@@ -29,16 +29,20 @@ class PhysicalConstants:
 class InstrumentParameters:
 
     def __init__(
-            self, physical_consts, N_read, I_dark, G_Amp) -> None:
+            self, physical_consts, N_read, I_dark, G_Amp, l_f, ) -> None:
 
-        # 強制入力パラメーター
+        # 入力されたパラメーターの代入
         self.physical_consts = physical_consts
         self.N_read = N_read  # [e-rms/pix] 読み出しノイズ
         self.I_dark = I_dark  # [e-/s/pix] 暗電流ノイズ
         self.G_Amp = G_Amp  # [無次元] プリアンプの倍率
+        self.l_f = l_f  # [m] 分光器導入ファイバーの長さ
 
         # システムゲイン導出
         self.G_sys = self.__calc_G_sys()  # [e-/DN] システムゲイン
+
+        # 分光器導入用ファイバーの透過率導出
+        self.tau_f = self.__calc_tau_f()  # [無次元] ファイバー透過率
 
     def h(self):
         mkhelp(self)
@@ -52,6 +56,23 @@ class InstrumentParameters:
 
         G_sys = C_PD / (e * G_SF) * ADU_ADC / G_Amp  # [e-/DN] システムゲイン
         return G_sys
+
+    def __calc_tau_f(self):
+        """
+        InF3ファイバーの透過率計算
+        参考リンク : https://www.thorlabs.co.jp/newgrouppage9.cfm?objectgroup_id=7062#ad-image-0
+
+        Returns
+        -------
+        float
+            ファイバー部分での透過率
+        """
+        l_f = self.l_f
+        tau_f_unit = 0.98  # [/m] 単位長さ（1m）当たりのファイバー透過率
+        tau_f_coupling = 0.5  # [無次元] ファイバー接続部分での結合損失（明確なソースなし、仮の値として設定）
+
+        tau_f = tau_f_coupling * tau_f_unit ** l_f
+        return tau_f
 
 
 class EmissionLineParameters:
