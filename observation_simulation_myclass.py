@@ -41,8 +41,10 @@ class InstrumentParameters:
         # システムゲイン導出
         self.G_sys = self.__calc_G_sys()  # [e-/DN] システムゲイン
 
-        # 分光器導入用ファイバーの透過率導出
-        self.tau_f = self.__calc_tau_f()  # [無次元] ファイバー透過率
+        # 装置透過率の導出
+        self.tau_t = 0.66  # [無次元] T60光学系全体での透過率（ソース 宇野2009M論p98）
+        self.tau_f = self.__calc_tau_f()  # [無次元] 分光器導入用光ファイバーの透過率
+        self.tau_s = self.__calc_tau_s()  # [無次元] ESPRITの装置透過率
 
     def h(self):
         mkhelp(self)
@@ -73,6 +75,23 @@ class InstrumentParameters:
 
         tau_f = tau_f_coupling * tau_f_unit ** l_f
         return tau_f
+
+    def __calc_tau_s(self):
+        """ESPRITの装置透過率の計算
+
+        Returns
+        -------
+        float
+            ESPRIT全体での装置透過率
+        """
+        tau_s_lens = 0.66
+        tau_s_mirror = 0.86
+
+        # 実際は回折効率は波長依存性がかなりある（宇野2012D論p106）が、ひとまず固定値として計算
+        tau_s_grating = 0.66  # 宇野2009M論p98の値を仮に置いている。
+
+        tau_s = tau_s_lens * tau_s_mirror * tau_s_grating
+        return tau_s
 
 
 class EmissionLineParameters:
