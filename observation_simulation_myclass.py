@@ -1,7 +1,3 @@
-import numpy as np
-import matplotlib.pyplot as plt
-
-
 def mkhelp(instance):
     import inspect
     attr_list = list(instance.__dict__.keys())
@@ -28,6 +24,34 @@ class PhysicalConstants:
 
     def h(self):
         mkhelp(self)
+
+
+class InstrumentParameters:
+
+    def __init__(
+            self, physical_consts, N_read, I_dark, G_Amp) -> None:
+
+        # 強制入力パラメーター
+        self.physical_consts = physical_consts
+        self.N_read = N_read  # [e-rms/pix] 読み出しノイズ
+        self.I_dark = I_dark  # [e-/s/pix] 暗電流ノイズ
+        self.G_Amp = G_Amp  # [無次元] プリアンプの倍率
+
+        # システムゲイン導出
+        self.G_sys = self.__calc_G_sys()  # [e-/DN] システムゲイン
+
+    def h(self):
+        mkhelp(self)
+
+    def __calc_G_sys(self):
+        e = self.physical_consts.e  # [C/e-] 電気素量
+        G_Amp = self.G_Amp  # [無次元] プリアンプの倍率
+        C_PD = 7.20e-14  # [F] 検出器フォトダイオードの電気容量
+        G_SF = 0.699  # [無次元] 検出器ソースフォロワの倍率
+        ADU_ADC = 10 / 2**16  # [V/DN] 16bit, +-5V入力ADCでの１DN当たりの電圧値
+
+        G_sys = C_PD / (e * G_SF) * ADU_ADC / G_Amp  # [e-/DN] システムゲイン
+        return G_sys
 
 
 class EmissionLineParameters:
