@@ -66,6 +66,13 @@ class InstrumentParameters:
         mkhelp(self)
 
     def __calc_G_sys(self):
+        """システムゲインG_sysの計算
+
+        Returns
+        -------
+        float
+            システムゲイン
+        """
         e = self.physical_consts.e  # [C/e-] 電気素量
         G_Amp = self.G_Amp  # [無次元] プリアンプの倍率
         C_PD = 7.20e-14  # [F] 検出器フォトダイオードの電気容量
