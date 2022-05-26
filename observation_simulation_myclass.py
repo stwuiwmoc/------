@@ -29,16 +29,23 @@ class PhysicalConstants:
 class InstrumentParameters:
 
     def __init__(
-            self, physical_consts, N_read, I_dark, G_Amp) -> None:
+            self, physical_consts, N_read, I_dark, G_Amp, l_f) -> None:
 
-        # 強制入力パラメーター
+        # 入力されたパラメーターの代入
         self.physical_consts = physical_consts
         self.N_read = N_read  # [e-rms/pix] 読み出しノイズ
         self.I_dark = I_dark  # [e-/s/pix] 暗電流ノイズ
         self.G_Amp = G_Amp  # [無次元] プリアンプの倍率
+        self.l_f = l_f  # [m] 分光器導入ファイバーの長さ
 
         # システムゲイン導出
         self.G_sys = self.__calc_G_sys()  # [e-/DN] システムゲイン
+
+        # 装置透過率の導出
+        self.tau_t = 0.66  # [無次元] T60光学系全体での透過率（ソース 宇野2009M論p98）
+        self.tau_f = self.__calc_tau_f()  # [無次元] 分光器導入用光ファイバーの透過率
+        self.tau_s = self.__calc_tau_s()  # [無次元] ESPRITの装置透過率
+        self.tau_e = self.tau_t * self.tau_f * self.tau_s  # [無次元] 装置全体の透過率合算
 
     def h(self):
         mkhelp(self)
@@ -52,6 +59,40 @@ class InstrumentParameters:
 
         G_sys = C_PD / (e * G_SF) * ADU_ADC / G_Amp  # [e-/DN] システムゲイン
         return G_sys
+
+    def __calc_tau_f(self):
+        """
+        InF3ファイバーの透過率計算
+        参考リンク : https://www.thorlabs.co.jp/newgrouppage9.cfm?objectgroup_id=7062#ad-image-0
+
+        Returns
+        -------
+        float
+            ファイバー部分での透過率
+        """
+        l_f = self.l_f
+        tau_f_unit = 0.98  # [/m] 単位長さ（1m）当たりのファイバー透過率
+        tau_f_coupling = 0.5  # [無次元] ファイバー接続部分での結合損失（明確なソースなし、仮の値として設定）
+
+        tau_f = tau_f_coupling * tau_f_unit ** l_f
+        return tau_f
+
+    def __calc_tau_s(self):
+        """ESPRITの装置透過率の計算
+
+        Returns
+        -------
+        float
+            ESPRIT全体での装置透過率
+        """
+        tau_s_lens = 0.66  # [無次元] 光学系レンズの透過率（宇野2009M論p98の値）
+        tau_s_mirror = 0.86  # [無次元] 光学系の鏡の透過率（宇野2009M論p98の値）
+
+        # 実際は回折効率は波長依存性がかなりある（宇野2012D論p106）が、ひとまず固定値として計算
+        tau_s_grating = 0.66  # 宇野2009M論p98の値を仮に置いている。
+
+        tau_s = tau_s_lens * tau_s_mirror * tau_s_grating
+        return tau_s
 
 
 class EmissionLineParameters:
