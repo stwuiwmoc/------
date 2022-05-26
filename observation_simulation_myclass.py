@@ -29,7 +29,7 @@ class PhysicalConstants:
 class InstrumentParameters:
 
     def __init__(
-            self, physical_consts, N_read, I_dark, G_Amp, l_f, ) -> None:
+            self, physical_consts, N_read, I_dark, G_Amp, l_f) -> None:
 
         # 入力されたパラメーターの代入
         self.physical_consts = physical_consts
@@ -45,6 +45,7 @@ class InstrumentParameters:
         self.tau_t = 0.66  # [無次元] T60光学系全体での透過率（ソース 宇野2009M論p98）
         self.tau_f = self.__calc_tau_f()  # [無次元] 分光器導入用光ファイバーの透過率
         self.tau_s = self.__calc_tau_s()  # [無次元] ESPRITの装置透過率
+        self.tau_e = self.tau_t * self.tau_f * self.tau_s  # [無次元] 装置全体の透過率合算
 
     def h(self):
         mkhelp(self)
@@ -84,8 +85,8 @@ class InstrumentParameters:
         float
             ESPRIT全体での装置透過率
         """
-        tau_s_lens = 0.66
-        tau_s_mirror = 0.86
+        tau_s_lens = 0.66  # [無次元] 光学系レンズの透過率（宇野2009M論p98の値）
+        tau_s_mirror = 0.86  # [無次元] 光学系の鏡の透過率（宇野2009M論p98の値）
 
         # 実際は回折効率は波長依存性がかなりある（宇野2012D論p106）が、ひとまず固定値として計算
         tau_s_grating = 0.66  # 宇野2009M論p98の値を仮に置いている。
