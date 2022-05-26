@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def mkhelp(instance):
     import inspect
     attr_list = list(instance.__dict__.keys())
@@ -29,7 +32,7 @@ class PhysicalConstants:
 class InstrumentParameters:
 
     def __init__(
-            self, physical_consts, N_read, I_dark, G_Amp, l_f) -> None:
+            self, physical_consts, N_read, I_dark, G_Amp, l_f, telescope_diameter) -> None:
 
         # 入力されたパラメーターの代入
         self.physical_consts = physical_consts
@@ -37,6 +40,7 @@ class InstrumentParameters:
         self.I_dark = I_dark  # [e-/s/pix] 暗電流ノイズ
         self.G_Amp = G_Amp  # [無次元] プリアンプの倍率
         self.l_f = l_f  # [m] 分光器導入ファイバーの長さ
+        self.telescope_diameter = telescope_diameter  # [m] 望遠鏡の口径
 
         # システムゲイン導出
         self.G_sys = self.__calc_G_sys()  # [e-/DN] システムゲイン
@@ -53,6 +57,10 @@ class InstrumentParameters:
         self.Omega = 2.35e-11 * plate_scale  # [str/pix] 1pixelが見込む立体角
         slit_length = 0.7  # [arcsec] ESPRITの分光スリット幅
         self.n_pix = slit_length / plate_scale  # [pix] 輝線が検出器上で広がる幅
+
+        # その他の文字の定義
+        self.A_t = np.pi * (self.telescope_diameter / 2) ** 2  # [m^2] 望遠鏡の開口面積
+        self.eta = 0.889  # [e-/photon] 検出器量子効率
 
     def h(self):
         mkhelp(self)
