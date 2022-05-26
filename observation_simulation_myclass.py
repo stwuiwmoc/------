@@ -42,10 +42,17 @@ class InstrumentParameters:
         self.G_sys = self.__calc_G_sys()  # [e-/DN] システムゲイン
 
         # 装置透過率の導出
-        self.tau_t = 0.66  # [無次元] T60光学系全体での透過率（ソース 宇野2009M論p98）
+        self.tau_t = 0.66  # [無次元] T60光学系全体での透過率（宇野2009M論p98）
         self.tau_f = self.__calc_tau_f()  # [無次元] 分光器導入用光ファイバーの透過率
         self.tau_s = self.__calc_tau_s()  # [無次元] ESPRITの装置透過率
         self.tau_e = self.tau_t * self.tau_f * self.tau_s  # [無次元] 装置全体の透過率合算
+
+        # ピクセル数関連の導出
+        # プレートスケールは検出器までの光学系で変わるのでTOPICSでは値が変わることに注意
+        plate_scale = 0.3  # [arcsec/pix] ESPRIT搭載時のプレートスケール（宇野2012D論p95）
+        self.Omega = 2.35e-11 * plate_scale  # [str/pix] 1pixelが見込む立体角
+        slit_length = 0.7  # [arcsec] ESPRITの分光スリット幅
+        self.n_pix = slit_length / plate_scale  # [pix] 輝線が検出器上で広がる幅
 
     def h(self):
         mkhelp(self)
