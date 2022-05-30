@@ -42,10 +42,10 @@ class InstrumentParameters:
         self.G_sys = self.__calc_G_sys()
 
         # 装置透過率の導出
-        self.tau_t = 0.66  # [無次元] T60光学系全体での透過率（宇野2009M論p98）
-        self.tau_f = self.__calc_tau_f()  # [無次元] 分光器導入用光ファイバーの透過率
-        self.tau_s = self.__calc_tau_s()  # [無次元] ESPRITの装置透過率
-        self.tau_e = self.tau_t * self.tau_f * self.tau_s  # [無次元] 装置全体の透過率合算
+        self.tau_t = 0.66
+        self.tau_f = self.__calc_tau_f()
+        self.tau_s = self.__calc_tau_s()
+        self.tau_e = self.tau_t * self.tau_f * self.tau_s
 
         # ピクセル数関連の導出
         # プレートスケールは検出器までの光学系で変わるのでTOPICSでは値が変わることに注意
@@ -79,9 +79,7 @@ class InstrumentParameters:
         return G_sys
 
     def __calc_tau_f(self):
-        """
-        InF3ファイバーの透過率計算
-        参考リンク : https://www.thorlabs.co.jp/newgrouppage9.cfm?objectgroup_id=7062#ad-image-0
+        """InF3ファイバーの透過率計算
 
         Returns
         -------
@@ -89,8 +87,8 @@ class InstrumentParameters:
             ファイバー部分での透過率
         """
         l_f = self.l_f
-        tau_f_unit = 0.98  # [/m] 単位長さ（1m）当たりのファイバー透過率
-        tau_f_coupling = 0.5  # [無次元] ファイバー接続部分での結合損失（明確なソースなし、仮の値として設定）
+        tau_f_unit = 0.98
+        tau_f_coupling = 0.5
 
         tau_f = tau_f_coupling * tau_f_unit ** l_f
         return tau_f
@@ -103,11 +101,11 @@ class InstrumentParameters:
         float
             ESPRIT全体での装置透過率
         """
-        tau_s_lens = 0.66  # [無次元] 光学系レンズの透過率（宇野2009M論p98の値）
-        tau_s_mirror = 0.86  # [無次元] 光学系の鏡の透過率（宇野2009M論p98の値）
+        tau_s_lens = 0.66
+        tau_s_mirror = 0.86
 
         # 実際は回折効率は波長依存性がかなりある（宇野2012D論p106）が、ひとまず固定値として計算
-        tau_s_grating = 0.66  # 宇野2009M論p98の値を仮に置いている。
+        tau_s_grating = 0.66
 
         tau_s = tau_s_lens * tau_s_mirror * tau_s_grating
         return tau_s
