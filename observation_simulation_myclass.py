@@ -38,8 +38,8 @@ class InstrumentParameters:
         self.l_f = l_f  # [m] 分光器導入ファイバーの長さ
         self.telescope_diameter = telescope_diameter  # [m] 望遠鏡の口径
 
-        # システムゲイン導出
-        self.G_sys = self.__calc_G_sys()  # [e-/DN] システムゲイン
+        # システムゲインの導出
+        self.G_sys = self.__calc_G_sys()
 
         # 装置透過率の導出
         self.tau_t = 0.66  # [無次元] T60光学系全体での透過率（宇野2009M論p98）
@@ -69,13 +69,13 @@ class InstrumentParameters:
         float
             システムゲイン
         """
-        e = phys_consts.e  # [C/e-] 電気素量
-        G_Amp = self.G_Amp  # [無次元] プリアンプの倍率
-        C_PD = 7.20e-14  # [F] 検出器フォトダイオードの電気容量
-        G_SF = 0.699  # [無次元] 検出器ソースフォロワの倍率
-        ADU_ADC = 10 / 2**16  # [V/DN] 16bit, +-5V入力ADCでの１DN当たりの電圧値
+        e = phys_consts.e
+        G_Amp = self.G_Amp
+        C_PD = 7.20e-14
+        G_SF = 0.699
+        ADU_ADC = 10 / 2**16
 
-        G_sys = C_PD / (e * G_SF) * ADU_ADC / G_Amp  # [e-/DN] システムゲイン
+        G_sys = C_PD / (e * G_SF) * ADU_ADC / G_Amp
         return G_sys
 
     def __calc_tau_f(self):
@@ -116,7 +116,12 @@ class InstrumentParameters:
 class EmissionLineParameters:
 
     def __init__(
-            self, lambda_um: float, g_ns: int, J_prime: int, A_if: float, E_prime: float) -> None:
+            self,
+            lambda_um: float,
+            g_ns: int,
+            J_prime: int,
+            A_if: float,
+            E_prime: float) -> None:
         """__init__ 各輝線のパラメータ
 
         Parameters
