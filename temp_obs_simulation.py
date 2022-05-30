@@ -1,6 +1,7 @@
 # %%
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy import constants as phys_consts
 
 import observation_simulation_myclass as osm
 
@@ -44,9 +45,9 @@ def calc_I_obj(physical_consts, line_params, N_H3p_: float, T_vib_: int):
     float
         発光輝線強度 [W/m^2/str]
     """
-    h = physical_consts.h
-    c = physical_consts.c
-    k_b = physical_consts.k_b
+    h = phys_consts.h
+    c = phys_consts.c
+    k_b = phys_consts.k
     Q_T = physical_consts.Q_T_dict[T_vib_]
 
     g_ns = line_params.g_ns
@@ -61,18 +62,18 @@ def calc_I_obj(physical_consts, line_params, N_H3p_: float, T_vib_: int):
     return I_obj_
 
 
-def calc_S_obj(physical_consts, line_params, I_obj_, A_t_, Omega_, tau_alpha_, tau_e_, eta_, G_sys_, t_obs_, n_pix_):
-    h = physical_consts.h
-    c = physical_consts.c
+def calc_S_obj(line_params, I_obj_, A_t_, Omega_, tau_alpha_, tau_e_, eta_, G_sys_, t_obs_, n_pix_):
+    h = phys_consts.h
+    c = phys_consts.c
     lambda_ = line_params.lambda_um
     S_obj_ = ((I_obj_ * A_t_ * Omega_ * tau_alpha_ * tau_e_) / (h * c / (lambda_ * 1e-6))) * eta_ * (1 / G_sys_) * t_obs_ * n_pix_
     return S_obj_
 
 
-def calc_del_T_del_R(physical_consts, line_params_fd, line_params_hb, beta_, R_s_):
-    h = physical_consts.h
-    c = physical_consts.c
-    k_b = physical_consts.k_b
+def calc_del_T_del_R(line_params_fd, line_params_hb, beta_, R_s_):
+    h = phys_consts.h
+    c = phys_consts.c
+    k_b = phys_consts.k
     E_prime_fd = line_params_fd.E_prime
     E_prime_hb = line_params_hb.E_prime
     del_T_del_R_ = - h * c / k_b * ((E_prime_hb - E_prime_fd) * 1e2) * (np.log(beta_) - np.log(R_s_)) ** -2 / R_s_
@@ -140,11 +141,11 @@ if __name__ == "__main__":
         # instrument constants
         A_t = (diamiter / 2) ** 2 * np.pi  # 望遠鏡開口面積
 
-        S_obj_fd = calc_S_obj(PHYSICAL_CONSTS, line_fd, I_obj_fd, A_t, Omega, tau_alpha, tau_e, eta, G_sys, t_obs, n_pix)
-        S_obj_hb = calc_S_obj(PHYSICAL_CONSTS, line_hb, I_obj_hb, A_t, Omega, tau_alpha, tau_e, eta, G_sys, t_obs, n_pix)
+        S_obj_fd = calc_S_obj(line_fd, I_obj_fd, A_t, Omega, tau_alpha, tau_e, eta, G_sys, t_obs, n_pix)
+        S_obj_hb = calc_S_obj(line_hb, I_obj_hb, A_t, Omega, tau_alpha, tau_e, eta, G_sys, t_obs, n_pix)
 
-        S_GBT_sky_fd = calc_S_obj(PHYSICAL_CONSTS, line_fd, I_GBT_sky, A_t, Omega, 1, tau_e, eta, G_sys, t_obs, n_pix)  # I_GBT + I_skyは大気透過率を考慮しないため1としている
-        S_GBT_sky_hb = calc_S_obj(PHYSICAL_CONSTS, line_hb, I_GBT_sky, A_t, Omega, 1, tau_e, eta, G_sys, t_obs, n_pix)  # I_GBT + I_skyは大気透過率を考慮しないため1としている
+        S_GBT_sky_fd = calc_S_obj(line_fd, I_GBT_sky, A_t, Omega, 1, tau_e, eta, G_sys, t_obs, n_pix)  # I_GBT + I_skyは大気透過率を考慮しないため1としている
+        S_GBT_sky_hb = calc_S_obj(line_hb, I_GBT_sky, A_t, Omega, 1, tau_e, eta, G_sys, t_obs, n_pix)  # I_GBT + I_skyは大気透過率を考慮しないため1としている
         S_dark = I_dark / G_sys * t_obs * n_pix
 
         SNR_fd = calc_SNR(S_obj_fd, S_GBT_sky_fd, S_dark, N_read, G_sys, n_pix)
@@ -155,7 +156,7 @@ if __name__ == "__main__":
         delta_S_obj_fd = S_obj_fd / SNR_fd
         delta_S_obj_hb = S_obj_hb / SNR_hb
 
-        del_T_del_R = calc_del_T_del_R(PHYSICAL_CONSTS, line_fd, line_hb, beta, R_s)
+        del_T_del_R = calc_del_T_del_R(line_fd, line_hb, beta, R_s)
         delta_R_s = np.sqrt((1 / S_obj_fd * delta_S_obj_hb) ** 2 + (S_obj_hb / (S_obj_fd ** 2) * delta_S_obj_fd) ** 2)
         delta_T = abs(del_T_del_R) * delta_R_s
 
