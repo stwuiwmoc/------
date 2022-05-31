@@ -110,6 +110,21 @@ class InstrumentParameters:
         return tau_s
 
 
+class ObservationParameters:
+
+    def __init__(self, t_obs) -> None:
+
+        # 入力パラメータの代入
+        self.t_obs = t_obs
+        self.tau_alpha = 0.9
+
+        # 参照元に I_GBT + I_sky のみの合算値しかないので、実装では md上の $I_{GBT} + I_{sky}$ を I_GBT_sky として記述
+        self.I_GBT_sky = 2.99e-6  # ESPRIT 3.4umでの値を仮置きした、今後もう少し複雑な機能を実装するかも
+
+    def h(self):
+        mkhelp(self)
+
+
 class EmissionLineParameters:
 
     def __init__(
