@@ -48,11 +48,10 @@ class InstrumentParameters:
         self.tau_e = self.tau_t * self.tau_f * self.tau_s
 
         # ピクセル数関連の導出
-        # プレートスケールは検出器までの光学系で変わるのでTOPICSでは値が変わることに注意
-        s_plate = 0.3  # [arcsec/pix] ESPRIT搭載時のプレートスケール（宇野2012D論p95）
-        self.Omega = 2.35e-11 * s_plate  # [str/pix] 1pixelが見込む立体角
-        w_slit = 0.7  # [arcsec] ESPRITの分光スリット幅
-        self.n_pix = w_slit / s_plate  # [pix] 輝線が検出器上で広がる幅
+        s_plate = 0.3  # <-ESPRITの値 プレートスケールは検出器までの光学系依存なのでTOPICSでは値が変わることに注意
+        self.Omega = 2.35e-11 * s_plate
+        w_slit = 0.7
+        self.n_pix = w_slit / s_plate
 
         # その他の文字の定義
         self.A_t = np.pi * (self.telescope_diameter / 2) ** 2  # [m^2] 望遠鏡の開口面積
