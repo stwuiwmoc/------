@@ -32,11 +32,11 @@ class InstrumentParameters:
             self, N_read, I_dark, G_Amp, l_f, telescope_diameter) -> None:
 
         # 入力されたパラメーターの代入
-        self.N_read = N_read  # [e-rms/pix] 読み出しノイズ
-        self.I_dark = I_dark  # [e-/s/pix] 暗電流ノイズ
-        self.G_Amp = G_Amp  # [無次元] プリアンプの倍率
-        self.l_f = l_f  # [m] 分光器導入ファイバーの長さ
-        self.telescope_diameter = telescope_diameter  # [m] 望遠鏡の口径
+        self.N_read = N_read
+        self.I_dark = I_dark
+        self.G_Amp = G_Amp
+        self.l_f = l_f
+        self.telescope_diameter = telescope_diameter
 
         # システムゲインの導出
         self.G_sys = self.__calc_G_sys()
@@ -54,8 +54,8 @@ class InstrumentParameters:
         self.n_pix = w_slit / s_plate
 
         # その他の文字の定義
-        self.A_t = np.pi * (self.telescope_diameter / 2) ** 2  # [m^2] 望遠鏡の開口面積
-        self.eta = 0.889  # [e-/photon] 検出器量子効率
+        self.A_t = np.pi * (self.telescope_diameter / 2) ** 2
+        self.eta = 0.889
 
     def h(self):
         mkhelp(self)
