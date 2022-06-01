@@ -57,25 +57,26 @@ class EmissionLineParameters:
         self.E_prime = E_prime
         self.T_hypo = T_hypo
 
+        # その他のパラメータの計算
         self.omega_if = 1 / (self.lambda_um * 1e-6) * 1e-2  # 波数 [/cm]
-        self.Q_T = self.__calc_Q_T(T=self.T_hypo)
+        self.Q_T = self.__calc_Q_T()
+
+        # 発光輝線強度 I_obj の計算
+        self.I_obj = self.__calc_I_obj()
 
     def h(self):
         mkhelp(self)
 
-    def __calc_Q_T(self, T: float) -> float:
+    def __calc_Q_T(self) -> float:
         """Partition function Q(T) の導出
-
-        Parameters
-        ----------
-        T : float
-
 
         Returns
         -------
         float
             partition function Q(T)
         """
+        T = self.T_hypo
+
         A_0 = -1.11391
         A_1 = +0.0581076
         A_2 = +0.000302967
@@ -86,6 +87,26 @@ class EmissionLineParameters:
 
         Q_T = A_0 * T**0 + A_1 * T**1 + A_2 * T**2 + A_3 * T**3 + A_4 * T**4 + A_5 * T**5 + A_6 * T**6
         return Q_T
+
+    def __calc_I_obj(self) -> float:
+
+        N_H3p = self.N_H3p
+        g_ns = self.g_ns
+        J_prime = self.J_prime
+        h = phys_consts.h
+        c = phys_consts.c
+        omega_if = self.omega_if
+        A_if = self.A_if
+        E_prime = self.E_prime
+        k_b = phys_consts.k
+        T_hypo = self.T_hypo
+        Q_T = self.Q_T
+
+        I_obj = N_H3p * g_ns * (2 * J_prime + 1) * h * c * (omega_if * 1e2) * A_if \
+            * np.exp(- h * c * (E_prime * 1e2) / (k_b * T_hypo)) \
+            / (4 * np.pi * Q_T)
+
+        return I_obj
 
 
 class InstrumentParameters:
