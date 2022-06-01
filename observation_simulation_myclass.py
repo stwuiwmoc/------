@@ -206,3 +206,14 @@ class ObservationParameters:
 
     def h(self):
         mkhelp(self)
+
+
+class EmissionLineDisperse:
+
+    def __init__(
+            self,
+            emission_line_params,
+            instrument_params,
+            observation_params) -> None:
+
+        pass
