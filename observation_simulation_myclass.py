@@ -1,3 +1,4 @@
+# %%
 import numpy as np
 from scipy import constants as phys_consts
 
@@ -15,50 +16,76 @@ def mkhelp(instance):
         print(method[0] + "()")
 
 
-class PhysicalConstants:
-
-    def __init__(self) -> None:
-        self.Q_T_dict = {  # [無次元] partition function
-            100: 7.36, 200: 20.726, 300: 37.608, 400: 57.649, 500: 80.579,
-            600: 106.393, 700: 135.33, 800: 167.812, 900: 204.388, 1000: 245.683, 1200: 345.179}
-
-    def h(self):
-        mkhelp(self)
-
-
 class EmissionLineParameters:
 
     def __init__(
             self,
             lambda_um: float,
+            N_H3p: float,
             g_ns: int,
             J_prime: int,
             A_if: float,
-            E_prime: float) -> None:
-        """__init__ 各輝線のパラメータ
+            E_prime: float,
+            T_hypo: float) -> None:
+
+        """各輝線のパラメータから発光輝線強度 I_obj を導出
 
         Parameters
         ----------
         lambda_um : float
-            輝線の中心波長 [um]
+            [um] 輝線の中心波長
+        N_H3p : float
+            _description_
         g_ns : int
-            nuclear spin weight, 2 or 4 [無次元]
+            [無次元] nuclear spin weight, 2 or 4
         J_prime : int
-            回転準位 [無次元]
+            [無次元] 回転準位
         A_if : float
-            アインシュタインのA係数 [/s]
+            [/s] アインシュタインのA係数
         E_prime : float
-            energy of upper statement [/cm]
+            [/cm] energy of upper statement
+        T_hypo : float
+            [K] 想定するH3+温度
         """
+
+        # 入力されたパラメータの代入
         self.lambda_um = lambda_um
-        self.omega_if = 1 / (self.lambda_um * 1e-6) * 1e-2  # 波数 [/cm]
+        self.N_H3p = N_H3p
         self.g_ns = g_ns
         self.J_prime = J_prime
         self.A_if = A_if
         self.E_prime = E_prime
+        self.T_hypo = T_hypo
+
+        self.omega_if = 1 / (self.lambda_um * 1e-6) * 1e-2  # 波数 [/cm]
+        self.Q_T = self.__calc_Q_T(T=self.T_hypo)
 
     def h(self):
         mkhelp(self)
+
+    def __calc_Q_T(self, T: float) -> float:
+        """Partition function Q(T) の導出
+
+        Parameters
+        ----------
+        T : float
+
+
+        Returns
+        -------
+        float
+            partition function Q(T)
+        """
+        A_0 = -1.11391
+        A_1 = +0.0581076
+        A_2 = +0.000302967
+        A_3 = -2.83724e-7
+        A_4 = +2.31119e-10
+        A_5 = -7.15895e-14
+        A_6 = + 1.00150e-17
+
+        Q_T = A_0 * T**0 + A_1 * T**1 + A_2 * T**2 + A_3 * T**3 + A_4 * T**4 + A_5 * T**5 + A_6 * T**6
+        return Q_T
 
 
 class InstrumentParameters:
