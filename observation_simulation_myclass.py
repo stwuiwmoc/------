@@ -26,6 +26,41 @@ class PhysicalConstants:
         mkhelp(self)
 
 
+class EmissionLineParameters:
+
+    def __init__(
+            self,
+            lambda_um: float,
+            g_ns: int,
+            J_prime: int,
+            A_if: float,
+            E_prime: float) -> None:
+        """__init__ 各輝線のパラメータ
+
+        Parameters
+        ----------
+        lambda_um : float
+            輝線の中心波長 [um]
+        g_ns : int
+            nuclear spin weight, 2 or 4 [無次元]
+        J_prime : int
+            回転準位 [無次元]
+        A_if : float
+            アインシュタインのA係数 [/s]
+        E_prime : float
+            energy of upper statement [/cm]
+        """
+        self.lambda_um = lambda_um
+        self.omega_if = 1 / (self.lambda_um * 1e-6) * 1e-2  # 波数 [/cm]
+        self.g_ns = g_ns
+        self.J_prime = J_prime
+        self.A_if = A_if
+        self.E_prime = E_prime
+
+    def h(self):
+        mkhelp(self)
+
+
 class InstrumentParameters:
 
     def __init__(
@@ -120,41 +155,6 @@ class ObservationParameters:
 
         # 参照元に I_GBT + I_sky のみの合算値しかないので、実装では md上の $I_{GBT} + I_{sky}$ を I_GBT_sky として記述
         self.I_GBT_sky = 2.99e-6  # ESPRIT 3.4umでの値を仮置きした、今後もう少し複雑な機能を実装するかも
-
-    def h(self):
-        mkhelp(self)
-
-
-class EmissionLineParameters:
-
-    def __init__(
-            self,
-            lambda_um: float,
-            g_ns: int,
-            J_prime: int,
-            A_if: float,
-            E_prime: float) -> None:
-        """__init__ 各輝線のパラメータ
-
-        Parameters
-        ----------
-        lambda_um : float
-            輝線の中心波長 [um]
-        g_ns : int
-            nuclear spin weight, 2 or 4 [無次元]
-        J_prime : int
-            回転準位 [無次元]
-        A_if : float
-            アインシュタインのA係数 [/s]
-        E_prime : float
-            energy of upper statement [/cm]
-        """
-        self.lambda_um = lambda_um
-        self.omega_if = 1 / (self.lambda_um * 1e-6) * 1e-2  # 波数 [/cm]
-        self.g_ns = g_ns
-        self.J_prime = J_prime
-        self.A_if = A_if
-        self.E_prime = E_prime
 
     def h(self):
         mkhelp(self)
