@@ -216,4 +216,40 @@ class EmissionLineDisperse:
             instrument_params,
             observation_params) -> None:
 
-        pass
+        # 入力パラメータの代入
+        self.emission_line_params = emission_line_params
+        self.instrument_params = instrument_params
+        self.observation_params = observation_params
+
+        # 各Singalの導出
+        self.S_obj = self.__calc_S_xx(
+            I_xx_=self.emission_line_params.I_obs,
+            tau_alpha_=self.observation_params.tau_alpha)
+
+        self.S_GBT_sky = self.__calc_S_xx(
+            I_xx_=self.observation_params.I_GBT_sky,
+            tau_alpha_=1)
+
+    def h(self):
+        mkhelp(self)
+
+    def __calc_S_xx(self, I_xx_, tau_alpha_):
+
+        I_xx = I_xx_
+        A_t = self.instrument_params.A_t
+        eta = self.instrument_params.eta
+        Omega = self.instrument_params.Omega
+        G_sys = self.instrument_params.G_sys
+        tau_alpha = tau_alpha_
+        tau_e = self.instrument_params.tau_e
+        rambda = self.emission_line_params.rambda
+        c = phys_consts.c
+        h = phys_consts.h
+        t_obs = self.observation_params.t_obs
+        n_pix = self.instrument_params.n_pix
+
+        S_xx = (I_xx * A_t * Omega * tau_alpha * tau_e) \
+            / (h * c / rambda) \
+            * eta * (1 / G_sys) * t_obs * n_pix
+
+        return S_xx
