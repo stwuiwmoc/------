@@ -20,7 +20,7 @@ class EmissionLineParameters:
 
     def __init__(
             self,
-            lambda_um: float,
+            rambda: float,
             N_H3p: float,
             g_ns: int,
             J_prime: int,
@@ -32,8 +32,8 @@ class EmissionLineParameters:
 
         Parameters
         ----------
-        lambda_um : float
-            [um] 輝線の中心波長
+        rambda : float
+            [m] 輝線の中心波長
         N_H3p : float
             _description_
         g_ns : int
@@ -49,7 +49,7 @@ class EmissionLineParameters:
         """
 
         # 入力されたパラメータの代入
-        self.lambda_um = lambda_um
+        self.rambda = rambda
         self.N_H3p = N_H3p
         self.g_ns = g_ns
         self.J_prime = J_prime
@@ -58,7 +58,7 @@ class EmissionLineParameters:
         self.T_hypo = T_hypo
 
         # その他のパラメータの計算
-        self.omega_if = 1 / (self.lambda_um * 1e-6) * 1e-2  # 波数 [/cm]
+        self.omega_if = 1 / self.rambda * 1e-2  # 波数 [/cm]
         self.Q_T = self.__calc_Q_T()
 
         # 発光輝線強度 I_obj の計算
