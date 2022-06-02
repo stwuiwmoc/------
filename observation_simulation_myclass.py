@@ -233,7 +233,21 @@ class EmissionLineDisperse:
     def h(self):
         mkhelp(self)
 
-    def __calc_S_xx(self, I_xx_, tau_alpha_):
+    def __calc_S_xx(self, I_xx_: float, tau_alpha_: float) -> float:
+        """検出器に結像される発光強度（I_obj, I_GBT, I_sky）から得られるシグナルを計算
+
+        Parameters
+        ----------
+        I_xx_ : float
+            発光強度
+        tau_alpha_ : float
+            大気透過率、I_GBTとI_skyでは1を代入する（mdに詳細あり）
+
+        Returns
+        -------
+        float
+            シグナル値
+        """
 
         I_xx = I_xx_
         A_t = self.instrument_params.A_t
