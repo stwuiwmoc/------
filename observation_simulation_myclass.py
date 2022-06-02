@@ -233,7 +233,7 @@ class EmissionLineDisperse:
         # 暗電流によるSignalの導出
         self.S_dark = self.__calc_S_dark()
 
-        # SNRの導出とDelta_Sの導入
+        # S/N導出とDelta_Sの導入
         self.SNR = self.__calc_SNR()
         self.Delta_S = self.S_obj / self.SNR
 
@@ -292,6 +292,13 @@ class EmissionLineDisperse:
         return S_dark
 
     def __calc_SNR(self) -> float:
+        """SNRの計算を実装
+
+        Returns
+        -------
+        float
+            [無次元] SNR = S_obj / N_all
+        """
         S_obj = self.S_obj
         S_GBT_sky = self.S_GBT_sky
         S_dark = self.S_dark
