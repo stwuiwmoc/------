@@ -230,6 +230,9 @@ class EmissionLineDisperse:
             I_xx_=self.observation_params.I_GBT_sky,
             tau_alpha_=1)
 
+        # 暗電流によるSignalの導出
+        self.S_dark = self.__calc_S_dark()
+
     def h(self):
         mkhelp(self)
 
@@ -267,3 +270,19 @@ class EmissionLineDisperse:
             * eta * (1 / G_sys) * t_obs * n_pix
 
         return S_xx
+
+    def __calc_S_dark(self) -> float:
+        """暗電流によるシグナルを計算
+
+        Returns
+        -------
+        float
+            [DN] 暗電流によるシグナル
+        """
+        I_dark = self.instrument_params.I_dark
+        G_sys = self.instrument_params.G_sys
+        t_obs = self.observation_params.t_obs
+        n_pix = self.instrument_params.n_pix
+
+        S_dark = (I_dark / G_sys) * t_obs * n_pix
+        return S_dark
