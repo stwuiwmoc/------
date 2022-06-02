@@ -239,14 +239,14 @@ class EmissionLineDisperse:
         Parameters
         ----------
         I_xx_ : float
-            発光強度
+            [W/m^2/str] 発光強度
         tau_alpha_ : float
-            大気透過率、I_GBTとI_skyでは1を代入する（mdに詳細あり）
+            [無次元] 大気透過率、I_GBTとI_skyでは1を代入する（mdに詳細あり）
 
         Returns
         -------
         float
-            シグナル値
+            [DN] シグナル値
         """
 
         I_xx = I_xx_
