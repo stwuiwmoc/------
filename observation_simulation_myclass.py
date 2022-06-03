@@ -223,7 +223,7 @@ class EmissionLineDisperse:
 
         # 各Singalの導出
         self.S_obj = self.__calc_S_xx(
-            I_xx_=self.emission_line_params.I_obs,
+            I_xx_=self.emission_line_params.I_obj,
             tau_alpha_=self.observation_params.tau_alpha)
 
         self.S_GBT_sky = self.__calc_S_xx(
