@@ -309,3 +309,14 @@ class EmissionLineDisperse:
         N_all = np.sqrt(S_obj + S_GBT_sky + S_dark + (N_read / G_sys)**2 * n_pix)
         SNR = S_obj / N_all
         return SNR
+
+
+class TemperatureFromSpectroscopy:
+
+    def __init__(self, emission_disperse_FD, emission_disperse_HB) -> None:
+        # 入力パラメータの代入
+        self.emission_disperse_FD = emission_disperse_FD
+        self.emission_disperse_HB = emission_disperse_HB
+
+    def h(self):
+        mkhelp(self)
