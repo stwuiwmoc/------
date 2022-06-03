@@ -20,7 +20,7 @@ class EmissionLineParameters:
 
     def __init__(
             self,
-            lambda_um: float,
+            rambda: float,
             N_H3p: float,
             g_ns: int,
             J_prime: int,
@@ -32,8 +32,8 @@ class EmissionLineParameters:
 
         Parameters
         ----------
-        lambda_um : float
-            [um] 輝線の中心波長
+        rambda : float
+            [m] 輝線の中心波長
         N_H3p : float
             _description_
         g_ns : int
@@ -49,7 +49,7 @@ class EmissionLineParameters:
         """
 
         # 入力されたパラメータの代入
-        self.lambda_um = lambda_um
+        self.rambda = rambda
         self.N_H3p = N_H3p
         self.g_ns = g_ns
         self.J_prime = J_prime
@@ -58,7 +58,7 @@ class EmissionLineParameters:
         self.T_hypo = T_hypo
 
         # その他のパラメータの計算
-        self.omega_if = 1 / (self.lambda_um * 1e-6) * 1e-2  # 波数 [/cm]
+        self.omega_if = 1 / self.rambda * 1e-2  # 波数 [/cm]
         self.Q_T = self.__calc_Q_T()
 
         # 発光輝線強度 I_obj の計算
@@ -206,3 +206,106 @@ class ObservationParameters:
 
     def h(self):
         mkhelp(self)
+
+
+class EmissionLineDisperse:
+
+    def __init__(
+            self,
+            emission_line_params,
+            instrument_params,
+            observation_params) -> None:
+
+        # 入力パラメータの代入
+        self.emission_line_params = emission_line_params
+        self.instrument_params = instrument_params
+        self.observation_params = observation_params
+
+        # 各Singalの導出
+        self.S_obj = self.__calc_S_xx(
+            I_xx_=self.emission_line_params.I_obj,
+            tau_alpha_=self.observation_params.tau_alpha)
+
+        self.S_GBT_sky = self.__calc_S_xx(
+            I_xx_=self.observation_params.I_GBT_sky,
+            tau_alpha_=1)
+
+        # 暗電流によるSignalの導出
+        self.S_dark = self.__calc_S_dark()
+
+        # S/N導出とDelta_Sの導入
+        self.SNR = self.__calc_SNR()
+        self.Delta_S = self.S_obj / self.SNR
+
+    def h(self):
+        mkhelp(self)
+
+    def __calc_S_xx(self, I_xx_: float, tau_alpha_: float) -> float:
+        """検出器に結像される発光強度（I_obj, I_GBT, I_sky）から得られるシグナルを計算
+
+        Parameters
+        ----------
+        I_xx_ : float
+            [W/m^2/str] 発光強度
+        tau_alpha_ : float
+            [無次元] 大気透過率、I_GBTとI_skyでは1を代入する（mdに詳細あり）
+
+        Returns
+        -------
+        float
+            [DN] シグナル値
+        """
+
+        I_xx = I_xx_
+        A_t = self.instrument_params.A_t
+        eta = self.instrument_params.eta
+        Omega = self.instrument_params.Omega
+        G_sys = self.instrument_params.G_sys
+        tau_alpha = tau_alpha_
+        tau_e = self.instrument_params.tau_e
+        rambda = self.emission_line_params.rambda
+        c = phys_consts.c
+        h = phys_consts.h
+        t_obs = self.observation_params.t_obs
+        n_pix = self.instrument_params.n_pix
+
+        S_xx = (I_xx * A_t * Omega * tau_alpha * tau_e) \
+            / (h * c / rambda) \
+            * eta * (1 / G_sys) * t_obs * n_pix
+
+        return S_xx
+
+    def __calc_S_dark(self) -> float:
+        """暗電流によるシグナルを計算
+
+        Returns
+        -------
+        float
+            [DN] 暗電流によるシグナル
+        """
+        I_dark = self.instrument_params.I_dark
+        G_sys = self.instrument_params.G_sys
+        t_obs = self.observation_params.t_obs
+        n_pix = self.instrument_params.n_pix
+
+        S_dark = (I_dark / G_sys) * t_obs * n_pix
+        return S_dark
+
+    def __calc_SNR(self) -> float:
+        """SNRの計算を実装
+
+        Returns
+        -------
+        float
+            [無次元] SNR = S_obj / N_all
+        """
+        S_obj = self.S_obj
+        S_GBT_sky = self.S_GBT_sky
+        S_dark = self.S_dark
+        N_read = self.instrument_params.N_read
+        G_sys = self.instrument_params.G_sys
+        n_pix = self.instrument_params.n_pix
+
+        N_all = np.sqrt(S_obj + S_GBT_sky + S_dark + (N_read / G_sys)**2 * n_pix)
+        SNR = S_obj / N_all
+        return SNR
