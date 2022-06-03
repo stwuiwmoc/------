@@ -359,7 +359,7 @@ class TemperatureFromSpectroscopy:
         beta = self.beta
         R_S = self.R_S
 
-        T_vib = (h * c / k_B) * (E_prime_HB - E_prime_FD) / (np.log(beta) - np.log(R_S))
+        T_vib = (h * c / k_B) * (E_prime_HB - E_prime_FD) * 1e2 / (np.log(beta) - np.log(R_S))
         return T_vib
 
     def __calc_Delta_R_S(self):
@@ -382,7 +382,7 @@ class TemperatureFromSpectroscopy:
         Delta_R_S = self.Delta_R_S
 
         del_T_del_R_S = - h * c / k_B \
-            * (E_prime_HB - E_prime_FD) \
+            * (E_prime_HB - E_prime_FD) * 1e2 \
             / (np.log(beta) - np.log(R_S))**2 \
             * (1 / R_S)
 
