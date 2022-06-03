@@ -323,6 +323,7 @@ class TemperatureFromSpectroscopy:
         self.T_vib = self.__calc_T_vib()
         self.Delta_R_S = self.__calc_Delta_R_S()
         self.Delta_T = self.__calc_Delta_T()
+        self.SNR_T = self.T_vib / self.Delta_T
 
     def h(self):
         mkhelp(self)
