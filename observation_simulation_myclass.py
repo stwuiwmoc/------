@@ -321,6 +321,7 @@ class TemperatureFromSpectroscopy:
         self.beta = self.__calc_beta()
         self.R_S = self.__calc_R_S()
         self.T_vib = self.__calc_T_vib()
+        self.Delta_R_S = self.__calc_Delta_R_S()
 
     def h(self):
         mkhelp(self)
@@ -359,3 +360,12 @@ class TemperatureFromSpectroscopy:
 
         T_vib = (h * c / k_B) * (E_prime_HB - E_prime_FD) / (np.log(beta) - np.log(R_S))
         return T_vib
+
+    def __calc_Delta_R_S(self):
+        S_FD = self.emission_disperse_FD.S_obj
+        S_HB = self.emission_disperse_HB.S_obj
+        Delta_S_FD = self.emission_disperse_FD.Delta_S
+        Delta_S_HB = self.emission_disperse_HB.Delta_S
+
+        Delta_R_S = np.sqrt((Delta_S_HB / S_FD)**2 + (S_HB * Delta_S_FD / S_FD**2)**2)
+        return Delta_R_S
