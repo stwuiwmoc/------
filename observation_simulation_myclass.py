@@ -309,3 +309,84 @@ class EmissionLineDisperse:
         N_all = np.sqrt(S_obj + S_GBT_sky + S_dark + (N_read / G_sys)**2 * n_pix)
         SNR = S_obj / N_all
         return SNR
+
+
+class TemperatureFromSpectroscopy:
+
+    def __init__(self, emission_disperse_FD, emission_disperse_HB) -> None:
+        # 入力パラメータの代入
+        self.emission_disperse_FD = emission_disperse_FD
+        self.emission_disperse_HB = emission_disperse_HB
+
+        self.beta = self.__calc_beta()
+        self.R_S = self.__calc_R_S()
+        self.T_vib = self.__calc_T_vib()
+        self.Delta_R_S = self.__calc_Delta_R_S()
+        self.Delta_T = self.__calc_Delta_T()
+        self.SNR_T = self.T_vib / self.Delta_T
+
+    def h(self):
+        mkhelp(self)
+
+    def __calc_beta(self):
+        g_ns_FD = self.emission_disperse_FD.emission_line_params.g_ns
+        J_prime_FD = self.emission_disperse_FD.emission_line_params.J_prime
+        omega_if_FD = self.emission_disperse_FD.emission_line_params.omega_if
+        A_if_FD = self.emission_disperse_FD.emission_line_params.A_if
+
+        g_ns_HB = self.emission_disperse_HB.emission_line_params.g_ns
+        J_prime_HB = self.emission_disperse_HB.emission_line_params.J_prime
+        omega_if_HB = self.emission_disperse_HB.emission_line_params.omega_if
+        A_if_HB = self.emission_disperse_HB.emission_line_params.A_if
+
+        beta = (g_ns_HB * (2 * J_prime_HB + 1) * omega_if_HB * A_if_HB) \
+            / (g_ns_FD * (2 * J_prime_FD + 1) * omega_if_FD * A_if_FD)
+
+        return beta
+
+    def __calc_R_S(self):
+        S_HB = self.emission_disperse_HB.S_obj
+        S_FD = self.emission_disperse_FD.S_obj
+
+        R_S = S_HB / S_FD
+        return R_S
+
+    def __calc_T_vib(self):
+        E_prime_FD = self.emission_disperse_FD.emission_line_params.E_prime
+        E_prime_HB = self.emission_disperse_HB.emission_line_params.E_prime
+        h = phys_consts.h
+        c = phys_consts.c
+        k_B = phys_consts.k
+        beta = self.beta
+        R_S = self.R_S
+
+        T_vib = (h * c / k_B) * (E_prime_HB - E_prime_FD) * 1e2 / (np.log(beta) - np.log(R_S))
+        return T_vib
+
+    def __calc_Delta_R_S(self):
+        S_FD = self.emission_disperse_FD.S_obj
+        S_HB = self.emission_disperse_HB.S_obj
+        Delta_S_FD = self.emission_disperse_FD.Delta_S
+        Delta_S_HB = self.emission_disperse_HB.Delta_S
+
+        Delta_R_S = np.sqrt((Delta_S_HB / S_FD)**2 + (S_HB * Delta_S_FD / S_FD**2)**2)
+        return Delta_R_S
+
+    def __calc_Delta_T(self):
+        E_prime_FD = self.emission_disperse_FD.emission_line_params.E_prime
+        E_prime_HB = self.emission_disperse_HB.emission_line_params.E_prime
+        h = phys_consts.h
+        c = phys_consts.c
+        k_B = phys_consts.k
+        beta = self.beta
+        R_S = self.R_S
+        Delta_R_S = self.Delta_R_S
+
+        del_T_del_R_S = - h * c / k_B \
+            * (E_prime_HB - E_prime_FD) * 1e2 \
+            / (np.log(beta) - np.log(R_S))**2 \
+            * (1 / R_S)
+
+        Delta_T = np.abs(del_T_del_R_S * Delta_R_S)
+
+        return Delta_T
