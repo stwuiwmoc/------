@@ -319,6 +319,7 @@ class TemperatureFromSpectroscopy:
         self.emission_disperse_HB = emission_disperse_HB
 
         self.beta = self.__calc_beta()
+        self.R_S = self.__calc_R_S()
 
     def h(self):
         mkhelp(self)
@@ -338,3 +339,10 @@ class TemperatureFromSpectroscopy:
             / (g_ns_FD * (2 * J_prime_FD + 1) * omega_if_FD * A_if_FD)
 
         return beta
+
+    def __calc_R_S(self):
+        S_HB = self.emission_disperse_HB.S_obj
+        S_FD = self.emission_disperse_FD.S_obj
+
+        R_S = S_HB / S_FD
+        return R_S
