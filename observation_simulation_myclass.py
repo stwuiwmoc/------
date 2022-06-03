@@ -318,5 +318,23 @@ class TemperatureFromSpectroscopy:
         self.emission_disperse_FD = emission_disperse_FD
         self.emission_disperse_HB = emission_disperse_HB
 
+        self.beta = self.__calc_beta()
+
     def h(self):
         mkhelp(self)
+
+    def __calc_beta(self):
+        g_ns_FD = self.emission_disperse_FD.emission_line_params.g_ns
+        J_prime_FD = self.emission_disperse_FD.emission_line_params.J_prime
+        omega_if_FD = self.emission_disperse_FD.emission_line_params.omega_if
+        A_if_FD = self.emission_disperse_FD.emission_line_params.A_if
+
+        g_ns_HB = self.emission_disperse_HB.emission_line_params.g_ns
+        J_prime_HB = self.emission_disperse_HB.emission_line_params.J_prime
+        omega_if_HB = self.emission_disperse_HB.emission_line_params.omega_if
+        A_if_HB = self.emission_disperse_HB.emission_line_params.A_if
+
+        beta = (g_ns_HB * (2 * J_prime_HB + 1) * omega_if_HB * A_if_HB) \
+            / (g_ns_FD * (2 * J_prime_FD + 1) * omega_if_FD * A_if_FD)
+
+        return beta
