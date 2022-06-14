@@ -16,7 +16,7 @@ def mkhelp(instance):
         print(method[0] + "()")
 
 
-def calc_Plank_law(rambda, T):
+def calc_Plank_law_I_prime(rambda, T):
     """プランクの法則から波長と温度の関数として分光放射輝度を計算
 
     Parameters
@@ -134,23 +134,54 @@ class EmissionLineParameters:
         return I_obj
 
 
+class TelescopeParameters:
+
+    def __init__(
+            self, T_GBT, telescope_diameter, tau_GBT=0.66) -> None:
+
+        self.T_GBT = T_GBT
+        self.telescope_diameter = telescope_diameter
+        self.tau_GBT = tau_GBT
+
+        self.A_t = np.pi * (self.telescope_diameter / 2) ** 2
+
+    def calc_I_GBT(self, rambda_: float) -> float:
+        """観測波長に対するI_GBTを計算
+
+        Parameters
+        ----------
+        rambda_ : float
+            [m] 観測波長
+
+        Returns
+        -------
+        float
+            [W / m^2 / str]	1秒あたりの望遠鏡（鏡面など）からの熱輻射
+        """
+        T_GBT = self.T_GBT
+        tau_GBT = self.tau_GBT
+
+        I_prime = calc_Plank_law_I_prime(rambda=rambda_, T=T_GBT)
+        I_GBT = I_prime * rambda_ * (1 - tau_GBT)
+
+        return I_GBT
+
+
 class InstrumentParameters:
 
     def __init__(
-            self, N_read, I_dark, G_Amp, l_f, telescope_diameter) -> None:
+            self, N_read, I_dark, G_Amp, l_f) -> None:
 
         # 入力されたパラメーターの代入
         self.N_read = N_read
         self.I_dark = I_dark
         self.G_Amp = G_Amp
         self.l_f = l_f
-        self.telescope_diameter = telescope_diameter
 
         # システムゲインの導出
         self.G_sys = self.__calc_G_sys()
 
         # 装置透過率の導出
-        self.tau_t = 0.66
         self.tau_f = self.__calc_tau_f()
         self.tau_s = self.__calc_tau_s()
         self.tau_e = self.tau_t * self.tau_f * self.tau_s
@@ -162,7 +193,6 @@ class InstrumentParameters:
         self.n_pix = w_slit / s_plate
 
         # その他の文字の定義
-        self.A_t = np.pi * (self.telescope_diameter / 2) ** 2
         self.eta = 0.889
 
     def h(self):
