@@ -36,7 +36,7 @@ def calc_Plank_law_I_prime(rambda, T):
     c = phys_consts.c
     k_B = phys_consts.k
 
-    I_prime = (2 * h * c / rambda**5) * (1 / (np.exp(h * c / (rambda * k_B * T)) - 1))
+    I_prime = (2 * h * c**2 / rambda**5) * (1 / (np.exp(h * c / (rambda * k_B * T)) - 1))
 
     return I_prime
 
