@@ -175,18 +175,19 @@ class TelescopeParameters:
 class InstrumentParameters:
 
     def __init__(
-            self, N_read, I_dark, G_Amp, l_f) -> None:
+            self, N_read, I_dark, G_Amp, l_f, FWHM) -> None:
 
         # 入力されたパラメーターの代入
         self.N_read = N_read
         self.I_dark = I_dark
         self.G_Amp = G_Amp
         self.l_f = l_f
+        self.FWHM = FWHM
 
         # システムゲインの導出
         self.G_sys = self.__calc_G_sys()
 
-        # 装置透過率の導出
+        # 各透過率の導出
         self.tau_f = self.__calc_tau_f()
         self.tau_s = self.__calc_tau_s()
         self.tau_e = self.tau_t * self.tau_f * self.tau_s
