@@ -102,12 +102,12 @@ class EmissionLineParameters:
         """
         T = self.T_hypo
 
-        A_0 = -1.11391
-        A_1 = +0.0581076
-        A_2 = +0.000302967
-        A_3 = -2.83724e-7
-        A_4 = +2.31119e-10
-        A_5 = -7.15895e-14
+        A_0 = - 1.11391
+        A_1 = + 0.0581076
+        A_2 = + 0.000302967
+        A_3 = - 2.83724e-7
+        A_4 = + 2.31119e-10
+        A_5 = - 7.15895e-14
         A_6 = + 1.00150e-17
 
         Q_T = A_0 * T**0 + A_1 * T**1 + A_2 * T**2 + A_3 * T**3 + A_4 * T**4 + A_5 * T**5 + A_6 * T**6
@@ -255,17 +255,38 @@ class InstrumentParameters:
 
 class ObservationParameters:
 
-    def __init__(self, t_obs) -> None:
+    def __init__(self, t_obs: float, T_sky: float) -> None:
 
         # 入力パラメータの代入
         self.t_obs = t_obs
         self.tau_alpha = 0.9
-
-        # 参照元に I_GBT + I_sky のみの合算値しかないので、実装では md上の $I_{GBT} + I_{sky}$ を I_GBT_sky として記述
-        self.I_sky = 2.99e-6  # ESPRIT 3.4umでの値を仮置きした、今後もう少し複雑な機能を実装するかも
+        self.T_sky = T_sky
 
     def h(self):
         mkhelp(self)
+
+    def calc_I_sky(self, rambda_: float, FWHM: float) -> float:
+        """観測波長に対するI_skyを計算
+
+        Parameters
+        ----------
+        rambda_ : float
+            [m] 観測波長
+        FWHM : float
+            [m] フィルターの半値幅
+
+        Returns
+        -------
+        float
+            [W / m^2 / str]	1秒あたりの大気から熱輻射
+        """
+        T_sky = self.T_sky
+        tau_alpha = self.tau_alpha
+
+        I_prime = calc_Plank_law_I_prime(rambda=rambda_, T=T_sky)
+        I_sky = I_prime * FWHM * (1 - tau_alpha)
+
+        return I_sky
 
 
 class EmissionLineDisperse:
@@ -294,7 +315,9 @@ class EmissionLineDisperse:
         I_GBT = self.telescope_params.calc_I_GBT(
             rambda_=self.emission_line_params.rambda,
             FWHM=self.instrument_params.FWHM)
-        I_sky = self.observation_params.I_sky
+        I_sky = self.observation_params.calc_I_sky(
+            rambda_=self.emission_line_params.rambda,
+            FWHM=self.instrument_params.FWHM)
 
         # 各Singalの導出
         self.S_obj = self.__calc_S_xx(
