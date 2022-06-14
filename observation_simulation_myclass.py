@@ -16,6 +16,31 @@ def mkhelp(instance):
         print(method[0] + "()")
 
 
+def calc_Plank_law(rambda, T):
+    """プランクの法則から波長と温度の関数として分光放射輝度を計算
+
+    Parameters
+    ----------
+    rambda : float
+        [m] 波長
+    T : float
+        [K] 黒体の温度
+
+    Returns
+    -------
+    float
+        [W / m^3 / str] 黒体放射による分光放射輝度
+    """
+
+    h = phys_consts.h
+    c = phys_consts.c
+    k_B = phys_consts.k
+
+    I_prime = (2 * h * c / rambda**5) * (1 / (np.exp(h * c / (rambda * k_B * T)) - 1))
+
+    return I_prime
+
+
 class EmissionLineParameters:
 
     def __init__(
