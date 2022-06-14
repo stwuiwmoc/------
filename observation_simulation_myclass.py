@@ -255,11 +255,22 @@ class InstrumentParameters:
 
 class ObservationParameters:
 
-    def __init__(self, t_obs: float, T_sky: float) -> None:
+    def __init__(self, tau_alpha: float, t_obs: float, T_sky: float) -> None:
+        """観測に関連するパラメータを格納
+
+        Parameters
+        ----------
+        tau_alpha : float
+            [無次元] 大気透過率
+        t_obs : float
+            [s] 積分時間
+        T_sky : float
+            [K] 大気温度
+        """
 
         # 入力パラメータの代入
+        self.tau_alpha = tau_alpha
         self.t_obs = t_obs
-        self.tau_alpha = 0.9
         self.T_sky = T_sky
 
     def h(self):

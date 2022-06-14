@@ -20,6 +20,7 @@ if __name__ == "__main__":
         telescope_diameter=0.6)
 
     observation_params = osm.ObservationParameters(
+        tau_alpha=0.812,
         t_obs=30 * 60,
         T_sky=273)
 
