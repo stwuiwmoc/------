@@ -145,13 +145,18 @@ class TelescopeParameters:
 
         self.A_t = np.pi * (self.telescope_diameter / 2) ** 2
 
-    def calc_I_GBT(self, rambda_: float) -> float:
+    def h(self):
+        mkhelp(self)
+
+    def calc_I_GBT(self, rambda_: float, FWHM: float) -> float:
         """観測波長に対するI_GBTを計算
 
         Parameters
         ----------
         rambda_ : float
             [m] 観測波長
+        FWHM : float
+            [m] フィルターの半値幅
 
         Returns
         -------
@@ -162,7 +167,7 @@ class TelescopeParameters:
         tau_GBT = self.tau_GBT
 
         I_prime = calc_Plank_law_I_prime(rambda=rambda_, T=T_GBT)
-        I_GBT = I_prime * rambda_ * (1 - tau_GBT)
+        I_GBT = I_prime * FWHM * (1 - tau_GBT)
 
         return I_GBT
 
