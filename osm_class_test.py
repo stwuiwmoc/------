@@ -13,6 +13,10 @@ if __name__ == "__main__":
         I_dark=20,
         G_Amp=9,
         l_f=15,
+        FWHM=16e-9)
+
+    telescope_params = osm.TelescopeParameters(
+        T_GBT=280,
         telescope_diameter=0.6)
 
     observation_params = osm.ObservationParameters(
@@ -39,11 +43,13 @@ if __name__ == "__main__":
     Q_1_0_obs = osm.EmissionLineDisperse(
         emission_line_params=Q_1_0_params,
         instrument_params=instrument_params,
+        telescope_params=telescope_params,
         observation_params=observation_params)
 
     R_3_0_obs = osm.EmissionLineDisperse(
         emission_line_params=R_3_0_params,
         instrument_params=instrument_params,
+        telescope_params=telescope_params,
         observation_params=observation_params)
 
     temp_decision = osm.TemperatureFromSpectroscopy(

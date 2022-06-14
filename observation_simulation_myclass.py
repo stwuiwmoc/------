@@ -16,6 +16,31 @@ def mkhelp(instance):
         print(method[0] + "()")
 
 
+def calc_Plank_law_I_prime(rambda, T):
+    """プランクの法則から波長と温度の関数として分光放射輝度を計算
+
+    Parameters
+    ----------
+    rambda : float
+        [m] 波長
+    T : float
+        [K] 黒体の温度
+
+    Returns
+    -------
+    float
+        [W / m^3 / str] 黒体放射による分光放射輝度
+    """
+
+    h = phys_consts.h
+    c = phys_consts.c
+    k_B = phys_consts.k
+
+    I_prime = (2 * h * c**2 / rambda**5) * (1 / (np.exp(h * c / (rambda * k_B * T)) - 1))
+
+    return I_prime
+
+
 class EmissionLineParameters:
 
     def __init__(
@@ -109,26 +134,62 @@ class EmissionLineParameters:
         return I_obj
 
 
+class TelescopeParameters:
+
+    def __init__(
+            self, T_GBT, telescope_diameter, tau_GBT=0.66) -> None:
+
+        self.T_GBT = T_GBT
+        self.telescope_diameter = telescope_diameter
+        self.tau_GBT = tau_GBT
+
+        self.A_t = np.pi * (self.telescope_diameter / 2) ** 2
+
+    def h(self):
+        mkhelp(self)
+
+    def calc_I_GBT(self, rambda_: float, FWHM: float) -> float:
+        """観測波長に対するI_GBTを計算
+
+        Parameters
+        ----------
+        rambda_ : float
+            [m] 観測波長
+        FWHM : float
+            [m] フィルターの半値幅
+
+        Returns
+        -------
+        float
+            [W / m^2 / str]	1秒あたりの望遠鏡（鏡面など）からの熱輻射
+        """
+        T_GBT = self.T_GBT
+        tau_GBT = self.tau_GBT
+
+        I_prime = calc_Plank_law_I_prime(rambda=rambda_, T=T_GBT)
+        I_GBT = I_prime * FWHM * (1 - tau_GBT)
+
+        return I_GBT
+
+
 class InstrumentParameters:
 
     def __init__(
-            self, N_read, I_dark, G_Amp, l_f, telescope_diameter) -> None:
+            self, N_read, I_dark, G_Amp, l_f, FWHM) -> None:
 
         # 入力されたパラメーターの代入
         self.N_read = N_read
         self.I_dark = I_dark
         self.G_Amp = G_Amp
         self.l_f = l_f
-        self.telescope_diameter = telescope_diameter
+        self.FWHM = FWHM
 
         # システムゲインの導出
         self.G_sys = self.__calc_G_sys()
 
-        # 装置透過率の導出
-        self.tau_t = 0.66
+        # 各透過率の導出
         self.tau_f = self.__calc_tau_f()
         self.tau_s = self.__calc_tau_s()
-        self.tau_e = self.tau_t * self.tau_f * self.tau_s
 
         # ピクセル数関連の導出
         s_plate = 0.3  # <-ESPRITの値 プレートスケールは検出器までの光学系依存なのでTOPICSでは値が変わることに注意
@@ -137,7 +198,6 @@ class InstrumentParameters:
         self.n_pix = w_slit / s_plate
 
         # その他の文字の定義
-        self.A_t = np.pi * (self.telescope_diameter / 2) ** 2
         self.eta = 0.889
 
     def h(self):
@@ -202,7 +262,7 @@ class ObservationParameters:
         self.tau_alpha = 0.9
 
         # 参照元に I_GBT + I_sky のみの合算値しかないので、実装では md上の $I_{GBT} + I_{sky}$ を I_GBT_sky として記述
-        self.I_GBT_sky = 2.99e-6  # ESPRIT 3.4umでの値を仮置きした、今後もう少し複雑な機能を実装するかも
+        self.I_sky = 2.99e-6  # ESPRIT 3.4umでの値を仮置きした、今後もう少し複雑な機能を実装するかも
 
     def h(self):
         mkhelp(self)
@@ -214,20 +274,39 @@ class EmissionLineDisperse:
             self,
             emission_line_params,
             instrument_params,
+            telescope_params,
             observation_params) -> None:
 
         # 入力パラメータの代入
         self.emission_line_params = emission_line_params
         self.instrument_params = instrument_params
+        self.telescope_params = telescope_params
         self.observation_params = observation_params
+
+        # 装置透過率の導出
+        tau_GBT = telescope_params.tau_GBT
+        tau_f = instrument_params.tau_f
+        tau_s = instrument_params.tau_s
+        self.tau_e = tau_GBT * tau_f * tau_s
+
+        # 各発光強度の導出
+        I_obj = self.emission_line_params.I_obj
+        I_GBT = self.telescope_params.calc_I_GBT(
+            rambda_=self.emission_line_params.rambda,
+            FWHM=self.instrument_params.FWHM)
+        I_sky = self.observation_params.I_sky
 
         # 各Singalの導出
         self.S_obj = self.__calc_S_xx(
-            I_xx_=self.emission_line_params.I_obj,
+            I_xx_=I_obj,
             tau_alpha_=self.observation_params.tau_alpha)
 
-        self.S_GBT_sky = self.__calc_S_xx(
-            I_xx_=self.observation_params.I_GBT_sky,
+        self.S_GBT = self.__calc_S_xx(
+            I_xx_=I_GBT,
+            tau_alpha_=1)
+
+        self.S_sky = self.__calc_S_xx(
+            I_xx_=I_sky,
             tau_alpha_=1)
 
         # 暗電流によるSignalの導出
@@ -257,12 +336,12 @@ class EmissionLineDisperse:
         """
 
         I_xx = I_xx_
-        A_t = self.instrument_params.A_t
+        A_t = self.telescope_params.A_t
         eta = self.instrument_params.eta
         Omega = self.instrument_params.Omega
         G_sys = self.instrument_params.G_sys
         tau_alpha = tau_alpha_
-        tau_e = self.instrument_params.tau_e
+        tau_e = self.tau_e
         rambda = self.emission_line_params.rambda
         c = phys_consts.c
         h = phys_consts.h
@@ -300,13 +379,14 @@ class EmissionLineDisperse:
             [無次元] SNR = S_obj / N_all
         """
         S_obj = self.S_obj
-        S_GBT_sky = self.S_GBT_sky
+        S_GBT = self.S_GBT
+        S_sky = self.S_sky
         S_dark = self.S_dark
         N_read = self.instrument_params.N_read
         G_sys = self.instrument_params.G_sys
         n_pix = self.instrument_params.n_pix
 
-        N_all = np.sqrt(S_obj + S_GBT_sky + S_dark + (N_read / G_sys)**2 * n_pix)
+        N_all = np.sqrt(S_obj + S_GBT + S_sky + S_dark + (N_read / G_sys)**2 * n_pix)
         SNR = S_obj / N_all
         return SNR
 
