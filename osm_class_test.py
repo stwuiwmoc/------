@@ -15,6 +15,8 @@ if __name__ == "__main__":
         G_Amp=9,
         has_fiber=True,
         l_fb=15,
+        rambda_fi_center=3.414e-6,
+        tau_fi_center=0.9,
         FWHM_fi=17e-9)
 
     telescope_params = osm.TelescopeParameters(

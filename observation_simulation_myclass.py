@@ -263,8 +263,6 @@ class InstrumentParameters:
         else:
             self.tau_fb = 1
 
-        self.tau_i = self.__calc_tau_i()
-
         # ピクセル数関連の導出
         if self.is_ESPRIT:
             self.s_plate = 0.3
@@ -314,7 +312,7 @@ class InstrumentParameters:
         tau_fb = tau_fb_coupling * tau_fb_unit ** l_fb
         return tau_fb
 
-    def __calc_tau_i(self):
+    def calc_tau_i(self, rambda):
         """装置透過率の計算
 
         Returns
@@ -456,7 +454,7 @@ class EmissionLineDisperse:
         # 装置透過率の導出
         tau_GBT = telescope_params.tau_GBT
         tau_fb = instrument_params.tau_fb
-        tau_i = instrument_params.tau_i
+        tau_i = instrument_params.calc_tau_i(rambda=self.emission_line_params.rambda)
         self.tau_e = tau_GBT * tau_fb * tau_i
 
         # 各発光強度の導出
