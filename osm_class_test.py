@@ -13,14 +13,16 @@ if __name__ == "__main__":
         I_dark=20,
         G_Amp=9,
         l_f=15,
-        FWHM=16e-9)
+        FWHM=17e-9)
 
     telescope_params = osm.TelescopeParameters(
-        T_GBT=280,
+        T_GBT=273,
         telescope_diameter=0.6)
 
     observation_params = osm.ObservationParameters(
-        t_obs=30 * 60)
+        tau_alpha=0.812,
+        t_obs=30 * 60,
+        T_sky=273)
 
     Q_1_0_params = osm.EmissionLineParameters(
         rambda=3.9530e-6,
