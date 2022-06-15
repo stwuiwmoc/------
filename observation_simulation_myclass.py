@@ -215,6 +215,7 @@ class InstrumentParameters:
             └ 誤差検討 \n
                 ├ システムゲインの導出 \n
                 ├ 装置透過率の導出 \n
+                ├ 干渉フィルター透過率の導出 \n
                 └ 装置のpixel数関連の導出 \n
 
         Parameters
@@ -312,16 +313,37 @@ class InstrumentParameters:
         tau_fb = tau_fb_coupling * tau_fb_unit ** l_fb
         return tau_fb
 
-    def calc_tau_i(self, rambda):
+    def calc_tau_i(self, rambda_: float) -> float:
         """装置透過率の計算
+
+        Parameters
+        ----------
+        rambda_ : float
+            観測対象の波長
 
         Returns
         -------
         float
             装置内部の透過率の合算
         """
+
         def calc_tau_i_filter():
-            tau_i_filter = 0.7
+            """干渉フィルターの透過率を計算
+
+            Returns
+            -------
+            float
+                干渉フィルターの透過率
+            """
+            rambda_fi_center = self.rambda_fi_center
+            tau_fi_center = self.tau_fi_center
+            FWHM_fi = self.FWHM_fi
+            rambda__ = rambda_
+
+            tau_i_filter = tau_fi_center \
+                * np.exp(
+                    - (rambda__ - rambda_fi_center)**2 / (2 * (FWHM_fi / (2 * np.sqrt(2 * np.log(2))))**2))
+
             return tau_i_filter
 
         def calc_tau_i_ESPRIT():
@@ -454,7 +476,7 @@ class EmissionLineDisperse:
         # 装置透過率の導出
         tau_GBT = telescope_params.tau_GBT
         tau_fb = instrument_params.tau_fb
-        tau_i = instrument_params.calc_tau_i(rambda=self.emission_line_params.rambda)
+        tau_i = instrument_params.calc_tau_i(rambda_=self.emission_line_params.rambda)
         self.tau_e = tau_GBT * tau_fb * tau_i
 
         # 各発光強度の導出

@@ -8,7 +8,18 @@ if __name__ == "__main__":
     N_H3p_ion = 5.0e+15
     T_hypothesis = 600
 
-    instrument_params = osm.InstrumentParameters(
+    instrument_params_for_Q_1_0 = osm.InstrumentParameters(
+        is_ESPRIT=True,
+        N_read=100,
+        I_dark=20,
+        G_Amp=9,
+        has_fiber=True,
+        l_fb=15,
+        rambda_fi_center=3.953e-6,
+        tau_fi_center=0.9,
+        FWHM_fi=266e-9)
+
+    instrument_params_for_R_3_0 = osm.InstrumentParameters(
         is_ESPRIT=True,
         N_read=100,
         I_dark=20,
@@ -48,13 +59,13 @@ if __name__ == "__main__":
 
     Q_1_0_obs = osm.EmissionLineDisperse(
         emission_line_params=Q_1_0_params,
-        instrument_params=instrument_params,
+        instrument_params=instrument_params_for_Q_1_0,
         telescope_params=telescope_params,
         observation_params=observation_params)
 
     R_3_0_obs = osm.EmissionLineDisperse(
         emission_line_params=R_3_0_params,
-        instrument_params=instrument_params,
+        instrument_params=instrument_params_for_R_3_0,
         telescope_params=telescope_params,
         observation_params=observation_params)
 
