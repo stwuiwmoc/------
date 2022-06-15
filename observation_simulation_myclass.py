@@ -260,12 +260,13 @@ class InstrumentParameters:
         # ピクセル数関連の導出
         if self.is_ESPRIT:
             self.s_plate = 0.3
+            w_slit = 0.7
+            self.n_pix = w_slit / self.s_plate
         else:
             self.s_plate = 0.43
+            self.n_pix = 1
 
         self.Omega = ((self.s_plate / 3600) * (np.pi / 180))**2
-        w_slit = 0.7
-        self.n_pix = w_slit / self.s_plate
 
         # その他の文字の定義
         self.eta = 0.889
