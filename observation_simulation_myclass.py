@@ -307,20 +307,54 @@ class InstrumentParameters:
         return tau_fb
 
     def __calc_tau_i(self):
-        """ESPRITの装置透過率の計算
+        """装置透過率の計算
 
         Returns
         -------
         float
-            ESPRIT全体での装置透過率
+            装置内部の透過率の合算
         """
-        tau_i_lens = 0.66
-        tau_i_mirror = 0.86
+        def calc_tau_i_filter():
+            tau_i_filter = 0.7
+            return tau_i_filter
 
-        # 実際は回折効率は波長依存性がかなりある（宇野2012D論p106）が、ひとまず固定値として計算
-        tau_i_grating = 0.66
+        def calc_tau_i_ESPRIT():
+            """ESPRITでのtau_iを計算
 
-        tau_i = tau_i_lens * tau_i_mirror * tau_i_grating
+            Returns
+            -------
+            float
+                ESPRITでのtau_i
+            """
+            tau_i_lens = 0.66
+            tau_i_mirror = 0.86
+            tau_i_filter = calc_tau_i_filter()
+
+            # 実際は回折効率は波長依存性がかなりある（宇野2012D論p106）が、ひとまず固定値として計算
+            tau_i_grating = 0.66
+
+            tau_i = tau_i_lens * tau_i_mirror * tau_i_filter * tau_i_grating
+            return tau_i
+
+        def calc_tau_i_TOPICS():
+            """TOPICSでのtau_iを計算
+
+            Returns
+            -------
+            float
+                TOPICSでのtau_i
+            """
+            tau_i_lens = 0.9**3
+            tau_i_filter = calc_tau_i_filter()
+
+            tau_i = tau_i_lens * tau_i_filter
+            return tau_i
+
+        if self.is_ESPRIT:
+            tau_i = calc_tau_i_ESPRIT()
+        else:
+            tau_i = calc_tau_i_TOPICS()
+
         return tau_i
 
 
