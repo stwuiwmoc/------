@@ -172,14 +172,14 @@ class TelescopeParameters:
     def h(self):
         mkhelp(self)
 
-    def calc_I_GBT(self, rambda_: float, FWHM: float) -> float:
+    def calc_I_GBT(self, rambda_: float, FWHM_fi: float) -> float:
         """観測波長に対するI_GBTを計算
 
         Parameters
         ----------
         rambda_ : float
             [m] 観測波長
-        FWHM : float
+        FWHM_fi : float
             [m] フィルターの半値幅
 
         Returns
@@ -191,7 +191,7 @@ class TelescopeParameters:
         tau_GBT = self.tau_GBT
 
         I_prime = calc_Plank_law_I_prime(rambda=rambda_, T=T_GBT)
-        I_GBT = I_prime * FWHM * (1 - tau_GBT)
+        I_GBT = I_prime * FWHM_fi * (1 - tau_GBT)
 
         return I_GBT
 
@@ -206,7 +206,7 @@ class InstrumentParameters:
             G_Amp: float,
             has_fiber: bool,
             l_fb: float,
-            FWHM: float) -> None:
+            FWHM_fi: float) -> None:
         """イメージャー、分光器のパラメータを保持
 
         観測見積もり.md
@@ -233,7 +233,7 @@ class InstrumentParameters:
             Falseの場合、ファイバー透過率は自動的に1に設定される。
         l_fb : float
             [m] 分光器導入用ファイバーの長さ
-        FWHM : float
+        FWHM_fi : float
             [m] フィルターの半値幅
         """
 
@@ -244,7 +244,7 @@ class InstrumentParameters:
         self.G_Amp = G_Amp
         self.has_fiber = has_fiber
         self.l_fb = l_fb
-        self.FWHM = FWHM
+        self.FWHM_fi = FWHM_fi
 
         # システムゲインの導出
         self.G_sys = self.__calc_G_sys()
@@ -387,14 +387,14 @@ class ObservationParameters:
     def h(self):
         mkhelp(self)
 
-    def calc_I_sky(self, rambda_: float, FWHM: float) -> float:
+    def calc_I_sky(self, rambda_: float, FWHM_fi: float) -> float:
         """観測波長に対するI_skyを計算
 
         Parameters
         ----------
         rambda_ : float
             [m] 観測波長
-        FWHM : float
+        FWHM_fi : float
             [m] フィルターの半値幅
 
         Returns
@@ -406,7 +406,7 @@ class ObservationParameters:
         tau_alpha = self.tau_alpha
 
         I_prime = calc_Plank_law_I_prime(rambda=rambda_, T=T_sky)
-        I_sky = I_prime * FWHM * (1 - tau_alpha)
+        I_sky = I_prime * FWHM_fi * (1 - tau_alpha)
 
         return I_sky
 
@@ -455,10 +455,10 @@ class EmissionLineDisperse:
         I_obj = self.emission_line_params.I_obj
         I_GBT = self.telescope_params.calc_I_GBT(
             rambda_=self.emission_line_params.rambda,
-            FWHM=self.instrument_params.FWHM)
+            FWHM_fi=self.instrument_params.FWHM_fi)
         I_sky = self.observation_params.calc_I_sky(
             rambda_=self.emission_line_params.rambda,
-            FWHM=self.instrument_params.FWHM)
+            FWHM_fi=self.instrument_params.FWHM_fi)
 
         # 各Singalの導出
         self.S_obj = self.__calc_S_xx(
