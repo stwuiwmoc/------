@@ -172,14 +172,14 @@ class TelescopeParameters:
     def h(self):
         mkhelp(self)
 
-    def calc_I_GBT(self, rambda_: float, FWHM: float) -> float:
+    def calc_I_GBT(self, rambda_: float, FWHM_fi: float) -> float:
         """観測波長に対するI_GBTを計算
 
         Parameters
         ----------
         rambda_ : float
             [m] 観測波長
-        FWHM : float
+        FWHM_fi : float
             [m] フィルターの半値幅
 
         Returns
@@ -191,7 +191,7 @@ class TelescopeParameters:
         tau_GBT = self.tau_GBT
 
         I_prime = calc_Plank_law_I_prime(rambda=rambda_, T=T_GBT)
-        I_GBT = I_prime * FWHM * (1 - tau_GBT)
+        I_GBT = I_prime * FWHM_fi * (1 - tau_GBT)
 
         return I_GBT
 
@@ -199,48 +199,81 @@ class TelescopeParameters:
 class InstrumentParameters:
 
     def __init__(
-            self, N_read: float, I_dark: float, G_Amp: float, l_f: float, FWHM: float) -> None:
+            self,
+            is_ESPRIT: bool,
+            N_read: float,
+            I_dark: float,
+            G_Amp: float,
+            has_fiber: bool,
+            l_fb: float,
+            rambda_fi_center: float,
+            tau_fi_center: float,
+            FWHM_fi: float) -> None:
         """イメージャー、分光器のパラメータを保持
 
         観測見積もり.md
             └ 誤差検討 \n
                 ├ システムゲインの導出 \n
                 ├ 装置透過率の導出 \n
+                ├ 干渉フィルター透過率の導出 \n
                 └ 装置のpixel数関連の導出 \n
 
         Parameters
         ----------
+        is_ESPRIT : bool
+            ESPRITか、TOPICSか。
+            Falseの場合、TOPICSを想定した計算になる。
+            プレートスケール、tau_iで用いる各透過率が変更される。
         N_read : float
             [e-rms] 読み出しノイズ
         I_dark : float
             [e-/s] 検出器暗電流
         G_Amp : float
             [無次元] プリアンプ倍率
-        l_f : float
+        has_fiber : bool
+            焦点から分光器への導入用ファイバーを使うかどうか。
+            Trueの場合、l_fbなどを用いてファイバー透過率が計算される。
+            Falseの場合、ファイバー透過率は自動的に1に設定される。
+        l_fb : float
             [m] 分光器導入用ファイバーの長さ
-        FWHM : float
-            [m] フィルターの半値幅
+        rambda_fi_center : float
+            [m] フィルターの中心波長
+        tau_fi_center : float
+            [無次元] フィルターの中心透過率
+        FWHM_fi : float
+            [m] フィルターの半値全幅
         """
 
         # 入力されたパラメーターの代入
+        self.is_ESPRIT = is_ESPRIT
         self.N_read = N_read
         self.I_dark = I_dark
         self.G_Amp = G_Amp
-        self.l_f = l_f
-        self.FWHM = FWHM
+        self.has_fiber = has_fiber
+        self.l_fb = l_fb
+        self.rambda_fi_center = rambda_fi_center
+        self.tau_fi_center = tau_fi_center
+        self.FWHM_fi = FWHM_fi
 
         # システムゲインの導出
         self.G_sys = self.__calc_G_sys()
 
         # 各透過率の導出
-        self.tau_f = self.__calc_tau_f()
-        self.tau_s = self.__calc_tau_s()
+        if self.has_fiber:
+            self.tau_fb = self.__calc_tau_fb()
+        else:
+            self.tau_fb = 1
 
         # ピクセル数関連の導出
-        s_plate = 0.3  # <-ESPRITの値 プレートスケールは検出器までの光学系依存なのでTOPICSでは値が変わることに注意
-        self.Omega = 2.35e-11 * s_plate
-        w_slit = 0.7
-        self.n_pix = w_slit / s_plate
+        if self.is_ESPRIT:
+            self.s_plate = 0.3
+            w_slit = 0.7
+            self.n_pix = w_slit / self.s_plate
+        else:
+            self.s_plate = 0.43
+            self.n_pix = 1
+
+        self.Omega = ((self.s_plate / 3600) * (np.pi / 180))**2
 
         # その他の文字の定義
         self.eta = 0.889
@@ -265,7 +298,7 @@ class InstrumentParameters:
         G_sys = C_PD / (e * G_SF) * ADU_ADC / G_Amp
         return G_sys
 
-    def __calc_tau_f(self):
+    def __calc_tau_fb(self):
         """InF3ファイバーの透過率計算
 
         Returns
@@ -273,29 +306,84 @@ class InstrumentParameters:
         float
             ファイバー部分での透過率
         """
-        l_f = self.l_f
-        tau_f_unit = 0.98
-        tau_f_coupling = 0.5
+        l_fb = self.l_fb
+        tau_fb_unit = 0.98
+        tau_fb_coupling = 0.5
 
-        tau_f = tau_f_coupling * tau_f_unit ** l_f
-        return tau_f
+        tau_fb = tau_fb_coupling * tau_fb_unit ** l_fb
+        return tau_fb
 
-    def __calc_tau_s(self):
-        """ESPRITの装置透過率の計算
+    def calc_tau_i(self, rambda_: float) -> float:
+        """装置透過率の計算
+
+        Parameters
+        ----------
+        rambda_ : float
+            観測対象の波長
 
         Returns
         -------
         float
-            ESPRIT全体での装置透過率
+            装置内部の透過率の合算
         """
-        tau_s_lens = 0.66
-        tau_s_mirror = 0.86
 
-        # 実際は回折効率は波長依存性がかなりある（宇野2012D論p106）が、ひとまず固定値として計算
-        tau_s_grating = 0.66
+        def calc_tau_i_filter():
+            """干渉フィルターの透過率を計算
 
-        tau_s = tau_s_lens * tau_s_mirror * tau_s_grating
-        return tau_s
+            Returns
+            -------
+            float
+                干渉フィルターの透過率
+            """
+            rambda_fi_center = self.rambda_fi_center
+            tau_fi_center = self.tau_fi_center
+            FWHM_fi = self.FWHM_fi
+            rambda__ = rambda_
+
+            tau_i_filter = tau_fi_center \
+                * np.exp(
+                    - (rambda__ - rambda_fi_center)**2 / (2 * (FWHM_fi / (2 * np.sqrt(2 * np.log(2))))**2))
+
+            return tau_i_filter
+
+        def calc_tau_i_ESPRIT():
+            """ESPRITでのtau_iを計算
+
+            Returns
+            -------
+            float
+                ESPRITでのtau_i
+            """
+            tau_i_lens = 0.66
+            tau_i_mirror = 0.86
+            tau_i_filter = calc_tau_i_filter()
+
+            # 実際は回折効率は波長依存性がかなりある（宇野2012D論p106）が、ひとまず固定値として計算
+            tau_i_grating = 0.66
+
+            tau_i = tau_i_lens * tau_i_mirror * tau_i_filter * tau_i_grating
+            return tau_i
+
+        def calc_tau_i_TOPICS():
+            """TOPICSでのtau_iを計算
+
+            Returns
+            -------
+            float
+                TOPICSでのtau_i
+            """
+            tau_i_lens = 0.9**3
+            tau_i_filter = calc_tau_i_filter()
+
+            tau_i = tau_i_lens * tau_i_filter
+            return tau_i
+
+        if self.is_ESPRIT:
+            tau_i = calc_tau_i_ESPRIT()
+        else:
+            tau_i = calc_tau_i_TOPICS()
+
+        return tau_i
 
 
 class ObservationParameters:
@@ -327,14 +415,14 @@ class ObservationParameters:
     def h(self):
         mkhelp(self)
 
-    def calc_I_sky(self, rambda_: float, FWHM: float) -> float:
+    def calc_I_sky(self, rambda_: float, FWHM_fi: float) -> float:
         """観測波長に対するI_skyを計算
 
         Parameters
         ----------
         rambda_ : float
             [m] 観測波長
-        FWHM : float
+        FWHM_fi : float
             [m] フィルターの半値幅
 
         Returns
@@ -346,7 +434,7 @@ class ObservationParameters:
         tau_alpha = self.tau_alpha
 
         I_prime = calc_Plank_law_I_prime(rambda=rambda_, T=T_sky)
-        I_sky = I_prime * FWHM * (1 - tau_alpha)
+        I_sky = I_prime * FWHM_fi * (1 - tau_alpha)
 
         return I_sky
 
@@ -387,18 +475,18 @@ class EmissionLineDisperse:
 
         # 装置透過率の導出
         tau_GBT = telescope_params.tau_GBT
-        tau_f = instrument_params.tau_f
-        tau_s = instrument_params.tau_s
-        self.tau_e = tau_GBT * tau_f * tau_s
+        tau_fb = instrument_params.tau_fb
+        tau_i = instrument_params.calc_tau_i(rambda_=self.emission_line_params.rambda)
+        self.tau_e = tau_GBT * tau_fb * tau_i
 
         # 各発光強度の導出
         I_obj = self.emission_line_params.I_obj
         I_GBT = self.telescope_params.calc_I_GBT(
             rambda_=self.emission_line_params.rambda,
-            FWHM=self.instrument_params.FWHM)
+            FWHM_fi=self.instrument_params.FWHM_fi)
         I_sky = self.observation_params.calc_I_sky(
             rambda_=self.emission_line_params.rambda,
-            FWHM=self.instrument_params.FWHM)
+            FWHM_fi=self.instrument_params.FWHM_fi)
 
         # 各Singalの導出
         self.S_obj = self.__calc_S_xx(
