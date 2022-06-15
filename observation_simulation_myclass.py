@@ -19,6 +19,10 @@ def mkhelp(instance):
 def calc_Plank_law_I_prime(rambda, T):
     """プランクの法則から波長と温度の関数として分光放射輝度を計算
 
+    観測見積もり.md
+        └ 地球大気と望遠鏡の発光 \n
+            └ プランクの法則 \n
+
     Parameters
     ----------
     rambda : float
@@ -54,6 +58,10 @@ class EmissionLineParameters:
             T_hypo: float) -> None:
 
         """各輝線のパラメータから発光輝線強度 I_obj を導出
+
+        観測見積もり.md
+            └ 観測対象の発光 \n
+                └ H3+輝線の放射強度 \n
 
         Parameters
         ----------
@@ -137,7 +145,23 @@ class EmissionLineParameters:
 class TelescopeParameters:
 
     def __init__(
-            self, T_GBT, telescope_diameter, tau_GBT=0.66) -> None:
+            self, T_GBT: float, telescope_diameter: float, tau_GBT: float = 0.66) -> None:
+        """望遠鏡のパラメータを保持
+
+        観測見積もり.md
+            └ 地球大気と望遠鏡の発光 \n
+                └ 望遠鏡の熱輻射による放射強度 \n
+
+        Parameters
+        ----------
+        T_GBT : float
+            [K] 望遠鏡光学系の温度
+        telescope_diameter : float
+            [m] 望遠鏡主鏡の口径
+        tau_GBT : float, optional
+            [無次元] 望遠鏡光学系の透過率,
+            by default 0.66（T60、クーデ）
+        """
 
         self.T_GBT = T_GBT
         self.telescope_diameter = telescope_diameter
@@ -175,7 +199,28 @@ class TelescopeParameters:
 class InstrumentParameters:
 
     def __init__(
-            self, N_read, I_dark, G_Amp, l_f, FWHM) -> None:
+            self, N_read: float, I_dark: float, G_Amp: float, l_f: float, FWHM: float) -> None:
+        """イメージャー、分光器のパラメータを保持
+
+        観測見積もり.md
+            └ 誤差検討 \n
+                ├ システムゲインの導出 \n
+                ├ 装置透過率の導出 \n
+                └ 装置のpixel数関連の導出 \n
+
+        Parameters
+        ----------
+        N_read : float
+            [e-rms] 読み出しノイズ
+        I_dark : float
+            [e-/s] 検出器暗電流
+        G_Amp : float
+            [無次元] プリアンプ倍率
+        l_f : float
+            [m] 分光器導入用ファイバーの長さ
+        FWHM : float
+            [m] フィルターの半値幅
+        """
 
         # 入力されたパラメーターの代入
         self.N_read = N_read
@@ -258,6 +303,12 @@ class ObservationParameters:
     def __init__(self, tau_alpha: float, t_obs: float, T_sky: float) -> None:
         """観測に関連するパラメータを格納
 
+        観測見積もり.md
+            ├ 地球大気と望遠鏡の発光 \n
+            │  └ 大気の熱輻射による放射強度 \n
+            └ 誤差検討 \n
+                └ 観測によるSignalの導出 \n
+
         Parameters
         ----------
         tau_alpha : float
@@ -308,6 +359,25 @@ class EmissionLineDisperse:
             instrument_params,
             telescope_params,
             observation_params) -> None:
+        """輝線発光を観測した時のSNRを計算
+
+        観測見積もり.md
+            └ 誤差検討 \n
+                ├ 観測によるSignalの導出 \n
+                ├ その他のSignalの導出とS_allの導入 \n
+                └ S/N導出とDelta_Sの導入 \n
+
+        Parameters
+        ----------
+        emission_line_params : EmissionLineParameters
+            インスタンス
+        instrument_params : InstrumentParameters
+            インスタンス
+        telescope_params : TelescopeParameters
+            インスタンス
+        observation_params : ObservationParameters
+            インスタンス
+        """
 
         # 入力パラメータの代入
         self.emission_line_params = emission_line_params
@@ -345,6 +415,8 @@ class EmissionLineDisperse:
 
         # 暗電流によるSignalの導出
         self.S_dark = self.__calc_S_dark()
+
+        self.S_all = self.S_obj + self.S_GBT + self.S_sky + self.S_dark
 
         # S/N導出とDelta_Sの導入
         self.SNR = self.__calc_SNR()
@@ -428,6 +500,21 @@ class EmissionLineDisperse:
 class TemperatureFromSpectroscopy:
 
     def __init__(self, emission_disperse_FD, emission_disperse_HB) -> None:
+        """2つの輝線観測結果から温度のSNRを計算
+
+        観測見積もり.md
+            ├ 観測対象の発光 \n
+            │  └ 振動温度の導出 \n
+            └ 観測誤差の伝搬 \n
+
+        Parameters
+        ----------
+        emission_disperse_FD : EmissionLineDisperse
+            インスタンス（Fundamental Band）
+        emission_disperse_HB : EmissionLineDisperse
+            インスタンス（Hot Band）
+        """
+
         # 入力パラメータの代入
         self.emission_disperse_FD = emission_disperse_FD
         self.emission_disperse_HB = emission_disperse_HB
