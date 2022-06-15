@@ -206,6 +206,8 @@ class InstrumentParameters:
             G_Amp: float,
             has_fiber: bool,
             l_fb: float,
+            rambda_fi_center: float,
+            tau_fi_center: float,
             FWHM_fi: float) -> None:
         """イメージャー、分光器のパラメータを保持
 
@@ -233,8 +235,12 @@ class InstrumentParameters:
             Falseの場合、ファイバー透過率は自動的に1に設定される。
         l_fb : float
             [m] 分光器導入用ファイバーの長さ
+        rambda_fi_center : float
+            [m] フィルターの中心波長
+        tau_fi_center : float
+            [無次元] フィルターの中心透過率
         FWHM_fi : float
-            [m] フィルターの半値幅
+            [m] フィルターの半値全幅
         """
 
         # 入力されたパラメーターの代入
@@ -244,6 +250,8 @@ class InstrumentParameters:
         self.G_Amp = G_Amp
         self.has_fiber = has_fiber
         self.l_fb = l_fb
+        self.rambda_fi_center = rambda_fi_center
+        self.tau_fi_center = tau_fi_center
         self.FWHM_fi = FWHM_fi
 
         # システムゲインの導出
