@@ -395,7 +395,7 @@ class ObservationParameters:
     def h(self):
         mkhelp(self)
 
-    def calc_I_sky(self, rambda_: float, FWHM_fi_: float) -> float:
+    def calc_I_sky(self, rambda_: float, FWHM_fi: float) -> float:
         """観測波長に対するI_skyを計算
 
         Parameters
@@ -414,7 +414,7 @@ class ObservationParameters:
         tau_alpha = self.tau_alpha
 
         I_prime = calc_Plank_law_I_prime(rambda=rambda_, T=T_sky)
-        I_sky = I_prime * FWHM_fi_ * (1 - tau_alpha)
+        I_sky = I_prime * FWHM_fi * (1 - tau_alpha)
 
         return I_sky
 
