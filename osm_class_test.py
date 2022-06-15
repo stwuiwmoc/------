@@ -9,6 +9,7 @@ if __name__ == "__main__":
     T_hypothesis = 600
 
     instrument_params = osm.InstrumentParameters(
+        is_ESPRIT=True,
         N_read=100,
         I_dark=20,
         G_Amp=9,

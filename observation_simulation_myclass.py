@@ -200,6 +200,7 @@ class InstrumentParameters:
 
     def __init__(
             self,
+            is_ESPRIT: bool,
             N_read: float,
             I_dark: float,
             G_Amp: float,
@@ -216,6 +217,10 @@ class InstrumentParameters:
 
         Parameters
         ----------
+        is_ESPRIT : bool
+            ESPRITか、TOPICSか。
+            Falseの場合、TOPICSを想定した計算になる。
+            プレートスケール、tau_iで用いる各透過率が変更される。
         N_read : float
             [e-rms] 読み出しノイズ
         I_dark : float
@@ -233,6 +238,7 @@ class InstrumentParameters:
         """
 
         # 入力されたパラメーターの代入
+        self.is_ESPRIT = is_ESPRIT
         self.N_read = N_read
         self.I_dark = I_dark
         self.G_Amp = G_Amp
@@ -252,10 +258,14 @@ class InstrumentParameters:
         self.tau_i = self.__calc_tau_i()
 
         # ピクセル数関連の導出
-        s_plate = 0.3  # <-ESPRITの値 プレートスケールは検出器までの光学系依存なのでTOPICSでは値が変わることに注意
-        self.Omega = 2.35e-11 * s_plate
+        if self.is_ESPRIT:
+            self.s_plate = 0.3
+        else:
+            self.s_plate = 0.43
+
+        self.Omega = ((self.s_plate / 3600) * (np.pi / 180))**2
         w_slit = 0.7
-        self.n_pix = w_slit / s_plate
+        self.n_pix = w_slit / self.s_plate
 
         # その他の文字の定義
         self.eta = 0.889
