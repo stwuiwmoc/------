@@ -204,7 +204,7 @@ class InstrumentParameters:
             I_dark: float,
             G_Amp: float,
             has_fiber: bool,
-            l_f: float,
+            l_fb: float,
             FWHM: float) -> None:
         """イメージャー、分光器のパラメータを保持
 
@@ -224,9 +224,9 @@ class InstrumentParameters:
             [無次元] プリアンプ倍率
         has_fiber : bool
             焦点から分光器への導入用ファイバーを使うかどうか。
-            Trueの場合、l_fなどを用いてファイバー透過率が計算される。
+            Trueの場合、l_fbなどを用いてファイバー透過率が計算される。
             Falseの場合、ファイバー透過率は自動的に1に設定される。
-        l_f : float
+        l_fb : float
             [m] 分光器導入用ファイバーの長さ
         FWHM : float
             [m] フィルターの半値幅
@@ -237,7 +237,7 @@ class InstrumentParameters:
         self.I_dark = I_dark
         self.G_Amp = G_Amp
         self.has_fiber = has_fiber
-        self.l_f = l_f
+        self.l_fb = l_fb
         self.FWHM = FWHM
 
         # システムゲインの導出
@@ -245,9 +245,9 @@ class InstrumentParameters:
 
         # 各透過率の導出
         if self.has_fiber:
-            self.tau_f = self.__calc_tau_f()
+            self.tau_fb = self.__calc_tau_fb()
         else:
-            self.tau_f = 1
+            self.tau_fb = 1
 
         self.tau_i = self.__calc_tau_i()
 
@@ -280,7 +280,7 @@ class InstrumentParameters:
         G_sys = C_PD / (e * G_SF) * ADU_ADC / G_Amp
         return G_sys
 
-    def __calc_tau_f(self):
+    def __calc_tau_fb(self):
         """InF3ファイバーの透過率計算
 
         Returns
@@ -288,12 +288,12 @@ class InstrumentParameters:
         float
             ファイバー部分での透過率
         """
-        l_f = self.l_f
-        tau_f_unit = 0.98
-        tau_f_coupling = 0.5
+        l_fb = self.l_fb
+        tau_fb_unit = 0.98
+        tau_fb_coupling = 0.5
 
-        tau_f = tau_f_coupling * tau_f_unit ** l_f
-        return tau_f
+        tau_fb = tau_fb_coupling * tau_fb_unit ** l_fb
+        return tau_fb
 
     def __calc_tau_i(self):
         """ESPRITの装置透過率の計算
@@ -402,9 +402,9 @@ class EmissionLineDisperse:
 
         # 装置透過率の導出
         tau_GBT = telescope_params.tau_GBT
-        tau_f = instrument_params.tau_f
+        tau_fb = instrument_params.tau_fb
         tau_i = instrument_params.tau_i
-        self.tau_e = tau_GBT * tau_f * tau_i
+        self.tau_e = tau_GBT * tau_fb * tau_i
 
         # 各発光強度の導出
         I_obj = self.emission_line_params.I_obj
