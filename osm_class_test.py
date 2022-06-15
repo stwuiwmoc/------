@@ -12,6 +12,7 @@ if __name__ == "__main__":
         N_read=100,
         I_dark=20,
         G_Amp=9,
+        has_fiber=True,
         l_f=15,
         FWHM=17e-9)
 

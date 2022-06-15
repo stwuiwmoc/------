@@ -199,7 +199,13 @@ class TelescopeParameters:
 class InstrumentParameters:
 
     def __init__(
-            self, N_read: float, I_dark: float, G_Amp: float, l_f: float, FWHM: float) -> None:
+            self,
+            N_read: float,
+            I_dark: float,
+            G_Amp: float,
+            has_fiber: bool,
+            l_f: float,
+            FWHM: float) -> None:
         """イメージャー、分光器のパラメータを保持
 
         観測見積もり.md
@@ -216,6 +222,10 @@ class InstrumentParameters:
             [e-/s] 検出器暗電流
         G_Amp : float
             [無次元] プリアンプ倍率
+        has_fiber : bool
+            焦点から分光器への導入用ファイバーを使うかどうか。
+            Trueの場合、l_fなどを用いてファイバー透過率が計算される。
+            Falseの場合、ファイバー透過率は自動的に1に設定される。
         l_f : float
             [m] 分光器導入用ファイバーの長さ
         FWHM : float
@@ -226,6 +236,7 @@ class InstrumentParameters:
         self.N_read = N_read
         self.I_dark = I_dark
         self.G_Amp = G_Amp
+        self.has_fiber = has_fiber
         self.l_f = l_f
         self.FWHM = FWHM
 
@@ -233,7 +244,11 @@ class InstrumentParameters:
         self.G_sys = self.__calc_G_sys()
 
         # 各透過率の導出
-        self.tau_f = self.__calc_tau_f()
+        if self.has_fiber:
+            self.tau_f = self.__calc_tau_f()
+        else:
+            self.tau_f = 1
+
         self.tau_s = self.__calc_tau_s()
 
         # ピクセル数関連の導出
