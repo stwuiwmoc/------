@@ -413,6 +413,8 @@ class EmissionLineDisperse:
             I_xx_=I_sky,
             tau_alpha_=1)
 
+        self.S_all = self.S_obj + self.S_GBT + self.S_sky + self.S_dark
+
         # 暗電流によるSignalの導出
         self.S_dark = self.__calc_S_dark()
 
