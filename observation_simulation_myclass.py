@@ -413,10 +413,10 @@ class EmissionLineDisperse:
             I_xx_=I_sky,
             tau_alpha_=1)
 
-        self.S_all = self.S_obj + self.S_GBT + self.S_sky + self.S_dark
-
         # 暗電流によるSignalの導出
         self.S_dark = self.__calc_S_dark()
+
+        self.S_all = self.S_obj + self.S_GBT + self.S_sky + self.S_dark
 
         # S/N導出とDelta_Sの導入
         self.SNR = self.__calc_SNR()
