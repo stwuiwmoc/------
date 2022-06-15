@@ -249,7 +249,7 @@ class InstrumentParameters:
         else:
             self.tau_f = 1
 
-        self.tau_s = self.__calc_tau_s()
+        self.tau_i = self.__calc_tau_i()
 
         # ピクセル数関連の導出
         s_plate = 0.3  # <-ESPRITの値 プレートスケールは検出器までの光学系依存なのでTOPICSでは値が変わることに注意
@@ -295,7 +295,7 @@ class InstrumentParameters:
         tau_f = tau_f_coupling * tau_f_unit ** l_f
         return tau_f
 
-    def __calc_tau_s(self):
+    def __calc_tau_i(self):
         """ESPRITの装置透過率の計算
 
         Returns
@@ -303,14 +303,14 @@ class InstrumentParameters:
         float
             ESPRIT全体での装置透過率
         """
-        tau_s_lens = 0.66
-        tau_s_mirror = 0.86
+        tau_i_lens = 0.66
+        tau_i_mirror = 0.86
 
         # 実際は回折効率は波長依存性がかなりある（宇野2012D論p106）が、ひとまず固定値として計算
-        tau_s_grating = 0.66
+        tau_i_grating = 0.66
 
-        tau_s = tau_s_lens * tau_s_mirror * tau_s_grating
-        return tau_s
+        tau_i = tau_i_lens * tau_i_mirror * tau_i_grating
+        return tau_i
 
 
 class ObservationParameters:
@@ -403,8 +403,8 @@ class EmissionLineDisperse:
         # 装置透過率の導出
         tau_GBT = telescope_params.tau_GBT
         tau_f = instrument_params.tau_f
-        tau_s = instrument_params.tau_s
-        self.tau_e = tau_GBT * tau_f * tau_s
+        tau_i = instrument_params.tau_i
+        self.tau_e = tau_GBT * tau_f * tau_i
 
         # 各発光強度の導出
         I_obj = self.emission_line_params.I_obj
