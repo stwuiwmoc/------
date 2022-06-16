@@ -257,6 +257,8 @@ class InstrumentParameters:
 
         # システムゲインの導出
         self.G_sys = self.__calc_G_sys()
+        FW = 152000
+        self.S_FW_pix = FW / self.G_sys
 
         # 各透過率の導出
         if self.has_fiber:
@@ -520,6 +522,7 @@ class EmissionLineDisperse:
         self.S_dark = self.__calc_S_dark()
 
         self.S_all = self.S_obj + self.S_GBT + self.S_sky + self.S_dark
+        self.S_all_pix = self.S_all / self.n_bin
 
         # S/N導出とDelta_Sの導入
         self.SNR = self.__calc_SNR()
