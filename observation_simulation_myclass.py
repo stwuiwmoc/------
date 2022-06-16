@@ -270,10 +270,10 @@ class InstrumentParameters:
         if self.is_ESPRIT:
             self.s_plate = 0.3
             w_slit = 0.7
-            self.n_bin_lambda = w_slit / self.s_plate
+            self.n_bin_rambda = w_slit / self.s_plate
         else:
             self.s_plate = 0.43
-            self.n_bin_lambda = 1
+            self.n_bin_rambda = 1
 
         self.Omega = ((self.s_plate / 3600) * (np.pi / 180))**2
 
@@ -494,7 +494,7 @@ class EmissionLineDisperse:
         self.tau_e = tau_GBT * tau_fb * tau_i
 
         # 装置のpixel数関連の導出
-        self.n_bin = instrument_params.n_bin_lambda * observation_params.n_bin_spatial
+        self.n_bin = instrument_params.n_bin_rambda * observation_params.n_bin_spatial
 
         # 各発光強度の導出
         I_obj = self.emission_line_params.I_obj
