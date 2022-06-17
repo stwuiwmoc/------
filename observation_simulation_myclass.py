@@ -497,25 +497,25 @@ class EmissionLineDisperse:
         self.n_bin = instrument_params.n_bin_rambda * observation_params.n_bin_spatial
 
         # 各発光強度の導出
-        I_obj = self.emission_line_params.I_obj
-        I_GBT = self.telescope_params.calc_I_GBT(
+        self.I_obj = self.emission_line_params.I_obj
+        self.I_GBT = self.telescope_params.calc_I_GBT(
             rambda_=self.emission_line_params.rambda,
             FWHM_fi=self.instrument_params.FWHM_fi)
-        I_sky = self.observation_params.calc_I_sky(
+        self.I_sky = self.observation_params.calc_I_sky(
             rambda_=self.emission_line_params.rambda,
             FWHM_fi=self.instrument_params.FWHM_fi)
 
         # 各Singalの導出
         self.S_obj = self.__calc_S_xx(
-            I_xx_=I_obj,
+            I_xx_=self.I_obj,
             tau_alpha_=self.observation_params.tau_alpha)
 
         self.S_GBT = self.__calc_S_xx(
-            I_xx_=I_GBT,
+            I_xx_=self.I_GBT,
             tau_alpha_=1)
 
         self.S_sky = self.__calc_S_xx(
-            I_xx_=I_sky,
+            I_xx_=self.I_sky,
             tau_alpha_=1)
 
         # 暗電流によるSignalの導出
