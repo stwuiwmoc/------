@@ -1,10 +1,12 @@
 # %%
 import numpy as np
 import matplotlib.pyplot as plt
+import importlib
 
 import observation_simulation_myclass as osm
 
 if __name__ == "__main__":
+    importlib.reload(osm)
     t_obs_array = np.arange(1, 100)  # [s]
 
     R_3_0_params = osm.EmissionLineParameters(
@@ -72,8 +74,46 @@ if __name__ == "__main__":
         observation_params=obs_4_bin_params)
 
     # plot start
-    fig1 = plt.figure(figsize=(7, 10))
-    gs1 = fig1.add_gridspec(2, 1)
+    fig1 = plt.figure(figsize=(12, 10))
+    gs1 = fig1.add_gridspec(2, 2)
+
+    # data table plot
+    ax13 = fig1.add_subplot(gs1[0:2, 1])
+
+    table13 = ax13.table(
+        cellText=[
+            ["H3+ parameters", "", ""],
+            ["rambda", R_3_0_params.rambda, "m"],
+            ["N_H3p", R_3_0_params.N_H3p, "m^-2"],
+            ["T_hypo", R_3_0_params.T_hypo, "K"],
+            ["", "", ""],
+            ["telescope_diameter", T60_params.telescope_diameter, "m"],
+            ["tau_GBT", T60_params.tau_GBT, ""],
+            ["T_GBT", T60_params.T_GBT, "K"],
+            ["", "", ""],
+            ["Observation_parameters", "", ""],
+            ["tau_alpha", obs_1_bin_params.tau_alpha, ""],
+            ["T_sky", obs_1_bin_params.T_sky, "K"],
+            ["t_obs", "", "s"],
+            ["", "", ""],
+            ["Intensity", "", ""],
+            ["I_obj", R_3_0_obs_1_bin.I_obj, "W / m^2 / str"],
+            ["I_sky", R_3_0_obs_1_bin.I_sky, "W / m^2 / str"],
+            ["I_GBT", R_3_0_obs_1_bin.I_GBT, "W / m^2 / str"],
+            ["", "", ""],
+            ["Telescope parameters", "", ""],
+            ["Instrument parameters", "", ""],
+            ["N_read", TOPICS_params.N_read, "e-rms"],
+            ["I_dark", TOPICS_params.I_dark, "e-/s"],
+            ["rambda_fi_center", TOPICS_params.rambda_fi_center, "m"],
+            ["tau_fi_center", TOPICS_params.tau_fi_center, ""],
+            ["FWHM_fi", TOPICS_params.FWHM_fi, "m"]],
+        loc="center",
+        fontsize=30)
+
+    table13.auto_set_font_size(False)
+    table13.set_fontsize(8)
+    ax13.axis("off")
 
     # t_obs vs e- plot
     ax11 = fig1.add_subplot(gs1[0, 0])
@@ -164,3 +204,5 @@ if __name__ == "__main__":
     ax12.set_xscale("log")
 
     ax12.legend()
+
+    fig1.tight_layout()
