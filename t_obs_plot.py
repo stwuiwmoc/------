@@ -78,8 +78,6 @@ if __name__ == "__main__":
     # t_obs vs e- plot
     ax11 = fig1.add_subplot(gs1[0, 0])
 
-    fig, ax = plt.subplots(2, 1)
-    ax11 = ax[0]
     # Signal plot
     linestyle_signal = "-"
     linewidth_signal = 3
