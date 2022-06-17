@@ -47,8 +47,9 @@ if __name__ == "__main__":
 
     observation_params = osm.ObservationParameters(
         tau_alpha=0.812,
-        t_obs=30 * 60,
-        T_sky=273)
+        T_sky=273,
+        n_bin_spatial=2,
+        t_obs=30 * 60)
 
     Q_1_0_params = osm.EmissionLineParameters(
         rambda=3.9530e-6,

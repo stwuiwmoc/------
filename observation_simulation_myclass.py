@@ -257,6 +257,8 @@ class InstrumentParameters:
 
         # システムゲインの導出
         self.G_sys = self.__calc_G_sys()
+        FW = 152000
+        self.S_FW_pix = FW / self.G_sys
 
         # 各透過率の導出
         if self.has_fiber:
@@ -268,10 +270,10 @@ class InstrumentParameters:
         if self.is_ESPRIT:
             self.s_plate = 0.3
             w_slit = 0.7
-            self.n_pix = w_slit / self.s_plate
+            self.n_bin_rambda = w_slit / self.s_plate
         else:
             self.s_plate = 0.43
-            self.n_pix = 1
+            self.n_bin_rambda = 1
 
         self.Omega = ((self.s_plate / 3600) * (np.pi / 180))**2
 
@@ -388,29 +390,40 @@ class InstrumentParameters:
 
 class ObservationParameters:
 
-    def __init__(self, tau_alpha: float, t_obs: float, T_sky: float) -> None:
+    def __init__(
+            self,
+            tau_alpha: float,
+            T_sky: float,
+            n_bin_spatial: int,
+            t_obs: float) -> None:
         """観測に関連するパラメータを格納
 
         観測見積もり.md
             ├ 地球大気と望遠鏡の発光 \n
             │  └ 大気の熱輻射による放射強度 \n
             └ 誤差検討 \n
+                ├ 装置のpixel数関連の導出 \n
                 └ 観測によるSignalの導出 \n
 
         Parameters
         ----------
         tau_alpha : float
             [無次元] 大気透過率
-        t_obs : float
-            [s] 積分時間
         T_sky : float
             [K] 大気温度
+        n_bin_spatial : int
+            [pix] 空間方向のbinning数、
+            TOPICSなら緯度経度方向の掛け算結果を入力
+            ESPRITなら空間方向1次元のbinning数を入力
+        t_obs : float
+            [s] 積分時間
         """
 
         # 入力パラメータの代入
         self.tau_alpha = tau_alpha
-        self.t_obs = t_obs
         self.T_sky = T_sky
+        self.n_bin_spatial = n_bin_spatial
+        self.t_obs = t_obs
 
     def h(self):
         mkhelp(self)
@@ -451,6 +464,7 @@ class EmissionLineDisperse:
 
         観測見積もり.md
             └ 誤差検討 \n
+                ├ 装置のpixel数関連の導出 \n
                 ├ 観測によるSignalの導出 \n
                 ├ その他のSignalの導出とS_allの導入 \n
                 └ S/N導出とDelta_Sの導入 \n
@@ -479,6 +493,9 @@ class EmissionLineDisperse:
         tau_i = instrument_params.calc_tau_i(rambda_=self.emission_line_params.rambda)
         self.tau_e = tau_GBT * tau_fb * tau_i
 
+        # 装置のpixel数関連の導出
+        self.n_bin = instrument_params.n_bin_rambda * observation_params.n_bin_spatial
+
         # 各発光強度の導出
         I_obj = self.emission_line_params.I_obj
         I_GBT = self.telescope_params.calc_I_GBT(
@@ -505,6 +522,7 @@ class EmissionLineDisperse:
         self.S_dark = self.__calc_S_dark()
 
         self.S_all = self.S_obj + self.S_GBT + self.S_sky + self.S_dark
+        self.S_all_pix = self.S_all / self.n_bin
 
         # S/N導出とDelta_Sの導入
         self.SNR = self.__calc_SNR()
@@ -540,11 +558,11 @@ class EmissionLineDisperse:
         c = phys_consts.c
         h = phys_consts.h
         t_obs = self.observation_params.t_obs
-        n_pix = self.instrument_params.n_pix
+        n_bin = self.n_bin
 
         S_xx = (I_xx * A_t * Omega * tau_alpha * tau_e) \
             / (h * c / rambda) \
-            * eta * (1 / G_sys) * t_obs * n_pix
+            * eta * (1 / G_sys) * t_obs * n_bin
 
         return S_xx
 
@@ -559,9 +577,9 @@ class EmissionLineDisperse:
         I_dark = self.instrument_params.I_dark
         G_sys = self.instrument_params.G_sys
         t_obs = self.observation_params.t_obs
-        n_pix = self.instrument_params.n_pix
+        n_bin = self.n_bin
 
-        S_dark = (I_dark / G_sys) * t_obs * n_pix
+        S_dark = (I_dark / G_sys) * t_obs * n_bin
         return S_dark
 
     def __calc_SNR(self) -> float:
@@ -578,9 +596,9 @@ class EmissionLineDisperse:
         S_dark = self.S_dark
         N_read = self.instrument_params.N_read
         G_sys = self.instrument_params.G_sys
-        n_pix = self.instrument_params.n_pix
+        n_bin = self.n_bin
 
-        N_all = np.sqrt(S_obj + S_GBT + S_sky + S_dark + (N_read / G_sys)**2 * n_pix)
+        N_all = np.sqrt(S_obj + S_GBT + S_sky + S_dark + (N_read / G_sys)**2 * n_bin)
         SNR = S_obj / N_all
         return SNR
 
