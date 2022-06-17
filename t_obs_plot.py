@@ -9,7 +9,7 @@ if __name__ == "__main__":
 
     R_3_0_params = osm.EmissionLineParameters(
         rambda=3.4128e-6,
-        N_H3p=1.0e+16,
+        N_H3p=2.0e+16,
         g_ns=4,
         J_prime=4,
         A_if=177.6,
@@ -46,10 +46,10 @@ if __name__ == "__main__":
         n_bin_spatial=1,
         t_obs=t_obs_array)
 
-    obs_2_bin_params = osm.ObservationParameters(
+    obs_4_bin_params = osm.ObservationParameters(
         tau_alpha=0.812,
         T_sky=273,
-        n_bin_spatial=2,
+        n_bin_spatial=4,
         t_obs=t_obs_array)
 
     print(
@@ -65,11 +65,11 @@ if __name__ == "__main__":
         telescope_params=T60_params,
         observation_params=obs_1_bin_params)
 
-    R_3_0_obs_2_bin = osm.EmissionLineDisperse(
+    R_3_0_obs_4_bin = osm.EmissionLineDisperse(
         emission_line_params=R_3_0_params,
         instrument_params=TOPICS_params,
         telescope_params=T60_params,
-        observation_params=obs_2_bin_params)
+        observation_params=obs_4_bin_params)
 
     # plot start
     fig1 = plt.figure(figsize=(7, 10))
@@ -142,3 +142,25 @@ if __name__ == "__main__":
     ax11.set_yscale("log")
 
     ax11.legend()
+
+    # t_obs vs SNR plot
+    ax12 = fig1.add_subplot(gs1[1, 0])
+
+    # SNR plot
+    ax12.plot(
+        t_obs_array,
+        R_3_0_obs_1_bin.SNR,
+        label=str(R_3_0_obs_1_bin.n_bin) + " pix binning")
+    ax12.plot(
+        t_obs_array,
+        R_3_0_obs_4_bin.SNR,
+        label=str(R_3_0_obs_4_bin.n_bin) + " pix binning")
+
+    ax12.grid()
+
+    ax12.set_xlabel("Integration Time t_obs [s]")
+    ax12.set_ylabel("SNR of each binning number")
+
+    ax12.set_xscale("log")
+
+    ax12.legend()
