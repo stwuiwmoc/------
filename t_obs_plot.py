@@ -5,6 +5,26 @@ import importlib
 
 import observation_simulation_myclass as osm
 
+
+def mkfolder(suffix=""):
+    import os
+    """
+    Parameters
+    ----------
+    suffix : str, optional
+        The default is "".
+
+    Returns
+    -------
+    str ( script name + suffix )
+    """
+    filename = os.path.basename(__file__)
+    filename = filename.replace(".py", "") + suffix
+    folder = "mkfolder/" + filename + "/"
+    os.makedirs(folder, exist_ok=True)
+    return folder
+
+
 if __name__ == "__main__":
     importlib.reload(osm)
     t_obs_array = np.arange(1, 100)  # [s]
@@ -206,3 +226,5 @@ if __name__ == "__main__":
     ax12.legend()
 
     fig1.tight_layout()
+
+    fig1.savefig(mkfolder() + "fig1.png")
