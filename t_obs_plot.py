@@ -40,7 +40,13 @@ if __name__ == "__main__":
             FWHM_fi=TOPICS_params.FWHM_fi) * 1e4,
         "e-04")
 
-    observation_params = osm.ObservationParameters(
+    obs_1_bin_params = osm.ObservationParameters(
+        tau_alpha=0.812,
+        T_sky=273,
+        n_bin_spatial=1,
+        t_obs=t_obs_array)
+
+    obs_2_bin_params = osm.ObservationParameters(
         tau_alpha=0.812,
         T_sky=273,
         n_bin_spatial=2,
@@ -48,16 +54,22 @@ if __name__ == "__main__":
 
     print(
         "I_sky = ",
-        observation_params.calc_I_sky(
+        obs_1_bin_params.calc_I_sky(
             rambda_=R_3_0_params.rambda,
             FWHM_fi=TOPICS_params.FWHM_fi) * 1e4,
         "e-04")
 
-    R_3_0_obs = osm.EmissionLineDisperse(
+    R_3_0_obs_1_bin = osm.EmissionLineDisperse(
         emission_line_params=R_3_0_params,
         instrument_params=TOPICS_params,
         telescope_params=T60_params,
-        observation_params=observation_params)
+        observation_params=obs_1_bin_params)
+
+    R_3_0_obs_2_bin = osm.EmissionLineDisperse(
+        emission_line_params=R_3_0_params,
+        instrument_params=TOPICS_params,
+        telescope_params=T60_params,
+        observation_params=obs_2_bin_params)
 
     # plot start
     fig1 = plt.figure(figsize=(7, 10))
@@ -66,19 +78,21 @@ if __name__ == "__main__":
     # t_obs vs e- plot
     ax11 = fig1.add_subplot(gs1[0, 0])
 
+    fig, ax = plt.subplots(2, 1)
+    ax11 = ax[0]
     # Signal plot
     linestyle_signal = "-"
     linewidth_signal = 3
 
     ax11.plot(
         t_obs_array,
-        R_3_0_obs.S_all * TOPICS_params.G_sys / R_3_0_obs.n_bin,
+        R_3_0_obs_1_bin.S_all * TOPICS_params.G_sys,
         label="S_all",
         linestyle=linestyle_signal,
         linewidth=linewidth_signal)
     ax11.plot(
         t_obs_array,
-        R_3_0_obs.S_obj * TOPICS_params.G_sys / R_3_0_obs.n_bin,
+        R_3_0_obs_1_bin.S_obj * TOPICS_params.G_sys,
         label="S_obj",
         linestyle=linestyle_signal,
         linewidth=linewidth_signal)
@@ -87,22 +101,22 @@ if __name__ == "__main__":
     linestyle_noise = "-."
     ax11.plot(
         t_obs_array,
-        np.sqrt(R_3_0_obs.S_all * TOPICS_params.G_sys / R_3_0_obs.n_bin),
+        np.sqrt(R_3_0_obs_1_bin.S_all * TOPICS_params.G_sys),
         label="N_all",
         linestyle=linestyle_noise)
     ax11.plot(
         t_obs_array,
-        np.sqrt(R_3_0_obs.S_sky * TOPICS_params.G_sys / R_3_0_obs.n_bin),
+        np.sqrt(R_3_0_obs_1_bin.S_sky * TOPICS_params.G_sys),
         label="N_sky",
         linestyle=linestyle_noise)
     ax11.plot(
         t_obs_array,
-        np.sqrt(R_3_0_obs.S_GBT * TOPICS_params.G_sys / R_3_0_obs.n_bin),
+        np.sqrt(R_3_0_obs_1_bin.S_GBT * TOPICS_params.G_sys),
         label="N_GBT",
         linestyle=linestyle_noise)
     ax11.plot(
         t_obs_array,
-        np.sqrt(R_3_0_obs.S_dark * TOPICS_params.G_sys / R_3_0_obs.n_bin),
+        np.sqrt(R_3_0_obs_1_bin.S_dark * TOPICS_params.G_sys),
         label="N_dark",
         linestyle=linestyle_noise)
     ax11.plot(
