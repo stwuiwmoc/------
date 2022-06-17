@@ -31,7 +31,7 @@ if __name__ == "__main__":
 
     T60_params = osm.TelescopeParameters(
         T_GBT=273,
-        telescope_diameter=1.6)
+        telescope_diameter=0.6)
 
     print(
         "I_GBT = ",
