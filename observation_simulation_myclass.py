@@ -16,6 +16,44 @@ def mkhelp(instance):
         print(method[0] + "()")
 
 
+def plot_parameter_table(
+        fig, position, parameter_table: list, fontsize: int):
+    """パラメータ表示用のtableをax内に作成
+
+    Parameters
+    ----------
+    fig : matplotlib.figure.Figure
+        Figureオブジェクト
+    position: matplotlib.gridspec.GridSpec
+        fig内での配置
+    parameter_table : list
+        パラメータリスト。縦横の要素数がそれぞれ一致している必要がある。（正方行列のように縦横で同じ要素数になる必要はない）
+    fontsize : int
+        テーブル内の文字サイズ
+
+    Returns
+    -------
+    matplotlib.axes._subplots.AxesSubplot
+        Axesオブジェクト
+    """
+
+    ax = fig.add_subplot(position)
+
+    table = ax.table(
+        cellText=parameter_table,
+        loc="center")
+
+    # fontsizeの調整
+    table.auto_set_font_size(False)
+    table.set_fontsize(fontsize)
+
+    # 縦幅をaxオブジェクトの縦幅に合わせて調整
+    for pos, cell in table.get_celld().items():
+        cell.set_height(1 / len(parameter_table))
+
+    return ax
+
+
 def calc_Plank_law_I_prime(rambda, T):
     """プランクの法則から波長と温度の関数として分光放射輝度を計算
 
