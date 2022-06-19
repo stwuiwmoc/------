@@ -47,6 +47,9 @@ def plot_parameter_table(
     table.auto_set_font_size(False)
     table.set_fontsize(fontsize)
 
+    # 軸ラベルの消去
+    ax.axis("off")
+
     # 縦幅をaxオブジェクトの縦幅に合わせて調整
     for pos, cell in table.get_celld().items():
         cell.set_height(1 / len(parameter_table))
