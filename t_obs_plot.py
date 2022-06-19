@@ -98,8 +98,6 @@ if __name__ == "__main__":
     gs1 = fig1.add_gridspec(2, 2)
 
     # data table plot
-    ax13 = fig1.add_subplot(gs1[0:2, 1])
-
     table_text_list = [
         ["H3+ parameters", "", ""],
         ["rambda", R_3_0_params.rambda, "m"],
@@ -128,16 +126,11 @@ if __name__ == "__main__":
         ["tau_fi_center", TOPICS_params.tau_fi_center, ""],
         ["FWHM_fi", TOPICS_params.FWHM_fi, "m"]]
 
-    table13 = ax13.table(
-        cellText=table_text_list,
-        loc="center")
-
-    table13.auto_set_font_size(False)
-    table13.set_fontsize(8)
-    ax13.axis("off")
-
-    for pos, cell in table13.get_celld().items():
-        cell.set_height(1 / len(table_text_list))
+    ax13 = osm.plot_parameter_table(
+        fig=fig1,
+        position=gs1[0:2, 1],
+        parameter_table=table_text_list,
+        fontsize=8)
 
     # t_obs vs e- plot
     ax11 = fig1.add_subplot(gs1[0, 0])
