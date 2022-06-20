@@ -98,6 +98,33 @@ def plot_t_obs_vs_Signal_and_Noise_per_1_pixel(
     return ax
 
 
+def plot_t_obs_vs_SNR(
+        fig, position, t_obs_array_, result_1bin, result_nbin):
+
+    ax = fig.add_subplot(position)
+
+    # SNR plot
+    ax.plot(
+        t_obs_array_,
+        result_1bin.SNR,
+        label=str(result_1bin.n_bin) + " pix binning")
+    ax.plot(
+        t_obs_array_,
+        result_nbin.SNR,
+        label=str(result_nbin.n_bin) + " pix binning")
+
+    ax.grid()
+
+    ax.set_xlabel("Integration Time t_obs [s]")
+    ax.set_ylabel("SNR of each binning number")
+
+    ax.set_xscale("log")
+
+    ax.legend()
+
+    return ax
+
+
 if __name__ == "__main__":
     importlib.reload(osm)
     t_obs_array = np.arange(1, 100)  # [s]
@@ -219,27 +246,12 @@ if __name__ == "__main__":
         t_obs_array_=t_obs_array,
         result_1bin=result_1bin_T60_PWV2000)
 
-    # t_obs vs SNR plot
-    ax12 = fig1.add_subplot(gs1[1, 0])
-
-    # SNR plot
-    ax12.plot(
-        t_obs_array,
-        result_1bin_T60_PWV2000.SNR,
-        label=str(result_1bin_T60_PWV2000.n_bin) + " pix binning")
-    ax12.plot(
-        t_obs_array,
-        result_4bin_T60_PWV2000.SNR,
-        label=str(result_4bin_T60_PWV2000.n_bin) + " pix binning")
-
-    ax12.grid()
-
-    ax12.set_xlabel("Integration Time t_obs [s]")
-    ax12.set_ylabel("SNR of each binning number")
-
-    ax12.set_xscale("log")
-
-    ax12.legend()
+    ax12 = plot_t_obs_vs_SNR(
+        fig=fig1,
+        position=gs1[1, 0],
+        t_obs_array_=t_obs_array,
+        result_1bin=result_1bin_T60_PWV2000,
+        result_nbin=result_4bin_T60_PWV2000)
 
     fig1.tight_layout()
 
@@ -293,26 +305,12 @@ if __name__ == "__main__":
         result_1bin=result_1bin_T60_PWV5000)
 
     # t_obs vs SNR plot
-    ax22 = fig2.add_subplot(gs1[1, 0])
-
-    # SNR plot
-    ax22.plot(
-        t_obs_array,
-        result_1bin_T60_PWV5000.SNR,
-        label=str(result_1bin_T60_PWV5000.n_bin) + " pix binning")
-    ax22.plot(
-        t_obs_array,
-        result_4bin_T60_PWV5000.SNR,
-        label=str(result_4bin_T60_PWV5000.n_bin) + " pix binning")
-
-    ax22.grid()
-
-    ax22.set_xlabel("Integration Time t_obs [s]")
-    ax22.set_ylabel("SNR of each binning number")
-
-    ax22.set_xscale("log")
-
-    ax22.legend()
+    ax22 = plot_t_obs_vs_SNR(
+        fig=fig2,
+        position=gs2[1, 0],
+        t_obs_array_=t_obs_array,
+        result_1bin=result_1bin_T60_PWV5000,
+        result_nbin=result_4bin_T60_PWV5000)
 
     fig2.tight_layout()
 
