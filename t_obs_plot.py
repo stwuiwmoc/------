@@ -54,13 +54,13 @@ if __name__ == "__main__":
         telescope_diameter=0.6)
 
     obs_1_bin_params = osm.ObservationParameters(
-        tau_alpha=0.812,
+        tau_alpha=0.564,
         T_sky=273,
         n_bin_spatial=1,
         t_obs=t_obs_array)
 
     obs_4_bin_params = osm.ObservationParameters(
-        tau_alpha=0.812,
+        tau_alpha=0.564,
         T_sky=273,
         n_bin_spatial=4,
         t_obs=t_obs_array)
