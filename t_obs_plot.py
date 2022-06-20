@@ -125,6 +125,52 @@ def plot_t_obs_vs_SNR(
     return ax
 
 
+def plot_input_data_table_plot(
+        fig,
+        position,
+        emission_line_params,
+        telescope_params,
+        instrument_params,
+        result_1bin):
+
+    # data table plot
+    table_text_list = [
+        ["H3+ parameters", "", ""],
+        ["rambda", emission_line_params.rambda, "m"],
+        ["N_H3p", emission_line_params.N_H3p, "m^-2"],
+        ["T_hypo", emission_line_params.T_hypo, "K"],
+        ["", "", ""],
+        ["Telescope parameters", "", ""],
+        ["telescope_diameter", telescope_params.telescope_diameter, "m"],
+        ["T_GBT", telescope_params.T_GBT, "K"],
+        ["tau_GBT", telescope_params.tau_GBT, ""],
+        ["T_sky", telescope_params.T_sky, "K"],
+        ["tau_sky", telescope_params.tau_sky, ""],
+        ["", "", ""],
+        ["Observation_parameters", "", ""],
+        ["t_obs", "", "s"],
+        ["", "", ""],
+        ["Intensity", "", ""],
+        ["I_obj", result_1bin.I_obj, "W / m^2 / str"],
+        ["I_sky", result_1bin.I_sky, "W / m^2 / str"],
+        ["I_GBT", result_1bin.I_GBT, "W / m^2 / str"],
+        ["", "", ""],
+        ["Instrument parameters", "", ""],
+        ["N_read", instrument_params.N_read, "e-rms"],
+        ["I_dark", instrument_params.I_dark, "e-/s"],
+        ["rambda_fl_center", instrument_params.rambda_fl_center, "m"],
+        ["tau_fl_center", instrument_params.tau_fl_center, ""],
+        ["FWHM_fl", instrument_params.FWHM_fl, "m"]]
+
+    ax = osm.plot_parameter_table(
+        fig=fig,
+        position=position,
+        parameter_table=table_text_list,
+        fontsize=8)
+
+    return ax
+
+
 if __name__ == "__main__":
     importlib.reload(osm)
     t_obs_array = np.arange(1, 100)  # [s]
@@ -199,47 +245,19 @@ if __name__ == "__main__":
         telescope_params=T60_PWV5000,
         observation_params=obs_4bin)
 
-    # plot start
+    # plot T60 PWV=2000
     fig1 = plt.figure(figsize=(12, 10))
     gs1 = fig1.add_gridspec(2, 2)
     fig1.suptitle("T60, PWV=2000")
 
-    # data table plot
-    fig1_table_text_list = [
-        ["H3+ parameters", "", ""],
-        ["rambda", R_3_0.rambda, "m"],
-        ["N_H3p", R_3_0.N_H3p, "m^-2"],
-        ["T_hypo", R_3_0.T_hypo, "K"],
-        ["", "", ""],
-        ["Telescope parameters", "", ""],
-        ["telescope_diameter", T60_PWV2000.telescope_diameter, "m"],
-        ["T_GBT", T60_PWV2000.T_GBT, "K"],
-        ["tau_GBT", T60_PWV2000.tau_GBT, ""],
-        ["T_sky", T60_PWV2000.T_sky, "K"],
-        ["tau_sky", T60_PWV2000.tau_sky, ""],
-        ["", "", ""],
-        ["Observation_parameters", "", ""],
-        ["t_obs", "", "s"],
-        ["", "", ""],
-        ["Intensity", "", ""],
-        ["I_obj", result_1bin_T60_PWV2000.I_obj, "W / m^2 / str"],
-        ["I_sky", result_1bin_T60_PWV2000.I_sky, "W / m^2 / str"],
-        ["I_GBT", result_1bin_T60_PWV2000.I_GBT, "W / m^2 / str"],
-        ["", "", ""],
-        ["Instrument parameters", "", ""],
-        ["N_read", TOPICS.N_read, "e-rms"],
-        ["I_dark", TOPICS.I_dark, "e-/s"],
-        ["rambda_fl_center", TOPICS.rambda_fl_center, "m"],
-        ["tau_fl_center", TOPICS.tau_fl_center, ""],
-        ["FWHM_fl", TOPICS.FWHM_fl, "m"]]
-
-    ax13 = osm.plot_parameter_table(
+    ax13 = plot_input_data_table_plot(
         fig=fig1,
         position=gs1[0:2, 1],
-        parameter_table=fig1_table_text_list,
-        fontsize=8)
+        emission_line_params=R_3_0,
+        telescope_params=T60_PWV2000,
+        instrument_params=TOPICS,
+        result_1bin=result_1bin_T60_PWV2000)
 
-    # t_obs vs e- plot
     ax11 = plot_t_obs_vs_Signal_and_Noise_per_1_pixel(
         fig=fig1,
         position=gs1[0, 0],
@@ -258,47 +276,19 @@ if __name__ == "__main__":
 
     fig1.savefig(mkfolder() + "fig1.png")
 
-    # plot start
+    # plot T60 PWV=5000
     fig2 = plt.figure(figsize=(12, 10))
     gs2 = fig2.add_gridspec(2, 2)
     fig2.suptitle("T60, PWV=5000")
 
-    # data table plot
-    fig2_table_text_list = [
-        ["H3+ parameters", "", ""],
-        ["rambda", R_3_0.rambda, "m"],
-        ["N_H3p", R_3_0.N_H3p, "m^-2"],
-        ["T_hypo", R_3_0.T_hypo, "K"],
-        ["", "", ""],
-        ["Telescope parameters", "", ""],
-        ["telescope_diameter", T60_PWV5000.telescope_diameter, "m"],
-        ["T_GBT", T60_PWV5000.T_GBT, "K"],
-        ["tau_GBT", T60_PWV5000.tau_GBT, ""],
-        ["T_sky", T60_PWV5000.T_sky, "K"],
-        ["tau_sky", T60_PWV5000.tau_sky, ""],
-        ["", "", ""],
-        ["Observation_parameters", "", ""],
-        ["t_obs", "", "s"],
-        ["", "", ""],
-        ["Intensity", "", ""],
-        ["I_obj", result_1bin_T60_PWV5000.I_obj, "W / m^2 / str"],
-        ["I_sky", result_1bin_T60_PWV5000.I_sky, "W / m^2 / str"],
-        ["I_GBT", result_1bin_T60_PWV5000.I_GBT, "W / m^2 / str"],
-        ["", "", ""],
-        ["Instrument parameters", "", ""],
-        ["N_read", TOPICS.N_read, "e-rms"],
-        ["I_dark", TOPICS.I_dark, "e-/s"],
-        ["rambda_fl_center", TOPICS.rambda_fl_center, "m"],
-        ["tau_fl_center", TOPICS.tau_fl_center, ""],
-        ["FWHM_fl", TOPICS.FWHM_fl, "m"]]
-
-    ax23 = osm.plot_parameter_table(
+    ax23 = plot_input_data_table_plot(
         fig=fig2,
         position=gs2[0:2, 1],
-        parameter_table=fig2_table_text_list,
-        fontsize=8)
+        emission_line_params=R_3_0,
+        telescope_params=T60_PWV5000,
+        instrument_params=TOPICS,
+        result_1bin=result_1bin_T60_PWV5000)
 
-    # t_obs vs e- plot
     ax21 = plot_t_obs_vs_Signal_and_Noise_per_1_pixel(
         fig=fig2,
         position=gs2[0, 0],
@@ -306,7 +296,6 @@ if __name__ == "__main__":
         instrument_params=TOPICS,
         result_1bin=result_1bin_T60_PWV5000)
 
-    # t_obs vs SNR plot
     ax22 = plot_t_obs_vs_SNR(
         fig=fig2,
         position=gs2[1, 0],
