@@ -38,8 +38,6 @@ if __name__ == "__main__":
         E_prime=3382.9299,
         T_hypo=1200)
 
-    print("I_obj = ", R_3_0_params.I_obj)
-
     TOPICS_params = osm.InstrumentParameters(
         is_ESPRIT=False,
         N_read=100,
@@ -55,13 +53,6 @@ if __name__ == "__main__":
         T_GBT=273,
         telescope_diameter=0.6)
 
-    print(
-        "I_GBT = ",
-        T60_params.calc_I_GBT(
-            rambda_=R_3_0_params.rambda,
-            FWHM_fi=TOPICS_params.FWHM_fi) * 1e4,
-        "e-04")
-
     obs_1_bin_params = osm.ObservationParameters(
         tau_alpha=0.812,
         T_sky=273,
@@ -73,13 +64,6 @@ if __name__ == "__main__":
         T_sky=273,
         n_bin_spatial=4,
         t_obs=t_obs_array)
-
-    print(
-        "I_sky = ",
-        obs_1_bin_params.calc_I_sky(
-            rambda_=R_3_0_params.rambda,
-            FWHM_fi=TOPICS_params.FWHM_fi) * 1e4,
-        "e-04")
 
     R_3_0_obs_1_bin = osm.EmissionLineDisperse(
         emission_line_params=R_3_0_params,
@@ -104,6 +88,7 @@ if __name__ == "__main__":
         ["N_H3p", R_3_0_params.N_H3p, "m^-2"],
         ["T_hypo", R_3_0_params.T_hypo, "K"],
         ["", "", ""],
+        ["Telescope parameters", "", ""],
         ["telescope_diameter", T60_params.telescope_diameter, "m"],
         ["tau_GBT", T60_params.tau_GBT, ""],
         ["T_GBT", T60_params.T_GBT, "K"],
@@ -118,7 +103,6 @@ if __name__ == "__main__":
         ["I_sky", R_3_0_obs_1_bin.I_sky, "W / m^2 / str"],
         ["I_GBT", R_3_0_obs_1_bin.I_GBT, "W / m^2 / str"],
         ["", "", ""],
-        ["Telescope parameters", "", ""],
         ["Instrument parameters", "", ""],
         ["N_read", TOPICS_params.N_read, "e-rms"],
         ["I_dark", TOPICS_params.I_dark, "e-/s"],
