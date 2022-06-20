@@ -44,11 +44,11 @@ if __name__ == "__main__":
     telescope_params = osm.TelescopeParameters(
         T_GBT=273,
         telescope_diameter=0.6,
-        tau_GBT=0.66)
+        tau_GBT=0.66,
+        T_sky=273,
+        tau_sky=0.512)
 
     observation_params = osm.ObservationParameters(
-        tau_sky=0.812,
-        T_sky=273,
         n_bin_spatial=2,
         t_obs=30 * 60)
 

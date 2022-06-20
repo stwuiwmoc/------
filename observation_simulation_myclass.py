@@ -189,12 +189,17 @@ class TelescopeParameters:
             self,
             T_GBT: float,
             telescope_diameter: float,
-            tau_GBT: float) -> None:
+            tau_GBT: float,
+            T_sky: float,
+            tau_sky: float) -> None:
+
         """望遠鏡のパラメータを保持
 
         観測見積もり.md
-            └ 望遠鏡の発光 \n
-                └ 望遠鏡の熱輻射による放射強度 \n
+            ├ 望遠鏡の発光 \n
+            │   └ 望遠鏡の熱輻射による放射強度 \n
+            └ 地球大気の発光 \n
+                └ 大気の熱輻射による放射強度 \n
 
         Parameters
         ----------
@@ -204,11 +209,17 @@ class TelescopeParameters:
             [m] 望遠鏡主鏡の口径
         tau_GBT : float
             [無次元] 望遠鏡光学系の透過率
+        T_sky : float
+            [K] 大気温度
+        tau_sky : float
+            [無次元] 大気透過率
         """
 
         self.T_GBT = T_GBT
         self.telescope_diameter = telescope_diameter
         self.tau_GBT = tau_GBT
+        self.tau_sky = tau_sky
+        self.T_sky = T_sky
 
         self.A_t = np.pi * (self.telescope_diameter / 2) ** 2
 
@@ -237,6 +248,29 @@ class TelescopeParameters:
         I_GBT = I_prime * FWHM_fl * (1 - tau_GBT)
 
         return I_GBT
+
+    def calc_I_sky(self, rambda_: float, FWHM_fl: float) -> float:
+        """観測波長に対するI_skyを計算
+
+        Parameters
+        ----------
+        rambda_ : float
+            [m] 観測波長
+        FWHM_fl : float
+            [m] フィルターの半値幅
+
+        Returns
+        -------
+        float
+            [W / m^2 / str]	1秒あたりの大気から熱輻射
+        """
+        T_sky = self.T_sky
+        tau_sky = self.tau_sky
+
+        I_prime = calc_Plank_law_I_prime(rambda=rambda_, T=T_sky)
+        I_sky = I_prime * FWHM_fl * (1 - tau_sky)
+
+        return I_sky
 
 
 class InstrumentParameters:
@@ -435,25 +469,17 @@ class ObservationParameters:
 
     def __init__(
             self,
-            tau_sky: float,
-            T_sky: float,
             n_bin_spatial: int,
             t_obs: float) -> None:
-        """観測に関連するパラメータを格納
+        """観測者が決めるパラメータを格納
 
         観測見積もり.md
-            ├ 地球大気の発光 \n
-            │  └ 大気の熱輻射による放射強度 \n
             └ 誤差検討 \n
                 ├ 装置のpixel数関連の導出 \n
                 └ 観測によるSignalの導出 \n
 
         Parameters
         ----------
-        tau_sky : float
-            [無次元] 大気透過率
-        T_sky : float
-            [K] 大気温度
         n_bin_spatial : int
             [pix] 空間方向のbinning数、
             TOPICSなら緯度経度方向の掛け算結果を入力
@@ -463,36 +489,11 @@ class ObservationParameters:
         """
 
         # 入力パラメータの代入
-        self.tau_sky = tau_sky
-        self.T_sky = T_sky
         self.n_bin_spatial = n_bin_spatial
         self.t_obs = t_obs
 
     def h(self):
         mkhelp(self)
-
-    def calc_I_sky(self, rambda_: float, FWHM_fl: float) -> float:
-        """観測波長に対するI_skyを計算
-
-        Parameters
-        ----------
-        rambda_ : float
-            [m] 観測波長
-        FWHM_fl : float
-            [m] フィルターの半値幅
-
-        Returns
-        -------
-        float
-            [W / m^2 / str]	1秒あたりの大気から熱輻射
-        """
-        T_sky = self.T_sky
-        tau_sky = self.tau_sky
-
-        I_prime = calc_Plank_law_I_prime(rambda=rambda_, T=T_sky)
-        I_sky = I_prime * FWHM_fl * (1 - tau_sky)
-
-        return I_sky
 
 
 class EmissionLineDisperse:
@@ -544,14 +545,14 @@ class EmissionLineDisperse:
         self.I_GBT = self.telescope_params.calc_I_GBT(
             rambda_=self.emission_line_params.rambda,
             FWHM_fl=self.instrument_params.FWHM_fl)
-        self.I_sky = self.observation_params.calc_I_sky(
+        self.I_sky = self.telescope_params.calc_I_sky(
             rambda_=self.emission_line_params.rambda,
             FWHM_fl=self.instrument_params.FWHM_fl)
 
         # 各Singalの導出
         self.S_obj = self.__calc_S_xx(
             I_xx_=self.I_obj,
-            tau_sky_=self.observation_params.tau_sky)
+            tau_sky_=self.telescope_params.tau_sky)
 
         self.S_GBT = self.__calc_S_xx(
             I_xx_=self.I_GBT,

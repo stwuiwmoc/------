@@ -52,17 +52,15 @@ if __name__ == "__main__":
     T60_params = osm.TelescopeParameters(
         T_GBT=273,
         telescope_diameter=0.6,
-        tau_GBT=0.66)
+        tau_GBT=0.66,
+        T_sky=273,
+        tau_sky=0.564)
 
     obs_1_bin_params = osm.ObservationParameters(
-        tau_sky=0.564,
-        T_sky=273,
         n_bin_spatial=1,
         t_obs=t_obs_array)
 
     obs_4_bin_params = osm.ObservationParameters(
-        tau_sky=0.564,
-        T_sky=273,
         n_bin_spatial=4,
         t_obs=t_obs_array)
 
@@ -91,12 +89,12 @@ if __name__ == "__main__":
         ["", "", ""],
         ["Telescope parameters", "", ""],
         ["telescope_diameter", T60_params.telescope_diameter, "m"],
-        ["tau_GBT", T60_params.tau_GBT, ""],
         ["T_GBT", T60_params.T_GBT, "K"],
+        ["tau_GBT", T60_params.tau_GBT, ""],
+        ["T_sky", T60_params.T_sky, "K"],
+        ["tau_sky", T60_params.tau_sky, ""],
         ["", "", ""],
         ["Observation_parameters", "", ""],
-        ["tau_sky", obs_1_bin_params.tau_sky, ""],
-        ["T_sky", obs_1_bin_params.T_sky, "K"],
         ["t_obs", "", "s"],
         ["", "", ""],
         ["Intensity", "", ""],
