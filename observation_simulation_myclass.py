@@ -186,7 +186,10 @@ class EmissionLineParameters:
 class TelescopeParameters:
 
     def __init__(
-            self, T_GBT: float, telescope_diameter: float, tau_GBT: float = 0.66) -> None:
+            self,
+            T_GBT: float,
+            telescope_diameter: float,
+            tau_GBT: float) -> None:
         """望遠鏡のパラメータを保持
 
         観測見積もり.md
@@ -199,9 +202,8 @@ class TelescopeParameters:
             [K] 望遠鏡光学系の温度
         telescope_diameter : float
             [m] 望遠鏡主鏡の口径
-        tau_GBT : float, optional
-            [無次元] 望遠鏡光学系の透過率,
-            by default 0.66（T60、クーデ）
+        tau_GBT : float
+            [無次元] 望遠鏡光学系の透過率
         """
 
         self.T_GBT = T_GBT
