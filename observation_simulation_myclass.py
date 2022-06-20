@@ -61,7 +61,7 @@ def calc_Plank_law_I_prime(rambda, T):
     """プランクの法則から波長と温度の関数として分光放射輝度を計算
 
     観測見積もり.md
-        └ 地球大気と望遠鏡の発光 \n
+        └ 望遠鏡の発光 \n
             └ プランクの法則 \n
 
     Parameters
@@ -193,7 +193,7 @@ class TelescopeParameters:
         """望遠鏡のパラメータを保持
 
         観測見積もり.md
-            └ 地球大気と望遠鏡の発光 \n
+            └ 望遠鏡の発光 \n
                 └ 望遠鏡の熱輻射による放射強度 \n
 
         Parameters
@@ -442,7 +442,7 @@ class ObservationParameters:
         """観測に関連するパラメータを格納
 
         観測見積もり.md
-            ├ 地球大気と望遠鏡の発光 \n
+            ├ 地球大気の発光 \n
             │  └ 大気の熱輻射による放射強度 \n
             └ 誤差検討 \n
                 ├ 装置のpixel数関連の導出 \n
