@@ -449,7 +449,7 @@ if __name__ == "__main__":
     # plot Pirika November
     fig4 = plt.figure(figsize=(12, 10))
     gs4 = fig4.add_gridspec(2, 2)
-    fig4.suptitle("Pirika, October")
+    fig4.suptitle("Pirika, November")
 
     ax43 = plot_input_data_table_plot(
         fig=fig4,
