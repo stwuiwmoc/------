@@ -25,6 +25,79 @@ def mkfolder(suffix=""):
     return folder
 
 
+def plot_t_obs_vs_Signal_and_Noise_per_1_pixel(
+        fig, position, t_obs_array_, result_1bin):
+
+    ax = fig.add_subplot(position)
+
+    # Signal plot
+    linestyle_signal = "-"
+    linewidth_signal = 3
+
+    ax.plot(
+        t_obs_array_,
+        result_1bin.S_all * TOPICS.G_sys,
+        label="S_all",
+        linestyle=linestyle_signal,
+        linewidth=linewidth_signal)
+    ax.plot(
+        t_obs_array_,
+        result_1bin.S_obj * TOPICS.G_sys,
+        label="S_obj",
+        linestyle=linestyle_signal,
+        linewidth=linewidth_signal)
+
+    # Noise plot
+    linestyle_noise = "-."
+    ax.plot(
+        t_obs_array_,
+        np.sqrt(result_1bin.S_all * TOPICS.G_sys),
+        label="N_all",
+        linestyle=linestyle_noise)
+    ax.plot(
+        t_obs_array_,
+        np.sqrt(result_1bin.S_sky * TOPICS.G_sys),
+        label="N_sky",
+        linestyle=linestyle_noise)
+    ax.plot(
+        t_obs_array_,
+        np.sqrt(result_1bin.S_GBT * TOPICS.G_sys),
+        label="N_GBT",
+        linestyle=linestyle_noise)
+    ax.plot(
+        t_obs_array_,
+        np.sqrt(result_1bin.S_dark * TOPICS.G_sys),
+        label="N_dark",
+        linestyle=linestyle_noise)
+    ax.plot(
+        t_obs_array_,
+        TOPICS.N_read * np.ones(len(t_obs_array_)),
+        label="N_read",
+        linestyle=linestyle_noise)
+
+    # FullWell plot
+    ax.plot(
+        t_obs_array_,
+        TOPICS.S_FW_pix * TOPICS.G_sys * np.ones(len(t_obs_array_)),
+        label="FW limit",
+        linestyle=":",
+        linewidth=3)
+
+    # axes decoration
+    ax.grid(axis="x", which="major")
+    ax.grid(axis="y", which="major")
+
+    ax.set_xlabel("Integration Time t_obs [s]")
+    ax.set_ylabel("Signal and Noise per 1 pixel [e-]")
+
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+
+    ax.legend()
+
+    return ax
+
+
 if __name__ == "__main__":
     importlib.reload(osm)
     t_obs_array = np.arange(1, 100)  # [s]
@@ -140,72 +213,11 @@ if __name__ == "__main__":
         fontsize=8)
 
     # t_obs vs e- plot
-    ax11 = fig1.add_subplot(gs1[0, 0])
-
-    # Signal plot
-    linestyle_signal = "-"
-    linewidth_signal = 3
-
-    ax11.plot(
-        t_obs_array,
-        result_1bin_T60_PWV2000.S_all * TOPICS.G_sys,
-        label="S_all",
-        linestyle=linestyle_signal,
-        linewidth=linewidth_signal)
-    ax11.plot(
-        t_obs_array,
-        result_1bin_T60_PWV2000.S_obj * TOPICS.G_sys,
-        label="S_obj",
-        linestyle=linestyle_signal,
-        linewidth=linewidth_signal)
-
-    # Noise plot
-    linestyle_noise = "-."
-    ax11.plot(
-        t_obs_array,
-        np.sqrt(result_1bin_T60_PWV2000.S_all * TOPICS.G_sys),
-        label="N_all",
-        linestyle=linestyle_noise)
-    ax11.plot(
-        t_obs_array,
-        np.sqrt(result_1bin_T60_PWV2000.S_sky * TOPICS.G_sys),
-        label="N_sky",
-        linestyle=linestyle_noise)
-    ax11.plot(
-        t_obs_array,
-        np.sqrt(result_1bin_T60_PWV2000.S_GBT * TOPICS.G_sys),
-        label="N_GBT",
-        linestyle=linestyle_noise)
-    ax11.plot(
-        t_obs_array,
-        np.sqrt(result_1bin_T60_PWV2000.S_dark * TOPICS.G_sys),
-        label="N_dark",
-        linestyle=linestyle_noise)
-    ax11.plot(
-        t_obs_array,
-        TOPICS.N_read * np.ones(len(t_obs_array)),
-        label="N_read",
-        linestyle=linestyle_noise)
-
-    # FullWell plot
-    ax11.plot(
-        t_obs_array,
-        TOPICS.S_FW_pix * TOPICS.G_sys * np.ones(len(t_obs_array)),
-        label="FW limit",
-        linestyle=":",
-        linewidth=3)
-
-    # axes decoration
-    ax11.grid(axis="x", which="major")
-    ax11.grid(axis="y", which="major")
-
-    ax11.set_xlabel("Integration Time t_obs [s]")
-    ax11.set_ylabel("Signal and Noise per 1 pixel [e-]")
-
-    ax11.set_xscale("log")
-    ax11.set_yscale("log")
-
-    ax11.legend()
+    ax11 = plot_t_obs_vs_Signal_and_Noise_per_1_pixel(
+        fig=fig1,
+        position=gs1[0, 0],
+        t_obs_array_=t_obs_array,
+        result_1bin=result_1bin_T60_PWV2000)
 
     # t_obs vs SNR plot
     ax12 = fig1.add_subplot(gs1[1, 0])
@@ -235,7 +247,7 @@ if __name__ == "__main__":
 
     # plot start
     fig2 = plt.figure(figsize=(12, 10))
-    gs1 = fig2.add_gridspec(2, 2)
+    gs2 = fig2.add_gridspec(2, 2)
     fig2.suptitle("T60, PWV=5000")
 
     # data table plot
@@ -269,77 +281,16 @@ if __name__ == "__main__":
 
     ax23 = osm.plot_parameter_table(
         fig=fig2,
-        position=gs1[0:2, 1],
+        position=gs2[0:2, 1],
         parameter_table=fig2_table_text_list,
         fontsize=8)
 
     # t_obs vs e- plot
-    ax21 = fig2.add_subplot(gs1[0, 0])
-
-    # Signal plot
-    linestyle_signal = "-"
-    linewidth_signal = 3
-
-    ax21.plot(
-        t_obs_array,
-        result_1bin_T60_PWV5000.S_all * TOPICS.G_sys,
-        label="S_all",
-        linestyle=linestyle_signal,
-        linewidth=linewidth_signal)
-    ax21.plot(
-        t_obs_array,
-        result_1bin_T60_PWV5000.S_obj * TOPICS.G_sys,
-        label="S_obj",
-        linestyle=linestyle_signal,
-        linewidth=linewidth_signal)
-
-    # Noise plot
-    linestyle_noise = "-."
-    ax21.plot(
-        t_obs_array,
-        np.sqrt(result_1bin_T60_PWV5000.S_all * TOPICS.G_sys),
-        label="N_all",
-        linestyle=linestyle_noise)
-    ax21.plot(
-        t_obs_array,
-        np.sqrt(result_1bin_T60_PWV5000.S_sky * TOPICS.G_sys),
-        label="N_sky",
-        linestyle=linestyle_noise)
-    ax21.plot(
-        t_obs_array,
-        np.sqrt(result_1bin_T60_PWV5000.S_GBT * TOPICS.G_sys),
-        label="N_GBT",
-        linestyle=linestyle_noise)
-    ax21.plot(
-        t_obs_array,
-        np.sqrt(result_1bin_T60_PWV5000.S_dark * TOPICS.G_sys),
-        label="N_dark",
-        linestyle=linestyle_noise)
-    ax21.plot(
-        t_obs_array,
-        TOPICS.N_read * np.ones(len(t_obs_array)),
-        label="N_read",
-        linestyle=linestyle_noise)
-
-    # FullWell plot
-    ax21.plot(
-        t_obs_array,
-        TOPICS.S_FW_pix * TOPICS.G_sys * np.ones(len(t_obs_array)),
-        label="FW limit",
-        linestyle=":",
-        linewidth=3)
-
-    # axes decoration
-    ax21.grid(axis="x", which="major")
-    ax21.grid(axis="y", which="major")
-
-    ax21.set_xlabel("Integration Time t_obs [s]")
-    ax21.set_ylabel("Signal and Noise per 1 pixel [e-]")
-
-    ax21.set_xscale("log")
-    ax21.set_yscale("log")
-
-    ax21.legend()
+    ax21 = plot_t_obs_vs_Signal_and_Noise_per_1_pixel(
+        fig=fig2,
+        position=gs2[0, 0],
+        t_obs_array_=t_obs_array,
+        result_1bin=result_1bin_T60_PWV5000)
 
     # t_obs vs SNR plot
     ax22 = fig2.add_subplot(gs1[1, 0])
