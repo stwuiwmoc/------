@@ -215,14 +215,14 @@ class TelescopeParameters:
     def h(self):
         mkhelp(self)
 
-    def calc_I_GBT(self, rambda_: float, FWHM_fi: float) -> float:
+    def calc_I_GBT(self, rambda_: float, FWHM_fl: float) -> float:
         """観測波長に対するI_GBTを計算
 
         Parameters
         ----------
         rambda_ : float
             [m] 観測波長
-        FWHM_fi : float
+        FWHM_fl : float
             [m] フィルターの半値幅
 
         Returns
@@ -234,7 +234,7 @@ class TelescopeParameters:
         tau_GBT = self.tau_GBT
 
         I_prime = calc_Plank_law_I_prime(rambda=rambda_, T=T_GBT)
-        I_GBT = I_prime * FWHM_fi * (1 - tau_GBT)
+        I_GBT = I_prime * FWHM_fl * (1 - tau_GBT)
 
         return I_GBT
 
@@ -249,9 +249,9 @@ class InstrumentParameters:
             G_Amp: float,
             has_fiber: bool,
             l_fb: float,
-            rambda_fi_center: float,
-            tau_fi_center: float,
-            FWHM_fi: float) -> None:
+            rambda_fl_center: float,
+            tau_fl_center: float,
+            FWHM_fl: float) -> None:
         """イメージャー、分光器のパラメータを保持
 
         観測見積もり.md
@@ -279,11 +279,11 @@ class InstrumentParameters:
             Falseの場合、ファイバー透過率は自動的に1に設定される。
         l_fb : float
             [m] 分光器導入用ファイバーの長さ
-        rambda_fi_center : float
+        rambda_fl_center : float
             [m] フィルターの中心波長
-        tau_fi_center : float
+        tau_fl_center : float
             [無次元] フィルターの中心透過率
-        FWHM_fi : float
+        FWHM_fl : float
             [m] フィルターの半値全幅
         """
 
@@ -294,9 +294,9 @@ class InstrumentParameters:
         self.G_Amp = G_Amp
         self.has_fiber = has_fiber
         self.l_fb = l_fb
-        self.rambda_fi_center = rambda_fi_center
-        self.tau_fi_center = tau_fi_center
-        self.FWHM_fi = FWHM_fi
+        self.rambda_fl_center = rambda_fl_center
+        self.tau_fl_center = tau_fl_center
+        self.FWHM_fl = FWHM_fl
 
         # システムゲインの導出
         self.G_sys = self.__calc_G_sys()
@@ -380,14 +380,14 @@ class InstrumentParameters:
             float
                 干渉フィルターの透過率
             """
-            rambda_fi_center = self.rambda_fi_center
-            tau_fi_center = self.tau_fi_center
-            FWHM_fi = self.FWHM_fi
+            rambda_fl_center = self.rambda_fl_center
+            tau_fl_center = self.tau_fl_center
+            FWHM_fl = self.FWHM_fl
             rambda__ = rambda_
 
-            tau_i_filter = tau_fi_center \
+            tau_i_filter = tau_fl_center \
                 * np.exp(
-                    - (rambda__ - rambda_fi_center)**2 / (2 * (FWHM_fi / (2 * np.sqrt(2 * np.log(2))))**2))
+                    - (rambda__ - rambda_fl_center)**2 / (2 * (FWHM_fl / (2 * np.sqrt(2 * np.log(2))))**2))
 
             return tau_i_filter
 
@@ -471,14 +471,14 @@ class ObservationParameters:
     def h(self):
         mkhelp(self)
 
-    def calc_I_sky(self, rambda_: float, FWHM_fi: float) -> float:
+    def calc_I_sky(self, rambda_: float, FWHM_fl: float) -> float:
         """観測波長に対するI_skyを計算
 
         Parameters
         ----------
         rambda_ : float
             [m] 観測波長
-        FWHM_fi : float
+        FWHM_fl : float
             [m] フィルターの半値幅
 
         Returns
@@ -490,7 +490,7 @@ class ObservationParameters:
         tau_sky = self.tau_sky
 
         I_prime = calc_Plank_law_I_prime(rambda=rambda_, T=T_sky)
-        I_sky = I_prime * FWHM_fi * (1 - tau_sky)
+        I_sky = I_prime * FWHM_fl * (1 - tau_sky)
 
         return I_sky
 
@@ -543,10 +543,10 @@ class EmissionLineDisperse:
         self.I_obj = self.emission_line_params.I_obj
         self.I_GBT = self.telescope_params.calc_I_GBT(
             rambda_=self.emission_line_params.rambda,
-            FWHM_fi=self.instrument_params.FWHM_fi)
+            FWHM_fl=self.instrument_params.FWHM_fl)
         self.I_sky = self.observation_params.calc_I_sky(
             rambda_=self.emission_line_params.rambda,
-            FWHM_fi=self.instrument_params.FWHM_fi)
+            FWHM_fl=self.instrument_params.FWHM_fl)
 
         # 各Singalの導出
         self.S_obj = self.__calc_S_xx(

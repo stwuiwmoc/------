@@ -45,9 +45,9 @@ if __name__ == "__main__":
         G_Amp=9,
         has_fiber=False,
         l_fb=None,
-        rambda_fi_center=3.414e-6,
-        tau_fi_center=0.9,
-        FWHM_fi=17e-9)
+        rambda_fl_center=3.414e-6,
+        tau_fl_center=0.9,
+        FWHM_fl=17e-9)
 
     T60_params = osm.TelescopeParameters(
         T_GBT=273,
@@ -107,9 +107,9 @@ if __name__ == "__main__":
         ["Instrument parameters", "", ""],
         ["N_read", TOPICS_params.N_read, "e-rms"],
         ["I_dark", TOPICS_params.I_dark, "e-/s"],
-        ["rambda_fi_center", TOPICS_params.rambda_fi_center, "m"],
-        ["tau_fi_center", TOPICS_params.tau_fi_center, ""],
-        ["FWHM_fi", TOPICS_params.FWHM_fi, "m"]]
+        ["rambda_fl_center", TOPICS_params.rambda_fl_center, "m"],
+        ["tau_fl_center", TOPICS_params.tau_fl_center, ""],
+        ["FWHM_fl", TOPICS_params.FWHM_fl, "m"]]
 
     ax13 = osm.plot_parameter_table(
         fig=fig1,
