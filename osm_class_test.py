@@ -15,9 +15,9 @@ if __name__ == "__main__":
         G_Amp=9,
         has_fiber=True,
         l_fb=15,
-        rambda_fi_center=3.953e-6,
-        tau_fi_center=0.9,
-        FWHM_fi=266e-9)
+        rambda_fl_center=3.953e-6,
+        tau_fl_center=0.9,
+        FWHM_fl=266e-9)
 
     ESPRIT_params_for_R_3_0 = osm.InstrumentParameters(
         is_ESPRIT=True,
@@ -26,9 +26,9 @@ if __name__ == "__main__":
         G_Amp=9,
         has_fiber=True,
         l_fb=15,
-        rambda_fi_center=3.414e-6,
-        tau_fi_center=0.9,
-        FWHM_fi=17e-9)
+        rambda_fl_center=3.414e-6,
+        tau_fl_center=0.9,
+        FWHM_fl=17e-9)
 
     TOPICS_params_for_R_3_0 = osm.InstrumentParameters(
         is_ESPRIT=False,
@@ -37,17 +37,18 @@ if __name__ == "__main__":
         G_Amp=9,
         has_fiber=False,
         l_fb=None,
-        rambda_fi_center=3.414e-6,
-        tau_fi_center=0.9,
-        FWHM_fi=17e-9)
+        rambda_fl_center=3.414e-6,
+        tau_fl_center=0.9,
+        FWHM_fl=17e-9)
 
     telescope_params = osm.TelescopeParameters(
         T_GBT=273,
-        telescope_diameter=0.6)
+        telescope_diameter=0.6,
+        tau_GBT=0.66,
+        T_sky=273,
+        tau_sky=0.512)
 
     observation_params = osm.ObservationParameters(
-        tau_alpha=0.812,
-        T_sky=273,
         n_bin_spatial=2,
         t_obs=30 * 60)
 
