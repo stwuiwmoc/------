@@ -25,8 +25,39 @@ def mkfolder(suffix=""):
     return folder
 
 
+def find_index_of_full_well_limit(
+        S_FW_pix: float,
+        S_all_pix_array: np.ndarray) -> int:
+    """full well limitになる時のindexを見つける
+
+    検出器のFW以上には電荷を蓄積できないため、S_all_pix =< S_FW_pix となる必要がある。
+    Full well limit は、S_all_pix = S_FW_pixとなった時なので、
+    S_all_pix と S_FW_pix の差分が最小になる時のindexを取得すればよい
+
+    Parameters
+    ----------
+    S_FW_pix_array : float
+        [DN / pix] FWに達した時のカウント値
+    S_all_pix_array : np.ndarray
+        [DN / pix] カウント値の合計
+
+    Returns
+    -------
+    int
+        full well limitになる時のindex
+    """
+
+    # FWとallの差分をとる
+    diff_all_FW_array = np.abs(S_all_pix_array - S_FW_pix)
+
+    # 差分が最小となる時のindexを取得する
+    index = np.argmin(diff_all_FW_array)
+
+    return index
+
+
 def plot_t_obs_vs_Signal_and_Noise_per_1_pixel(
-        fig, position, t_obs_array_, instrument_params, result_1bin):
+        fig, position, t_obs_array_, instrument_params, result_1bin, FW_limit_index):
 
     ax = fig.add_subplot(position)
 
@@ -81,7 +112,17 @@ def plot_t_obs_vs_Signal_and_Noise_per_1_pixel(
         instrument_params.S_FW_pix * instrument_params.G_sys * np.ones(len(t_obs_array_)),
         label="FW limit",
         linestyle=":",
-        linewidth=3)
+        linewidth=3,
+        color="red")
+
+    # FullWell limit plot
+    ax.vlines(
+        x=t_obs_array_[FW_limit_index],
+        ymin=1,
+        ymax=np.max(result_1bin.S_all * instrument_params.G_sys),
+        linestyle=":",
+        linewidth=3,
+        color="red")
 
     # axes decoration
     ax.grid(axis="x", which="major")
@@ -99,7 +140,7 @@ def plot_t_obs_vs_Signal_and_Noise_per_1_pixel(
 
 
 def plot_t_obs_vs_SNR(
-        fig, position, t_obs_array_, result_1bin, result_nbin):
+        fig, position, t_obs_array_, result_1bin, result_nbin, FW_limit_index):
 
     ax = fig.add_subplot(position)
 
@@ -112,6 +153,15 @@ def plot_t_obs_vs_SNR(
         t_obs_array_,
         result_nbin.SNR,
         label=str(result_nbin.n_bin) + " pix binning")
+
+    # FullWell limit plot
+    ax.vlines(
+        x=t_obs_array_[FW_limit_index],
+        ymin=0,
+        ymax=np.max(result_nbin.SNR),
+        linestyle=":",
+        linewidth=3,
+        color="red")
 
     ax.grid()
 
@@ -283,6 +333,19 @@ if __name__ == "__main__":
         telescope_params=Pirika_Nov,
         observation_params=obs_16bin)
 
+    # Fullwell Limit detection
+    FW_limit_index_T60_PWV2000 = find_index_of_full_well_limit(
+        S_FW_pix=TOPICS.S_FW_pix, S_all_pix_array=result_1bin_T60_PWV2000.S_all_pix)
+
+    FW_limit_index_T60_PWV5000 = find_index_of_full_well_limit(
+        S_FW_pix=TOPICS.S_FW_pix, S_all_pix_array=result_1bin_T60_PWV5000.S_all_pix)
+
+    FW_limit_index_Pirika_Oct = find_index_of_full_well_limit(
+        S_FW_pix=TOPICS.S_FW_pix, S_all_pix_array=result_1bin_Pirika_Oct.S_all_pix)
+
+    FW_limit_index_Pirika_Nov = find_index_of_full_well_limit(
+        S_FW_pix=TOPICS.S_FW_pix, S_all_pix_array=result_1bin_Pirika_Nov.S_all_pix)
+
     # plot start
     # plot T60 PWV=2000
     fig1 = plt.figure(figsize=(12, 10))
@@ -302,14 +365,16 @@ if __name__ == "__main__":
         position=gs1[0, 0],
         t_obs_array_=t_obs_array,
         instrument_params=TOPICS,
-        result_1bin=result_1bin_T60_PWV2000)
+        result_1bin=result_1bin_T60_PWV2000,
+        FW_limit_index=FW_limit_index_T60_PWV2000)
 
     ax12 = plot_t_obs_vs_SNR(
         fig=fig1,
         position=gs1[1, 0],
         t_obs_array_=t_obs_array,
         result_1bin=result_1bin_T60_PWV2000,
-        result_nbin=result_4bin_T60_PWV2000)
+        result_nbin=result_4bin_T60_PWV2000,
+        FW_limit_index=FW_limit_index_T60_PWV2000)
 
     fig1.tight_layout()
 
@@ -333,14 +398,16 @@ if __name__ == "__main__":
         position=gs2[0, 0],
         t_obs_array_=t_obs_array,
         instrument_params=TOPICS,
-        result_1bin=result_1bin_T60_PWV5000)
+        result_1bin=result_1bin_T60_PWV5000,
+        FW_limit_index=FW_limit_index_T60_PWV5000)
 
     ax22 = plot_t_obs_vs_SNR(
         fig=fig2,
         position=gs2[1, 0],
         t_obs_array_=t_obs_array,
         result_1bin=result_1bin_T60_PWV5000,
-        result_nbin=result_4bin_T60_PWV5000)
+        result_nbin=result_4bin_T60_PWV5000,
+        FW_limit_index=FW_limit_index_T60_PWV5000)
 
     fig2.tight_layout()
 
@@ -364,14 +431,16 @@ if __name__ == "__main__":
         position=gs3[0, 0],
         t_obs_array_=t_obs_array,
         instrument_params=TOPICS,
-        result_1bin=result_1bin_Pirika_Oct)
+        result_1bin=result_1bin_Pirika_Oct,
+        FW_limit_index=FW_limit_index_Pirika_Oct)
 
     ax32 = plot_t_obs_vs_SNR(
         fig=fig3,
         position=gs3[1, 0],
         t_obs_array_=t_obs_array,
         result_1bin=result_1bin_Pirika_Oct,
-        result_nbin=result_16bin_Pirika_Oct)
+        result_nbin=result_16bin_Pirika_Oct,
+        FW_limit_index=FW_limit_index_Pirika_Oct)
 
     fig3.tight_layout()
 
@@ -395,14 +464,16 @@ if __name__ == "__main__":
         position=gs4[0, 0],
         t_obs_array_=t_obs_array,
         instrument_params=TOPICS,
-        result_1bin=result_1bin_Pirika_Nov)
+        result_1bin=result_1bin_Pirika_Nov,
+        FW_limit_index=FW_limit_index_Pirika_Nov)
 
     ax42 = plot_t_obs_vs_SNR(
         fig=fig4,
         position=gs4[1, 0],
         t_obs_array_=t_obs_array,
         result_1bin=result_1bin_Pirika_Nov,
-        result_nbin=result_16bin_Pirika_Nov)
+        result_nbin=result_16bin_Pirika_Nov,
+        FW_limit_index=FW_limit_index_Pirika_Nov)
 
     fig4.tight_layout()
 
