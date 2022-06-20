@@ -435,7 +435,7 @@ class ObservationParameters:
 
     def __init__(
             self,
-            tau_alpha: float,
+            tau_sky: float,
             T_sky: float,
             n_bin_spatial: int,
             t_obs: float) -> None:
@@ -450,7 +450,7 @@ class ObservationParameters:
 
         Parameters
         ----------
-        tau_alpha : float
+        tau_sky : float
             [無次元] 大気透過率
         T_sky : float
             [K] 大気温度
@@ -463,7 +463,7 @@ class ObservationParameters:
         """
 
         # 入力パラメータの代入
-        self.tau_alpha = tau_alpha
+        self.tau_sky = tau_sky
         self.T_sky = T_sky
         self.n_bin_spatial = n_bin_spatial
         self.t_obs = t_obs
@@ -487,10 +487,10 @@ class ObservationParameters:
             [W / m^2 / str]	1秒あたりの大気から熱輻射
         """
         T_sky = self.T_sky
-        tau_alpha = self.tau_alpha
+        tau_sky = self.tau_sky
 
         I_prime = calc_Plank_law_I_prime(rambda=rambda_, T=T_sky)
-        I_sky = I_prime * FWHM_fi * (1 - tau_alpha)
+        I_sky = I_prime * FWHM_fi * (1 - tau_sky)
 
         return I_sky
 
@@ -551,15 +551,15 @@ class EmissionLineDisperse:
         # 各Singalの導出
         self.S_obj = self.__calc_S_xx(
             I_xx_=self.I_obj,
-            tau_alpha_=self.observation_params.tau_alpha)
+            tau_sky_=self.observation_params.tau_sky)
 
         self.S_GBT = self.__calc_S_xx(
             I_xx_=self.I_GBT,
-            tau_alpha_=1)
+            tau_sky_=1)
 
         self.S_sky = self.__calc_S_xx(
             I_xx_=self.I_sky,
-            tau_alpha_=1)
+            tau_sky_=1)
 
         # 暗電流によるSignalの導出
         self.S_dark = self.__calc_S_dark()
@@ -574,14 +574,14 @@ class EmissionLineDisperse:
     def h(self):
         mkhelp(self)
 
-    def __calc_S_xx(self, I_xx_: float, tau_alpha_: float) -> float:
+    def __calc_S_xx(self, I_xx_: float, tau_sky_: float) -> float:
         """検出器に結像される発光強度（I_obj, I_GBT, I_sky）から得られるシグナルを計算
 
         Parameters
         ----------
         I_xx_ : float
             [W/m^2/str] 発光強度
-        tau_alpha_ : float
+        tau_sky_ : float
             [無次元] 大気透過率、I_GBTとI_skyでは1を代入する（mdに詳細あり）
 
         Returns
@@ -595,7 +595,7 @@ class EmissionLineDisperse:
         eta = self.instrument_params.eta
         Omega = self.instrument_params.Omega
         G_sys = self.instrument_params.G_sys
-        tau_alpha = tau_alpha_
+        tau_sky = tau_sky_
         tau_e = self.tau_e
         rambda = self.emission_line_params.rambda
         c = phys_consts.c
@@ -603,7 +603,7 @@ class EmissionLineDisperse:
         t_obs = self.observation_params.t_obs
         n_bin = self.n_bin
 
-        S_xx = (I_xx * A_t * Omega * tau_alpha * tau_e) \
+        S_xx = (I_xx * A_t * Omega * tau_sky * tau_e) \
             / (h * c / rambda) \
             * eta * (1 / G_sys) * t_obs * n_bin
 

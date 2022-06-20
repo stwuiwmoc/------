@@ -55,13 +55,13 @@ if __name__ == "__main__":
         tau_GBT=0.66)
 
     obs_1_bin_params = osm.ObservationParameters(
-        tau_alpha=0.564,
+        tau_sky=0.564,
         T_sky=273,
         n_bin_spatial=1,
         t_obs=t_obs_array)
 
     obs_4_bin_params = osm.ObservationParameters(
-        tau_alpha=0.564,
+        tau_sky=0.564,
         T_sky=273,
         n_bin_spatial=4,
         t_obs=t_obs_array)
@@ -95,7 +95,7 @@ if __name__ == "__main__":
         ["T_GBT", T60_params.T_GBT, "K"],
         ["", "", ""],
         ["Observation_parameters", "", ""],
-        ["tau_alpha", obs_1_bin_params.tau_alpha, ""],
+        ["tau_sky", obs_1_bin_params.tau_sky, ""],
         ["T_sky", obs_1_bin_params.T_sky, "K"],
         ["t_obs", "", "s"],
         ["", "", ""],

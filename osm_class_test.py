@@ -47,7 +47,7 @@ if __name__ == "__main__":
         tau_GBT=0.66)
 
     observation_params = osm.ObservationParameters(
-        tau_alpha=0.812,
+        tau_sky=0.812,
         T_sky=273,
         n_bin_spatial=2,
         t_obs=30 * 60)
