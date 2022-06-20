@@ -26,7 +26,7 @@ def mkfolder(suffix=""):
 
 
 def plot_t_obs_vs_Signal_and_Noise_per_1_pixel(
-        fig, position, t_obs_array_, result_1bin):
+        fig, position, t_obs_array_, instrument_params, result_1bin):
 
     ax = fig.add_subplot(position)
 
@@ -36,13 +36,13 @@ def plot_t_obs_vs_Signal_and_Noise_per_1_pixel(
 
     ax.plot(
         t_obs_array_,
-        result_1bin.S_all * TOPICS.G_sys,
+        result_1bin.S_all * instrument_params.G_sys,
         label="S_all",
         linestyle=linestyle_signal,
         linewidth=linewidth_signal)
     ax.plot(
         t_obs_array_,
-        result_1bin.S_obj * TOPICS.G_sys,
+        result_1bin.S_obj * instrument_params.G_sys,
         label="S_obj",
         linestyle=linestyle_signal,
         linewidth=linewidth_signal)
@@ -51,34 +51,34 @@ def plot_t_obs_vs_Signal_and_Noise_per_1_pixel(
     linestyle_noise = "-."
     ax.plot(
         t_obs_array_,
-        np.sqrt(result_1bin.S_all * TOPICS.G_sys),
+        np.sqrt(result_1bin.S_all * instrument_params.G_sys),
         label="N_all",
         linestyle=linestyle_noise)
     ax.plot(
         t_obs_array_,
-        np.sqrt(result_1bin.S_sky * TOPICS.G_sys),
+        np.sqrt(result_1bin.S_sky * instrument_params.G_sys),
         label="N_sky",
         linestyle=linestyle_noise)
     ax.plot(
         t_obs_array_,
-        np.sqrt(result_1bin.S_GBT * TOPICS.G_sys),
+        np.sqrt(result_1bin.S_GBT * instrument_params.G_sys),
         label="N_GBT",
         linestyle=linestyle_noise)
     ax.plot(
         t_obs_array_,
-        np.sqrt(result_1bin.S_dark * TOPICS.G_sys),
+        np.sqrt(result_1bin.S_dark * instrument_params.G_sys),
         label="N_dark",
         linestyle=linestyle_noise)
     ax.plot(
         t_obs_array_,
-        TOPICS.N_read * np.ones(len(t_obs_array_)),
+        instrument_params.N_read * np.ones(len(t_obs_array_)),
         label="N_read",
         linestyle=linestyle_noise)
 
     # FullWell plot
     ax.plot(
         t_obs_array_,
-        TOPICS.S_FW_pix * TOPICS.G_sys * np.ones(len(t_obs_array_)),
+        instrument_params.S_FW_pix * instrument_params.G_sys * np.ones(len(t_obs_array_)),
         label="FW limit",
         linestyle=":",
         linewidth=3)
@@ -244,6 +244,7 @@ if __name__ == "__main__":
         fig=fig1,
         position=gs1[0, 0],
         t_obs_array_=t_obs_array,
+        instrument_params=TOPICS,
         result_1bin=result_1bin_T60_PWV2000)
 
     ax12 = plot_t_obs_vs_SNR(
@@ -302,6 +303,7 @@ if __name__ == "__main__":
         fig=fig2,
         position=gs2[0, 0],
         t_obs_array_=t_obs_array,
+        instrument_params=TOPICS,
         result_1bin=result_1bin_T60_PWV5000)
 
     # t_obs vs SNR plot
