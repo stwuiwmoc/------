@@ -367,12 +367,12 @@ if __name__ == "__main__":
         n_bin_spatial=1,
         t_obs=t_obs_array)
 
-    obs_4bin = osm.ObservationParameters(
-        n_bin_spatial=2 * 2,
-        t_obs=t_obs_array)
-
     obs_9bin = osm.ObservationParameters(
         n_bin_spatial=3 * 3,
+        t_obs=t_obs_array)
+
+    obs_25bin = osm.ObservationParameters(
+        n_bin_spatial=5 * 5,
         t_obs=t_obs_array)
 
     obs_64bin = osm.ObservationParameters(
@@ -395,18 +395,6 @@ if __name__ == "__main__":
         telescope_params=T60_PWV5000,
         observation_params=obs_1bin)
 
-    result_4bin_T60_PWV2000 = osm.EmissionLineDisperse(
-        emission_line_params=R_3_0,
-        instrument_params=TOPICS,
-        telescope_params=T60_PWV2000,
-        observation_params=obs_4bin)
-
-    result_4bin_T60_PWV5000 = osm.EmissionLineDisperse(
-        emission_line_params=R_3_0,
-        instrument_params=TOPICS,
-        telescope_params=T60_PWV5000,
-        observation_params=obs_4bin)
-
     result_9bin_T60_PWV2000 = osm.EmissionLineDisperse(
         emission_line_params=R_3_0,
         instrument_params=TOPICS,
@@ -418,6 +406,18 @@ if __name__ == "__main__":
         instrument_params=TOPICS,
         telescope_params=T60_PWV5000,
         observation_params=obs_9bin)
+
+    result_25bin_T60_PWV2000 = osm.EmissionLineDisperse(
+        emission_line_params=R_3_0,
+        instrument_params=TOPICS,
+        telescope_params=T60_PWV2000,
+        observation_params=obs_25bin)
+
+    result_25bin_T60_PWV5000 = osm.EmissionLineDisperse(
+        emission_line_params=R_3_0,
+        instrument_params=TOPICS,
+        telescope_params=T60_PWV5000,
+        observation_params=obs_25bin)
 
     result_1bin_Pirika_Oct = osm.EmissionLineDisperse(
         emission_line_params=R_3_0,
@@ -495,8 +495,8 @@ if __name__ == "__main__":
         position=gs1[1, 0],
         t_obs_array_=t_obs_array,
         result_1bin=result_1bin_T60_PWV2000,
-        result_nbin_small=result_4bin_T60_PWV2000,
-        result_nbin_large=result_9bin_T60_PWV2000,
+        result_nbin_small=result_9bin_T60_PWV2000,
+        result_nbin_large=result_25bin_T60_PWV2000,
         FW_limit_index=FW_limit_index_T60_PWV2000)
 
     fig1.tight_layout()
@@ -529,8 +529,8 @@ if __name__ == "__main__":
         position=gs2[1, 0],
         t_obs_array_=t_obs_array,
         result_1bin=result_1bin_T60_PWV5000,
-        result_nbin_small=result_4bin_T60_PWV5000,
-        result_nbin_large=result_9bin_T60_PWV5000,
+        result_nbin_small=result_9bin_T60_PWV5000,
+        result_nbin_large=result_25bin_T60_PWV5000,
         FW_limit_index=FW_limit_index_T60_PWV5000)
 
     fig2.tight_layout()
