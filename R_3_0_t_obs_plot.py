@@ -236,7 +236,7 @@ if __name__ == "__main__":
 
     TOPICS = osm.InstrumentParameters(
         is_ESPRIT=False,
-        N_read=100,
+        N_read=1200,
         I_dark=20,
         G_Amp=9,
         has_fiber=False,
