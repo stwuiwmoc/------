@@ -277,12 +277,12 @@ if __name__ == "__main__":
         n_bin_spatial=1,
         t_obs=t_obs_array)
 
-    obs_4bin = osm.ObservationParameters(
-        n_bin_spatial=2 * 2,
+    obs_9bin = osm.ObservationParameters(
+        n_bin_spatial=3 * 3,
         t_obs=t_obs_array)
 
-    obs_16bin = osm.ObservationParameters(
-        n_bin_spatial=4 * 4,
+    obs_64bin = osm.ObservationParameters(
+        n_bin_spatial=8 * 8,
         t_obs=t_obs_array)
 
     result_1bin_T60_PWV2000 = osm.EmissionLineDisperse(
@@ -297,17 +297,17 @@ if __name__ == "__main__":
         telescope_params=T60_PWV5000,
         observation_params=obs_1bin)
 
-    result_4bin_T60_PWV2000 = osm.EmissionLineDisperse(
+    result_9bin_T60_PWV2000 = osm.EmissionLineDisperse(
         emission_line_params=R_3_0,
         instrument_params=TOPICS,
         telescope_params=T60_PWV2000,
-        observation_params=obs_4bin)
+        observation_params=obs_9bin)
 
-    result_4bin_T60_PWV5000 = osm.EmissionLineDisperse(
+    result_9bin_T60_PWV5000 = osm.EmissionLineDisperse(
         emission_line_params=R_3_0,
         instrument_params=TOPICS,
         telescope_params=T60_PWV5000,
-        observation_params=obs_4bin)
+        observation_params=obs_9bin)
 
     result_1bin_Pirika_Oct = osm.EmissionLineDisperse(
         emission_line_params=R_3_0,
@@ -321,17 +321,17 @@ if __name__ == "__main__":
         telescope_params=Pirika_Nov,
         observation_params=obs_1bin)
 
-    result_16bin_Pirika_Oct = osm.EmissionLineDisperse(
+    result_64bin_Pirika_Oct = osm.EmissionLineDisperse(
         emission_line_params=R_3_0,
         instrument_params=TOPICS,
         telescope_params=Pirika_Oct,
-        observation_params=obs_16bin)
+        observation_params=obs_64bin)
 
-    result_16bin_Pirika_Nov = osm.EmissionLineDisperse(
+    result_64bin_Pirika_Nov = osm.EmissionLineDisperse(
         emission_line_params=R_3_0,
         instrument_params=TOPICS,
         telescope_params=Pirika_Nov,
-        observation_params=obs_16bin)
+        observation_params=obs_64bin)
 
     # Fullwell Limit detection
     FW_limit_index_T60_PWV2000 = find_index_of_full_well_limit(
@@ -373,7 +373,7 @@ if __name__ == "__main__":
         position=gs1[1, 0],
         t_obs_array_=t_obs_array,
         result_1bin=result_1bin_T60_PWV2000,
-        result_nbin=result_4bin_T60_PWV2000,
+        result_nbin=result_9bin_T60_PWV2000,
         FW_limit_index=FW_limit_index_T60_PWV2000)
 
     fig1.tight_layout()
@@ -406,7 +406,7 @@ if __name__ == "__main__":
         position=gs2[1, 0],
         t_obs_array_=t_obs_array,
         result_1bin=result_1bin_T60_PWV5000,
-        result_nbin=result_4bin_T60_PWV5000,
+        result_nbin=result_9bin_T60_PWV5000,
         FW_limit_index=FW_limit_index_T60_PWV5000)
 
     fig2.tight_layout()
@@ -439,7 +439,7 @@ if __name__ == "__main__":
         position=gs3[1, 0],
         t_obs_array_=t_obs_array,
         result_1bin=result_1bin_Pirika_Oct,
-        result_nbin=result_16bin_Pirika_Oct,
+        result_nbin=result_64bin_Pirika_Oct,
         FW_limit_index=FW_limit_index_Pirika_Oct)
 
     fig3.tight_layout()
@@ -472,7 +472,7 @@ if __name__ == "__main__":
         position=gs4[1, 0],
         t_obs_array_=t_obs_array,
         result_1bin=result_1bin_Pirika_Nov,
-        result_nbin=result_16bin_Pirika_Nov,
+        result_nbin=result_64bin_Pirika_Nov,
         FW_limit_index=FW_limit_index_Pirika_Nov)
 
     fig4.tight_layout()
