@@ -1,4 +1,5 @@
 # %%
+import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
 import importlib
@@ -57,7 +58,35 @@ def find_index_of_full_well_limit(
 
 
 def plot_t_obs_vs_Signal_and_Noise_per_1_pixel(
-        fig, position, t_obs_array_, instrument_params, result_1bin, FW_limit_index):
+        fig: matplotlib.figure.Figure,
+        position: matplotlib.gridspec.GridSpec,
+        t_obs_array_: np.ndarray,
+        instrument_params: osm.InstrumentParameters,
+        result_1bin: osm.EmissionLineDisperse,
+        FW_limit_index: int) -> matplotlib.axes._subplots.Axes:
+    """1piexlでのSignalとNoiseをe-単位でプロット
+
+    Parameters
+    ----------
+    fig : matplotlib.figure.Figure
+        Figureオブジェクト
+    position : matplotlib.gridspec.GridSpec
+        Gridspecオブジェクト
+    t_obs_array_ : np.ndarray
+        [s] 積分時間
+    instrument_params : osm.InstrumentParameters
+        自作インスタンス
+    result_1bin : osm.EmissionLineDisperse
+        自作インスタンス
+        binning数が1のもの
+    FW_limit_index : int
+        FWに達する時のindex
+
+    Returns
+    -------
+    matplotlib.axes._subplots.Axes
+        Axesオブジェクト
+    """
 
     ax = fig.add_subplot(position)
 
@@ -140,7 +169,41 @@ def plot_t_obs_vs_Signal_and_Noise_per_1_pixel(
 
 
 def plot_t_obs_vs_SNR(
-        fig, position, t_obs_array_, result_1bin, result_nbin, FW_limit_index):
+        fig: matplotlib.figure.Figure,
+        position: matplotlib.gridspec.GridSpec,
+        t_obs_array_: np.ndarray,
+        result_1bin: osm.EmissionLineDisperse,
+        result_nbin_small: osm.EmissionLineDisperse,
+        result_nbin_large: osm.EmissionLineDisperse,
+        FW_limit_index: int) -> matplotlib.axes._subplots.Axes:
+
+    """binningなし、bininng数少なめ、binning数多めの各SNRをプロット
+
+    Parameters
+    ----------
+    fig : matplotlib.figure.Figure
+        Figureオブジェクト
+    position : matplotlib.gridspec.GridSpec
+        Gridspecオブジェクト
+    t_obs_array_ : np.ndarray
+        [s] 積分時間
+    result_1bin : osm.EmissionLineDisperse
+        自作インスタンス
+        binning数が1のもの
+    result_nbin_small : osm.EmissionLineDisperse
+        自作インスタンス
+        binning数が少なめのもの
+    result_nbin_large : osm.EmissionLineDisperse
+        自作インスタンス
+        binning数が多めのもの
+    FW_limit_index : int
+        FWに達する時のindex
+
+    Returns
+    -------
+    matplotlib.axes._subplots.Axes
+        Axesオブジェクト
+    """
 
     ax = fig.add_subplot(position)
 
@@ -151,14 +214,18 @@ def plot_t_obs_vs_SNR(
         label=str(result_1bin.n_bin) + " pix binning")
     ax.plot(
         t_obs_array_,
-        result_nbin.SNR,
-        label=str(result_nbin.n_bin) + " pix binning")
+        result_nbin_small.SNR,
+        label=str(result_nbin_small.n_bin) + " pix binning")
+    ax.plot(
+        t_obs_array_,
+        result_nbin_large.SNR,
+        label=str(result_nbin_large.n_bin) + " pix binning")
 
     # FullWell limit plot
     ax.vlines(
         x=t_obs_array_[FW_limit_index],
         ymin=0,
-        ymax=np.max(result_nbin.SNR),
+        ymax=np.max(result_nbin_large.SNR),
         linestyle=":",
         linewidth=3,
         color="red")
@@ -176,12 +243,35 @@ def plot_t_obs_vs_SNR(
 
 
 def plot_input_data_table_plot(
-        fig,
-        position,
-        emission_line_params,
-        telescope_params,
-        instrument_params,
-        result_1bin):
+        fig: matplotlib.figure.Figure,
+        position: matplotlib.gridspec.GridSpec,
+        emission_line_params: osm.EmissionLineParameters,
+        telescope_params: osm.TelescopeParameters,
+        instrument_params: osm.InstrumentParameters,
+        result_1bin: osm.EmissionLineDisperse) -> matplotlib.axes._subplots.Axes:
+    """_summary_
+
+    Parameters
+    ----------
+    fig : matplotlib.figure.Figure
+        Figureオブジェクト
+    position : matplotlib.gridspec.GridSpec
+        Gridspecオブジェクト
+    emission_line_params : osm.EmissionLineParameters
+        自作インスタンス
+    telescope_params : osm.TelescopeParameters
+        自作インスタンス
+    instrument_params : osm.InstrumentParameters
+        自作インスタンス
+    result_1bin : osm.EmissionLineDisperse
+        自作インスタンス
+        binning数が1のもの
+
+    Returns
+    -------
+    matplotlib.axes._subplots.Axes
+        Axesオブジェクト
+    """
 
     # data table plot
     table_text_list = [
@@ -236,7 +326,7 @@ if __name__ == "__main__":
 
     TOPICS = osm.InstrumentParameters(
         is_ESPRIT=False,
-        N_read=100,
+        N_read=600,
         I_dark=20,
         G_Amp=9,
         has_fiber=False,
@@ -277,12 +367,20 @@ if __name__ == "__main__":
         n_bin_spatial=1,
         t_obs=t_obs_array)
 
-    obs_4bin = osm.ObservationParameters(
-        n_bin_spatial=2 * 2,
+    obs_9bin = osm.ObservationParameters(
+        n_bin_spatial=3 * 3,
         t_obs=t_obs_array)
 
-    obs_16bin = osm.ObservationParameters(
-        n_bin_spatial=4 * 4,
+    obs_25bin = osm.ObservationParameters(
+        n_bin_spatial=5 * 5,
+        t_obs=t_obs_array)
+
+    obs_64bin = osm.ObservationParameters(
+        n_bin_spatial=8 * 8,
+        t_obs=t_obs_array)
+
+    obs_100bin = osm.ObservationParameters(
+        n_bin_spatial=10 * 10,
         t_obs=t_obs_array)
 
     result_1bin_T60_PWV2000 = osm.EmissionLineDisperse(
@@ -297,17 +395,29 @@ if __name__ == "__main__":
         telescope_params=T60_PWV5000,
         observation_params=obs_1bin)
 
-    result_4bin_T60_PWV2000 = osm.EmissionLineDisperse(
+    result_9bin_T60_PWV2000 = osm.EmissionLineDisperse(
         emission_line_params=R_3_0,
         instrument_params=TOPICS,
         telescope_params=T60_PWV2000,
-        observation_params=obs_4bin)
+        observation_params=obs_9bin)
 
-    result_4bin_T60_PWV5000 = osm.EmissionLineDisperse(
+    result_9bin_T60_PWV5000 = osm.EmissionLineDisperse(
         emission_line_params=R_3_0,
         instrument_params=TOPICS,
         telescope_params=T60_PWV5000,
-        observation_params=obs_4bin)
+        observation_params=obs_9bin)
+
+    result_25bin_T60_PWV2000 = osm.EmissionLineDisperse(
+        emission_line_params=R_3_0,
+        instrument_params=TOPICS,
+        telescope_params=T60_PWV2000,
+        observation_params=obs_25bin)
+
+    result_25bin_T60_PWV5000 = osm.EmissionLineDisperse(
+        emission_line_params=R_3_0,
+        instrument_params=TOPICS,
+        telescope_params=T60_PWV5000,
+        observation_params=obs_25bin)
 
     result_1bin_Pirika_Oct = osm.EmissionLineDisperse(
         emission_line_params=R_3_0,
@@ -321,17 +431,29 @@ if __name__ == "__main__":
         telescope_params=Pirika_Nov,
         observation_params=obs_1bin)
 
-    result_16bin_Pirika_Oct = osm.EmissionLineDisperse(
+    result_64bin_Pirika_Oct = osm.EmissionLineDisperse(
         emission_line_params=R_3_0,
         instrument_params=TOPICS,
         telescope_params=Pirika_Oct,
-        observation_params=obs_16bin)
+        observation_params=obs_64bin)
 
-    result_16bin_Pirika_Nov = osm.EmissionLineDisperse(
+    result_64bin_Pirika_Nov = osm.EmissionLineDisperse(
         emission_line_params=R_3_0,
         instrument_params=TOPICS,
         telescope_params=Pirika_Nov,
-        observation_params=obs_16bin)
+        observation_params=obs_64bin)
+
+    result_100bin_Pirika_Oct = osm.EmissionLineDisperse(
+        emission_line_params=R_3_0,
+        instrument_params=TOPICS,
+        telescope_params=Pirika_Oct,
+        observation_params=obs_100bin)
+
+    result_100bin_Pirika_Nov = osm.EmissionLineDisperse(
+        emission_line_params=R_3_0,
+        instrument_params=TOPICS,
+        telescope_params=Pirika_Nov,
+        observation_params=obs_100bin)
 
     # Fullwell Limit detection
     FW_limit_index_T60_PWV2000 = find_index_of_full_well_limit(
@@ -373,7 +495,8 @@ if __name__ == "__main__":
         position=gs1[1, 0],
         t_obs_array_=t_obs_array,
         result_1bin=result_1bin_T60_PWV2000,
-        result_nbin=result_4bin_T60_PWV2000,
+        result_nbin_small=result_9bin_T60_PWV2000,
+        result_nbin_large=result_25bin_T60_PWV2000,
         FW_limit_index=FW_limit_index_T60_PWV2000)
 
     fig1.tight_layout()
@@ -406,7 +529,8 @@ if __name__ == "__main__":
         position=gs2[1, 0],
         t_obs_array_=t_obs_array,
         result_1bin=result_1bin_T60_PWV5000,
-        result_nbin=result_4bin_T60_PWV5000,
+        result_nbin_small=result_9bin_T60_PWV5000,
+        result_nbin_large=result_25bin_T60_PWV5000,
         FW_limit_index=FW_limit_index_T60_PWV5000)
 
     fig2.tight_layout()
@@ -439,7 +563,8 @@ if __name__ == "__main__":
         position=gs3[1, 0],
         t_obs_array_=t_obs_array,
         result_1bin=result_1bin_Pirika_Oct,
-        result_nbin=result_16bin_Pirika_Oct,
+        result_nbin_small=result_64bin_Pirika_Oct,
+        result_nbin_large=result_100bin_Pirika_Oct,
         FW_limit_index=FW_limit_index_Pirika_Oct)
 
     fig3.tight_layout()
@@ -472,7 +597,8 @@ if __name__ == "__main__":
         position=gs4[1, 0],
         t_obs_array_=t_obs_array,
         result_1bin=result_1bin_Pirika_Nov,
-        result_nbin=result_16bin_Pirika_Nov,
+        result_nbin_small=result_64bin_Pirika_Nov,
+        result_nbin_large=result_100bin_Pirika_Nov,
         FW_limit_index=FW_limit_index_Pirika_Nov)
 
     fig4.tight_layout()
