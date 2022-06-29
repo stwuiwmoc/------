@@ -189,6 +189,7 @@ class TelescopeParameters:
             self,
             T_GBT: float,
             D_t: float,
+            FNO_t: float,
             tau_GBT: float,
             T_sky: float,
             tau_sky: float) -> None:
@@ -207,6 +208,8 @@ class TelescopeParameters:
             [K] 望遠鏡光学系の温度
         D_t : float
             [m] 望遠鏡主鏡の口径
+        FNO_t : float
+            [無次元] 望遠鏡光学系の合成F値
         tau_GBT : float
             [無次元] 望遠鏡光学系の透過率
         T_sky : float
@@ -217,10 +220,12 @@ class TelescopeParameters:
 
         self.T_GBT = T_GBT
         self.D_t = D_t
+        self.FNO_t = FNO_t
         self.tau_GBT = tau_GBT
         self.tau_sky = tau_sky
         self.T_sky = T_sky
 
+        self.f_t = self.D_t * self.FNO_t
         self.A_t = np.pi * (self.D_t / 2) ** 2
 
     def h(self):
