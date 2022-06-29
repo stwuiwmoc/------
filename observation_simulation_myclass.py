@@ -188,7 +188,8 @@ class TelescopeParameters:
     def __init__(
             self,
             T_GBT: float,
-            telescope_diameter: float,
+            D_t: float,
+            FNO_t: float,
             tau_GBT: float,
             T_sky: float,
             tau_sky: float) -> None:
@@ -205,8 +206,10 @@ class TelescopeParameters:
         ----------
         T_GBT : float
             [K] 望遠鏡光学系の温度
-        telescope_diameter : float
+        D_t : float
             [m] 望遠鏡主鏡の口径
+        FNO_t : float
+            [無次元] 望遠鏡光学系の合成F値
         tau_GBT : float
             [無次元] 望遠鏡光学系の透過率
         T_sky : float
@@ -216,12 +219,14 @@ class TelescopeParameters:
         """
 
         self.T_GBT = T_GBT
-        self.telescope_diameter = telescope_diameter
+        self.D_t = D_t
+        self.FNO_t = FNO_t
         self.tau_GBT = tau_GBT
         self.tau_sky = tau_sky
         self.T_sky = T_sky
 
-        self.A_t = np.pi * (self.telescope_diameter / 2) ** 2
+        self.f_t = self.D_t * self.FNO_t
+        self.A_t = np.pi * (self.D_t / 2) ** 2
 
     def h(self):
         mkhelp(self)
@@ -277,6 +282,7 @@ class InstrumentParameters:
 
     def __init__(
             self,
+            telescope_params: TelescopeParameters,
             is_ESPRIT: bool,
             N_read: float,
             I_dark: float,
@@ -297,6 +303,8 @@ class InstrumentParameters:
 
         Parameters
         ----------
+        telescope_params : TelescopeParameters,
+            自作インスタンス
         is_ESPRIT : bool
             ESPRITか、TOPICSか。
             Falseの場合、TOPICSを想定した計算になる。
@@ -322,6 +330,7 @@ class InstrumentParameters:
         """
 
         # 入力されたパラメーターの代入
+        self.telescope_params = telescope_params
         self.is_ESPRIT = is_ESPRIT
         self.N_read = N_read
         self.I_dark = I_dark
@@ -344,15 +353,20 @@ class InstrumentParameters:
             self.tau_fb = 1
 
         # ピクセル数関連の導出
+        f_t = self.telescope_params.f_t
+        s_pix = 30e-6
+
         if self.is_ESPRIT:
-            self.s_plate = 0.3
+            self.m_i_all = 1
+            self.theta_pix = np.arctan(s_pix / (self.m_i_all * f_t)) * (180 / np.pi) * 3600
             w_slit = 0.7
-            self.n_bin_rambda = w_slit / self.s_plate
+            self.n_bin_rambda = w_slit / self.theta_pix
         else:
-            self.s_plate = 0.43
+            self.m_i_all = 2
+            self.theta_pix = np.arctan(s_pix / (self.m_i_all * f_t)) * (180 / np.pi) * 3600
             self.n_bin_rambda = 1
 
-        self.Omega = ((self.s_plate / 3600) * (np.pi / 180))**2
+        self.Omega = ((self.theta_pix / 3600) * (np.pi / 180))**2
 
         # その他の文字の定義
         self.eta = 0.889
