@@ -43,7 +43,7 @@ if __name__ == "__main__":
 
     telescope_params = osm.TelescopeParameters(
         T_GBT=273,
-        telescope_diameter=0.6,
+        D_t=0.6,
         tau_GBT=0.66,
         T_sky=273,
         tau_sky=0.512)

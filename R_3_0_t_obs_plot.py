@@ -281,7 +281,7 @@ def plot_input_data_table_plot(
         ["T_hypo", emission_line_params.T_hypo, "K"],
         ["", "", ""],
         ["Telescope parameters", "", ""],
-        ["telescope_diameter", telescope_params.telescope_diameter, "m"],
+        ["D_t", telescope_params.D_t, "m"],
         ["T_GBT", telescope_params.T_GBT, "K"],
         ["tau_GBT", telescope_params.tau_GBT, ""],
         ["T_sky", telescope_params.T_sky, "K"],
@@ -337,28 +337,28 @@ if __name__ == "__main__":
 
     T60_PWV2000 = osm.TelescopeParameters(
         T_GBT=273,
-        telescope_diameter=0.6,
+        D_t=0.6,
         tau_GBT=0.66,
         T_sky=273,
         tau_sky=0.744)
 
     T60_PWV5000 = osm.TelescopeParameters(
         T_GBT=273,
-        telescope_diameter=0.6,
+        D_t=0.6,
         tau_GBT=0.66,
         T_sky=273,
         tau_sky=0.564)
 
     Pirika_Oct = osm.TelescopeParameters(
         T_GBT=273,
-        telescope_diameter=0.6,  # T60とF=12が同じなので、イメージスケールの詳細を実装し終わるまではこの値で代入
+        D_t=0.6,  # T60とF=12が同じなので、イメージスケールの詳細を実装し終わるまではこの値で代入
         tau_GBT=0.66,
         T_sky=273,
         tau_sky=0.131)
 
     Pirika_Nov = osm.TelescopeParameters(
         T_GBT=273,
-        telescope_diameter=0.6,  # T60とF=12が同じなので、イメージスケールの詳細を実装し終わるまではこの値で代入
+        D_t=0.6,  # T60とF=12が同じなので、イメージスケールの詳細を実装し終わるまではこの値で代入
         tau_GBT=0.66,
         T_sky=273,
         tau_sky=0.286)

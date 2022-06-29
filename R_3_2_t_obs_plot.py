@@ -53,28 +53,28 @@ if __name__ == "__main__":
 
     T60_PWV2000 = osm.TelescopeParameters(
         T_GBT=273,
-        telescope_diameter=0.6,
+        D_t=0.6,
         tau_GBT=0.66,
         T_sky=273,
         tau_sky=0.967)
 
     T60_PWV5000 = osm.TelescopeParameters(
         T_GBT=273,
-        telescope_diameter=0.6,
+        D_t=0.6,
         tau_GBT=0.66,
         T_sky=273,
         tau_sky=0.965)
 
     Pirika_Oct = osm.TelescopeParameters(
         T_GBT=273,
-        telescope_diameter=0.6,  # T60とF=12が同じなので、イメージスケールの詳細を実装し終わるまではこの値で代入
+        D_t=0.6,  # T60とF=12が同じなので、イメージスケールの詳細を実装し終わるまではこの値で代入
         tau_GBT=0.66,
         T_sky=273,
         tau_sky=0.900)
 
     Pirika_Nov = osm.TelescopeParameters(
         T_GBT=273,
-        telescope_diameter=0.6,  # T60とF=12が同じなので、イメージスケールの詳細を実装し終わるまではこの値で代入
+        D_t=0.6,  # T60とF=12が同じなので、イメージスケールの詳細を実装し終わるまではこの値で代入
         tau_GBT=0.66,
         T_sky=273,
         tau_sky=0.911)

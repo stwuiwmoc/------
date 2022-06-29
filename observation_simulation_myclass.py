@@ -188,7 +188,7 @@ class TelescopeParameters:
     def __init__(
             self,
             T_GBT: float,
-            telescope_diameter: float,
+            D_t: float,
             tau_GBT: float,
             T_sky: float,
             tau_sky: float) -> None:
@@ -205,7 +205,7 @@ class TelescopeParameters:
         ----------
         T_GBT : float
             [K] 望遠鏡光学系の温度
-        telescope_diameter : float
+        D_t : float
             [m] 望遠鏡主鏡の口径
         tau_GBT : float
             [無次元] 望遠鏡光学系の透過率
@@ -216,12 +216,12 @@ class TelescopeParameters:
         """
 
         self.T_GBT = T_GBT
-        self.telescope_diameter = telescope_diameter
+        self.D_t = D_t
         self.tau_GBT = tau_GBT
         self.tau_sky = tau_sky
         self.T_sky = T_sky
 
-        self.A_t = np.pi * (self.telescope_diameter / 2) ** 2
+        self.A_t = np.pi * (self.D_t / 2) ** 2
 
     def h(self):
         mkhelp(self)
