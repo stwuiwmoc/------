@@ -8,7 +8,16 @@ if __name__ == "__main__":
     N_H3p_ion = 1.0e+16
     T_hypothesis = 1000
 
+    telescope_params = osm.TelescopeParameters(
+        T_GBT=273,
+        D_t=0.6,
+        FNO_t=12,
+        tau_GBT=0.66,
+        T_sky=273,
+        tau_sky=0.512)
+
     ESPRIT_params_for_Q_1_0 = osm.InstrumentParameters(
+        telescope_params=telescope_params,
         is_ESPRIT=True,
         N_read=100,
         I_dark=20,
@@ -20,6 +29,7 @@ if __name__ == "__main__":
         FWHM_fl=266e-9)
 
     ESPRIT_params_for_R_3_0 = osm.InstrumentParameters(
+        telescope_params=telescope_params,
         is_ESPRIT=True,
         N_read=100,
         I_dark=20,
@@ -31,6 +41,7 @@ if __name__ == "__main__":
         FWHM_fl=17e-9)
 
     TOPICS_params_for_R_3_0 = osm.InstrumentParameters(
+        telescope_params=telescope_params,
         is_ESPRIT=False,
         N_read=100,
         I_dark=20,
@@ -40,14 +51,6 @@ if __name__ == "__main__":
         rambda_fl_center=3.414e-6,
         tau_fl_center=0.9,
         FWHM_fl=17e-9)
-
-    telescope_params = osm.TelescopeParameters(
-        T_GBT=273,
-        D_t=0.6,
-        FNO_t=12,
-        tau_GBT=0.66,
-        T_sky=273,
-        tau_sky=0.512)
 
     observation_params = osm.ObservationParameters(
         n_bin_spatial=2,

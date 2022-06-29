@@ -40,17 +40,6 @@ if __name__ == "__main__":
         E_prime=3287.2629,
         T_hypo=1200)
 
-    TOPICS = osm.InstrumentParameters(
-        is_ESPRIT=False,
-        N_read=600,
-        I_dark=20,
-        G_Amp=9,
-        has_fiber=False,
-        l_fb=None,
-        rambda_fl_center=3.414e-6,
-        tau_fl_center=0.9,
-        FWHM_fl=17e-9)
-
     T60_PWV2000 = osm.TelescopeParameters(
         T_GBT=273,
         D_t=0.6,
@@ -83,6 +72,30 @@ if __name__ == "__main__":
         T_sky=273,
         tau_sky=0.911)
 
+    TOPICS_in_T60 = osm.InstrumentParameters(
+        telescope_params=T60_PWV2000,
+        is_ESPRIT=False,
+        N_read=600,
+        I_dark=20,
+        G_Amp=9,
+        has_fiber=False,
+        l_fb=None,
+        rambda_fl_center=3.414e-6,
+        tau_fl_center=0.9,
+        FWHM_fl=17e-9)
+
+    TOPICS_in_Pirika = osm.InstrumentParameters(
+        telescope_params=Pirika_Oct,
+        is_ESPRIT=False,
+        N_read=600,
+        I_dark=20,
+        G_Amp=9,
+        has_fiber=False,
+        l_fb=None,
+        rambda_fl_center=3.414e-6,
+        tau_fl_center=0.9,
+        FWHM_fl=17e-9)
+
     obs_1bin = osm.ObservationParameters(
         n_bin_spatial=1,
         t_obs=t_obs_array)
@@ -105,88 +118,88 @@ if __name__ == "__main__":
 
     result_1bin_T60_PWV2000 = osm.EmissionLineDisperse(
         emission_line_params=R_3_2,
-        instrument_params=TOPICS,
+        instrument_params=TOPICS_in_T60,
         telescope_params=T60_PWV2000,
         observation_params=obs_1bin)
 
     result_1bin_T60_PWV5000 = osm.EmissionLineDisperse(
         emission_line_params=R_3_2,
-        instrument_params=TOPICS,
+        instrument_params=TOPICS_in_T60,
         telescope_params=T60_PWV5000,
         observation_params=obs_1bin)
 
     result_9bin_T60_PWV2000 = osm.EmissionLineDisperse(
         emission_line_params=R_3_2,
-        instrument_params=TOPICS,
+        instrument_params=TOPICS_in_T60,
         telescope_params=T60_PWV2000,
         observation_params=obs_9bin)
 
     result_9bin_T60_PWV5000 = osm.EmissionLineDisperse(
         emission_line_params=R_3_2,
-        instrument_params=TOPICS,
+        instrument_params=TOPICS_in_T60,
         telescope_params=T60_PWV5000,
         observation_params=obs_9bin)
 
     result_25bin_T60_PWV2000 = osm.EmissionLineDisperse(
         emission_line_params=R_3_2,
-        instrument_params=TOPICS,
+        instrument_params=TOPICS_in_T60,
         telescope_params=T60_PWV2000,
         observation_params=obs_25bin)
 
     result_25bin_T60_PWV5000 = osm.EmissionLineDisperse(
         emission_line_params=R_3_2,
-        instrument_params=TOPICS,
+        instrument_params=TOPICS_in_T60,
         telescope_params=T60_PWV5000,
         observation_params=obs_25bin)
 
     result_1bin_Pirika_Oct = osm.EmissionLineDisperse(
         emission_line_params=R_3_2,
-        instrument_params=TOPICS,
+        instrument_params=TOPICS_in_Pirika,
         telescope_params=Pirika_Oct,
         observation_params=obs_1bin)
 
     result_1bin_Pirika_Nov = osm.EmissionLineDisperse(
         emission_line_params=R_3_2,
-        instrument_params=TOPICS,
+        instrument_params=TOPICS_in_Pirika,
         telescope_params=Pirika_Nov,
         observation_params=obs_1bin)
 
     result_64bin_Pirika_Oct = osm.EmissionLineDisperse(
         emission_line_params=R_3_2,
-        instrument_params=TOPICS,
+        instrument_params=TOPICS_in_Pirika,
         telescope_params=Pirika_Oct,
         observation_params=obs_64bin)
 
     result_64bin_Pirika_Nov = osm.EmissionLineDisperse(
         emission_line_params=R_3_2,
-        instrument_params=TOPICS,
+        instrument_params=TOPICS_in_Pirika,
         telescope_params=Pirika_Nov,
         observation_params=obs_64bin)
 
     result_100bin_Pirika_Oct = osm.EmissionLineDisperse(
         emission_line_params=R_3_2,
-        instrument_params=TOPICS,
+        instrument_params=TOPICS_in_Pirika,
         telescope_params=Pirika_Oct,
         observation_params=obs_100bin)
 
     result_100bin_Pirika_Nov = osm.EmissionLineDisperse(
         emission_line_params=R_3_2,
-        instrument_params=TOPICS,
+        instrument_params=TOPICS_in_Pirika,
         telescope_params=Pirika_Nov,
         observation_params=obs_100bin)
 
     # Fullwell Limit detection
     FW_limit_index_T60_PWV2000 = R_3_0_t_obs_plot.find_index_of_full_well_limit(
-        S_FW_pix=TOPICS.S_FW_pix, S_all_pix_array=result_1bin_T60_PWV2000.S_all_pix)
+        S_FW_pix=TOPICS_in_T60.S_FW_pix, S_all_pix_array=result_1bin_T60_PWV2000.S_all_pix)
 
     FW_limit_index_T60_PWV5000 = R_3_0_t_obs_plot.find_index_of_full_well_limit(
-        S_FW_pix=TOPICS.S_FW_pix, S_all_pix_array=result_1bin_T60_PWV5000.S_all_pix)
+        S_FW_pix=TOPICS_in_T60.S_FW_pix, S_all_pix_array=result_1bin_T60_PWV5000.S_all_pix)
 
     FW_limit_index_Pirika_Oct = R_3_0_t_obs_plot.find_index_of_full_well_limit(
-        S_FW_pix=TOPICS.S_FW_pix, S_all_pix_array=result_1bin_Pirika_Oct.S_all_pix)
+        S_FW_pix=TOPICS_in_Pirika.S_FW_pix, S_all_pix_array=result_1bin_Pirika_Oct.S_all_pix)
 
     FW_limit_index_Pirika_Nov = R_3_0_t_obs_plot.find_index_of_full_well_limit(
-        S_FW_pix=TOPICS.S_FW_pix, S_all_pix_array=result_1bin_Pirika_Nov.S_all_pix)
+        S_FW_pix=TOPICS_in_Pirika.S_FW_pix, S_all_pix_array=result_1bin_Pirika_Nov.S_all_pix)
 
     # plot start
     # plot T60 PWV=2000
@@ -199,14 +212,14 @@ if __name__ == "__main__":
         position=gs1[0:2, 1],
         emission_line_params=R_3_2,
         telescope_params=T60_PWV2000,
-        instrument_params=TOPICS,
+        instrument_params=TOPICS_in_T60,
         result_1bin=result_1bin_T60_PWV2000)
 
     ax11 = R_3_0_t_obs_plot.plot_t_obs_vs_Signal_and_Noise_per_1_pixel(
         fig=fig1,
         position=gs1[0, 0],
         t_obs_array_=t_obs_array,
-        instrument_params=TOPICS,
+        instrument_params=TOPICS_in_T60,
         result_1bin=result_1bin_T60_PWV2000,
         FW_limit_index=FW_limit_index_T60_PWV2000)
 
@@ -233,14 +246,14 @@ if __name__ == "__main__":
         position=gs2[0:2, 1],
         emission_line_params=R_3_2,
         telescope_params=T60_PWV5000,
-        instrument_params=TOPICS,
+        instrument_params=TOPICS_in_T60,
         result_1bin=result_1bin_T60_PWV5000)
 
     ax21 = R_3_0_t_obs_plot.plot_t_obs_vs_Signal_and_Noise_per_1_pixel(
         fig=fig2,
         position=gs2[0, 0],
         t_obs_array_=t_obs_array,
-        instrument_params=TOPICS,
+        instrument_params=TOPICS_in_T60,
         result_1bin=result_1bin_T60_PWV5000,
         FW_limit_index=FW_limit_index_T60_PWV5000)
 
@@ -267,14 +280,14 @@ if __name__ == "__main__":
         position=gs3[0:2, 1],
         emission_line_params=R_3_2,
         telescope_params=Pirika_Oct,
-        instrument_params=TOPICS,
+        instrument_params=TOPICS_in_Pirika,
         result_1bin=result_1bin_Pirika_Oct)
 
     ax31 = R_3_0_t_obs_plot.plot_t_obs_vs_Signal_and_Noise_per_1_pixel(
         fig=fig3,
         position=gs3[0, 0],
         t_obs_array_=t_obs_array,
-        instrument_params=TOPICS,
+        instrument_params=TOPICS_in_Pirika,
         result_1bin=result_1bin_Pirika_Oct,
         FW_limit_index=FW_limit_index_Pirika_Oct)
 
@@ -301,14 +314,14 @@ if __name__ == "__main__":
         position=gs4[0:2, 1],
         emission_line_params=R_3_2,
         telescope_params=Pirika_Nov,
-        instrument_params=TOPICS,
+        instrument_params=TOPICS_in_Pirika,
         result_1bin=result_1bin_Pirika_Nov)
 
     ax41 = R_3_0_t_obs_plot.plot_t_obs_vs_Signal_and_Noise_per_1_pixel(
         fig=fig4,
         position=gs4[0, 0],
         t_obs_array_=t_obs_array,
-        instrument_params=TOPICS,
+        instrument_params=TOPICS_in_Pirika,
         result_1bin=result_1bin_Pirika_Nov,
         FW_limit_index=FW_limit_index_Pirika_Nov)
 
