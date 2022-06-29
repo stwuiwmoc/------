@@ -1,7 +1,17 @@
 # %%
 import subprocess
-from subprocess import PIPE
 
 if __name__ == "__main__":
-    proc = subprocess.run(["git", "show", "HEAD"], stdout=PIPE, stderr=PIPE, shell=True)
-    print(proc.stdout.decode("utf-8"))
+    proc1 = subprocess.run(
+        ["git", "show", "HEAD"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        shell=True)
+    print(proc1.stdout.decode("utf-8"))
+
+    proc2 = subprocess.run(
+        ["git", "log"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        shell=True)
+    print(proc2.stdout.decode("utf-8"))
