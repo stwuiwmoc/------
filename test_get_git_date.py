@@ -5,7 +5,7 @@ if __name__ == "__main__":
 
     print("--- Get all ---")
     proc1 = subprocess.run(
-        ["git", "show", "HEAD"],
+        ["git", "log", "-1"],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         shell=True)
@@ -13,7 +13,6 @@ if __name__ == "__main__":
     print(proc1_text)
 
     print("--- Get only date---")
-
     proc2 = subprocess.run(
         ["git", "log", "-1", "--format='%cI'"],
         stdout=subprocess.PIPE,
@@ -21,3 +20,18 @@ if __name__ == "__main__":
         shell=True)
     proc2_text = proc2.stdout.decode("utf-8")
     print(proc2_text)
+
+    print("--- Get change status---")
+    proc3 = subprocess.run(
+        ["git", "status", "--short"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        shell=True)
+
+    proc3_text = proc3.stdout.decode("utf-8")
+    print(proc3_text)
+
+    if proc3_text[1] == "M":
+        print("Not staged")
+    else:
+        print("Staged")
