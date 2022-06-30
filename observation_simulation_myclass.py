@@ -74,7 +74,7 @@ def calc_Plank_law_I_prime(rambda, T):
     Returns
     -------
     float
-        [W / m^3 / str] 黒体放射による分光放射輝度
+        [W / m^3 / sr] 黒体放射による分光放射輝度
     """
 
     h = phys_consts.h
@@ -244,7 +244,7 @@ class TelescopeParameters:
         Returns
         -------
         float
-            [W / m^2 / str]	1秒あたりの望遠鏡（鏡面など）からの熱輻射
+            [W / m^2 / sr]	1秒あたりの望遠鏡（鏡面など）からの熱輻射
         """
         T_GBT = self.T_GBT
         tau_GBT = self.tau_GBT
@@ -267,7 +267,7 @@ class TelescopeParameters:
         Returns
         -------
         float
-            [W / m^2 / str]	1秒あたりの大気から熱輻射
+            [W / m^2 / sr]	1秒あたりの大気から熱輻射
         """
         T_sky = self.T_sky
         tau_sky = self.tau_sky
@@ -595,7 +595,7 @@ class EmissionLineDisperse:
         Parameters
         ----------
         I_xx_ : float
-            [W/m^2/str] 発光強度
+            [W/m^2/sr] 発光強度
         tau_sky_ : float
             [無次元] 大気透過率、I_GBTとI_skyでは1を代入する（mdに詳細あり）
 
