@@ -39,6 +39,40 @@ def get_latest_commit_date() -> str:
     return latest_commit_date_text
 
 
+def have_some_change_in_git_status() -> bool:
+    """git的な意味でのファイルの変更の有無をboolianで取得する
+
+    Returns
+    -------
+    bool
+        ファイルの変更箇所ありならTrue, 無しならFalse
+    """
+
+    import subprocess
+
+    git_command = ["git", "status", "--short"]
+
+    proc = subprocess.run(
+        git_command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        shell=True)
+
+    proc_text = proc.stdout.decode("utf-8")
+
+    if len(proc_text) == 0:
+        # git status --short で出力される文字列が無い
+        # つまり「ファイルの変更箇所なし」を意味する
+        have_some_change = False
+
+    else:
+        # git status --short で出力された文字列がある
+        # つまり「ファイルに何かしらの変更箇所あり」を意味する
+        have_some_change = True
+
+    return have_some_change
+
+
 def plot_parameter_table(
         fig, position, parameter_table: list, fontsize: int):
     """パラメータ表示用のtableをax内に作成
