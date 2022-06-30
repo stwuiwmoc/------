@@ -16,6 +16,29 @@ def mkhelp(instance):
         print(method[0] + "()")
 
 
+def get_latest_commit_date() -> str:
+    """現在のツリーで直近のコミット日時を文字列として取得する
+
+    Returns
+    -------
+    str
+        直近のコミット日時
+    """
+    import subprocess
+
+    git_command = ["git", "log", "-1", "--format='%cI'"]
+
+    proc = subprocess.run(
+        git_command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        shell=True)
+
+    latest_commit_date_text = proc.stdout.decode("utf-8")
+
+    return latest_commit_date_text
+
+
 def plot_parameter_table(
         fig, position, parameter_table: list, fontsize: int):
     """パラメータ表示用のtableをax内に作成

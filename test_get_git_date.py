@@ -1,26 +1,8 @@
 # %%
 import subprocess
+import importlib
 
-
-def get_latest_commit_date() -> str:
-    """現在のツリーで直近のコミット日時を文字列として取得する
-
-    Returns
-    -------
-    str
-        直近のコミット日時
-    """
-    git_command = ["git", "log", "-1", "--format='%cI'"]
-
-    proc = subprocess.run(
-        git_command,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        shell=True)
-
-    latest_commit_date_text = proc.stdout.decode("utf-8")
-
-    return latest_commit_date_text
+import observation_simulation_myclass as osm
 
 
 def get_current_git_status() -> str:
@@ -74,6 +56,7 @@ def get_current_git_status() -> str:
 
 
 if __name__ == "__main__":
+    importlib.reload(osm)
 
     print("--- Get all ---")
     proc1 = subprocess.run(
@@ -85,7 +68,7 @@ if __name__ == "__main__":
     print(proc1_text)
 
     print("--- Get only date---")
-    print(get_latest_commit_date())
+    print(osm.get_latest_commit_date())
 
     print("--- Get change status---")
     print(get_current_git_status())
