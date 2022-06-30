@@ -1,6 +1,28 @@
 # %%
 import subprocess
 
+
+def get_latest_commit_date() -> str:
+    """現在のツリーで直近のコミット日時を文字列として取得する
+
+    Returns
+    -------
+    str
+        直近のコミット日時
+    """
+    git_command = ["git", "log", "-1", "--format='%cI'"]
+
+    proc = subprocess.run(
+        git_command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        shell=True)
+
+    latest_commit_date_text = proc.stdout.decode("utf-8")
+
+    return latest_commit_date_text
+
+
 if __name__ == "__main__":
 
     print("--- Get all ---")
@@ -13,13 +35,7 @@ if __name__ == "__main__":
     print(proc1_text)
 
     print("--- Get only date---")
-    proc2 = subprocess.run(
-        ["git", "log", "-1", "--format='%cI'"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        shell=True)
-    proc2_text = proc2.stdout.decode("utf-8")
-    print(proc2_text)
+    print(get_latest_commit_date())
 
     print("--- Get change status---")
     proc3 = subprocess.run(
