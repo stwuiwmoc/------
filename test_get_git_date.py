@@ -32,12 +32,19 @@ if __name__ == "__main__":
     print(proc3_text)
 
     if len(proc3_text) == 0:
-        print("Not changed")
-    elif proc3_text[0:2] == " M":
-        print("Not staged")
-    elif proc3_text[0:2] == "MM":
-        print("Partially staged")
-    elif proc3_text[0:2] == "M ":
-        print("All staged")
+        text_about_change = "Not changed"
+        text_about_staging = ""
+
     else:
-        print("Error! Check subprocess output.")
+        text_about_change = "Changed"
+
+        if proc3_text[0:2] == " M":
+            text_about_staging = "Not staged"
+        elif proc3_text[0:2] == "MM":
+            text_about_staging = "Partially staged"
+        elif proc3_text[0:2] == "M ":
+            text_about_staging = "All staged"
+        else:
+            text_about_staging = "Can't read current status. Check commands for subprocess."
+
+    print(text_about_change + " and " + text_about_staging)
