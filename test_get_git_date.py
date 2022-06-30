@@ -39,12 +39,12 @@ if __name__ == "__main__":
         text_about_change = "Changed"
 
         if proc3_text[0:2] == " M":
-            text_about_staging = "Not staged"
+            text_about_staging = "and Not staged"
         elif proc3_text[0:2] == "MM":
-            text_about_staging = "Partially staged"
+            text_about_staging = "and Partially staged"
         elif proc3_text[0:2] == "M ":
-            text_about_staging = "All staged"
+            text_about_staging = "and All staged"
         else:
-            text_about_staging = "Can't read current status. Check commands for subprocess."
+            text_about_staging = "and Can't read current status. Check commands for subprocess."
 
-    print(text_about_change + " and " + text_about_staging)
+    print(text_about_change + text_about_staging)
