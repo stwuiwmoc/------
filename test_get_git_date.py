@@ -23,7 +23,7 @@ if __name__ == "__main__":
 
     print("--- Get change status---")
     proc3 = subprocess.run(
-        ["git", "status", "--short"],
+        ["git", "status"],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         shell=True)
@@ -31,7 +31,9 @@ if __name__ == "__main__":
     proc3_text = proc3.stdout.decode("utf-8")
     print(proc3_text)
 
-    if proc3_text[1] == "M":
+    if len(proc3_text) == 0:
+        print("Not changed")
+    elif proc3_text[1] == "M":
         print("Not staged")
     else:
         print("Staged")
