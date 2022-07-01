@@ -208,6 +208,21 @@ class LightGenenrator:
         """
         self.__I_prime = self.__I_prime * magnification
 
+    def get_I(self) -> float:
+        """波長方向に self.__rambda_lower_limit から self.__upper_limit まで積分して放射強度を計算
+
+        Returns
+        -------
+        float
+            [W / m^2 / sr] 放射強度
+        """
+        # 各波長での微小面積要素の計算
+        I_d_rambda = self.__I_prime * self.__rambda_division_width
+
+        # 微小面積要素の足し合わせ
+        I_ = np.sum(I_d_rambda)
+        return I_
+
     def show_rambda_vs_I_prime_plot(self) -> None:
         """横軸波長、縦軸分光放射輝度のグラフを表示
         """
