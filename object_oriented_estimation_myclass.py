@@ -1,3 +1,4 @@
+import numpy as np
 import matplotlib
 
 
@@ -86,7 +87,6 @@ def plot_parameter_table(
         position: matplotlib.gridspec.GridSpec,
         parameter_table: list,
         fontsize: int) -> matplotlib.axes._subplots.Axes:
-
     """パラメータ表示用のtableをax内に作成
 
     Parameters
@@ -124,3 +124,44 @@ def plot_parameter_table(
         cell.set_height(1 / len(parameter_table))
 
     return ax
+
+
+class LightGenenrator:
+
+    def __init__(
+            self,
+            rambda_lower_limit: float,
+            rambda_upper_limit: float,
+            rambda_division_width: float) -> None:
+
+        # 入力されたパラメータの代入
+        self.__rambda_lower_limit = rambda_lower_limit
+        self.__rambda_upper_limit = rambda_upper_limit
+        self.__rambda_division_width = rambda_division_width
+
+        # rambdaの1次元arrayを生成
+        self.__rambda = np.arange(
+            start=self.__rambda_lower_limit,
+            stop=self.__rambda_upper_limit,
+            step=self.__rambda_division_width)
+
+        # 分光放射強度
+        self.__I_prime = np.zeros(len(self.__rambda))
+
+    def h(self):
+        mkhelp(self)
+
+    def get_rambda_division_width(self) -> float:
+        return self.__rambda_division_width
+
+    def get_rambda(self) -> np.ndarray:
+        return self.__rambda
+
+    def get_I_prime(self) -> np.ndarray:
+        return self.__I_prime
+
+    def add_I_prime(self) -> None:
+        pass
+
+    def multiply_I_prime(self) -> None:
+        pass
