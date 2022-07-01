@@ -1,5 +1,6 @@
 # %%
 import numpy as np
+import matplotlib
 from scipy import constants as phys_consts
 
 
@@ -84,7 +85,10 @@ def have_some_change_in_git_status() -> bool:
 
 
 def plot_parameter_table(
-        fig, position, parameter_table: list, fontsize: int):
+        fig: matplotlib.figure.Figure,
+        position: matplotlib.gridspec.GridSpec,
+        parameter_table: list,
+        fontsize: int) -> matplotlib.axes._subplots.Axes:
     """パラメータ表示用のtableをax内に作成
 
     Parameters
