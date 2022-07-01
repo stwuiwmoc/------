@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib
+import matplotlib.pyplot as plt
 
 
 def mkhelp(instance):
@@ -133,6 +134,17 @@ class LightGenenrator:
             rambda_lower_limit: float,
             rambda_upper_limit: float,
             rambda_division_width: float) -> None:
+        """波長と分光放射輝度を保持するクラス
+
+        Parameters
+        ----------
+        rambda_lower_limit : float
+            [m] 計算する波長の最小値
+        rambda_upper_limit : float
+            [m] 計算する波長の最大値
+        rambda_division_width : float
+            [m] 計算する波長の分割幅
+        """
 
         # 入力されたパラメータの代入
         self.__rambda_lower_limit = rambda_lower_limit
@@ -145,7 +157,7 @@ class LightGenenrator:
             stop=self.__rambda_upper_limit,
             step=self.__rambda_division_width)
 
-        # 分光放射強度
+        # 分光放射強度の1次元arrayを生成
         self.__I_prime = np.zeros(len(self.__rambda))
 
     def h(self):
@@ -165,3 +177,22 @@ class LightGenenrator:
 
     def multiply_I_prime(self) -> None:
         pass
+
+    def show_I_prime_plot(self) -> None:
+        """横軸波長、縦軸分光放射輝度のグラフを表示
+        """
+        fig = plt.figure()
+        gs = fig.add_gridspec(1, 1)
+
+        ax = fig.add_subplot(gs[0, 0])
+
+        ax.plot(
+            self.__rambda,
+            self.__I_prime)
+
+        ax.grid()
+        ax.set_xlabel("rambda [m]")
+        ax.set_ylabel("I' [W / m^2 / sr / m]")
+
+        fig.tight_layout()
+        fig.show()
