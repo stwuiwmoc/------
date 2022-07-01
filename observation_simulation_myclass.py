@@ -16,14 +16,15 @@ def mkhelp(instance):
         print(method[0] + "()")
 
 
-def get_latest_commit_date() -> str:
+def get_latest_commit_datetime() -> list[str]:
     """現在のツリーで直近のコミット日時を文字列として取得する
 
     Returns
     -------
-    str
-        直近のコミット日時
+    list[str]
+        ["Latest commit datetime", コミットした日付, コミットした時刻]
     """
+
     import subprocess
 
     git_command = ["git", "log", "-1", "--format='%cI'"]
@@ -37,9 +38,15 @@ def get_latest_commit_date() -> str:
     latest_commit_date_text = proc.stdout.decode("utf-8")
 
     # タイムゾーンを表す "+0900" を削除
-    latest_commit_date_text_without_timezone = latest_commit_date_text[1:-8]
+    latest_commit_datetime_text_without_timezone = latest_commit_date_text[1:-8]
 
-    return latest_commit_date_text_without_timezone
+    # 日付のみを含む文字列
+    latest_commit_date_text = latest_commit_datetime_text_without_timezone[:10]
+
+    # 時刻のみを含む文字列
+    latest_commit_time_text = latest_commit_datetime_text_without_timezone[11:]
+
+    return "Latest commit datetime", latest_commit_date_text, latest_commit_time_text
 
 
 def have_some_change_in_git_status() -> bool:
