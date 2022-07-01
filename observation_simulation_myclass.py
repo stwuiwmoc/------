@@ -36,7 +36,10 @@ def get_latest_commit_date() -> str:
 
     latest_commit_date_text = proc.stdout.decode("utf-8")
 
-    return latest_commit_date_text
+    # タイムゾーンを表す "+0900" を削除
+    latest_commit_date_text_without_timezone = latest_commit_date_text[1:-8]
+
+    return latest_commit_date_text_without_timezone
 
 
 def have_some_change_in_git_status() -> bool:

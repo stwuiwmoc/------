@@ -275,6 +275,9 @@ def plot_input_data_table_plot(
 
     # data table plot
     table_text_list = [
+        ["Latest commit date", osm.get_latest_commit_date()[:10], osm.get_latest_commit_date()[11:]],
+        ["Have some change", "from above commit", osm.have_some_change_in_git_status()],
+        ["", "", ""],
         ["H3+ parameters", "", ""],
         ["rambda", emission_line_params.rambda, "m"],
         ["N_H3p", emission_line_params.N_H3p, "m^-2"],
