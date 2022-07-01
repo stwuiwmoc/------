@@ -346,3 +346,24 @@ class H3plusAuroralEmission:
             / (4 * np.pi * Q_T)
 
         return I_obj
+
+    def get_rambda_obj(self) -> float:
+        return self.__rambda_obj
+
+    def get_N_H3p(self) -> float:
+        return self.__N_H3p
+
+    def get_g_ns(self) -> int:
+        return self.__g_ns
+
+    def get_J_prime(self) -> int:
+        return self.__J_prime
+
+    def get_A_if(self) -> float:
+        return self.__A_if
+
+    def get_E_prime(self) -> float:
+        return self.__E_prime
+
+    def get_T_hypo(self) -> float:
+        return self.__T_hypo
