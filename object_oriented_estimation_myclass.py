@@ -166,19 +166,49 @@ class LightGenenrator:
     def get_rambda_division_width(self) -> float:
         return self.__rambda_division_width
 
+    def get_len(self) -> int:
+        """rambdaの要素数（= I_prime の要素数）を返す
+
+        Returns
+        -------
+        int
+            rambdaの要素数
+        """
+        return len(self.__rambda)
+
     def get_rambda(self) -> np.ndarray:
         return self.__rambda
 
     def get_I_prime(self) -> np.ndarray:
         return self.__I_prime
 
-    def add_I_prime(self) -> None:
-        pass
+    def add_I_prime_to(
+            self,
+            I_prime_xx: np.ndarray) -> None:
+        """現在の分光放射強度 I' に対して他の分光放射強度を加算する
 
-    def multiply_I_prime(self) -> None:
-        pass
+        Parameters
+        ----------
+        I_prime_xx : np.ndarray
+            [W / m^2 / sr / m] 分光放射強度の1次元のarray、
+            要素数は self.get_len() と一致している必要がある。
+        """
+        self.__I_prime = self.__I_prime + I_prime_xx
 
-    def show_I_prime_plot(self) -> None:
+    def multiply_I_prime_to(
+            self,
+            magnification: np.ndarray) -> None:
+        """現在の分光放射強度 I' に対して任意の倍率を乗算する
+
+        Parameters
+        ----------
+        magnification : np.ndarray
+            [無次元] 倍率（透過率など）の1次元のarray、
+            要素数は self.get_len() と一致している必要がある。
+        """
+        self.__I_prime = self.__I_prime * magnification
+
+    def show_rambda_vs_I_prime_plot(self) -> None:
         """横軸波長、縦軸分光放射輝度のグラフを表示
         """
         fig = plt.figure()
