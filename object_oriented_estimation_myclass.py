@@ -367,3 +367,45 @@ class H3plusAuroralEmission:
 
     def get_T_hypo(self) -> float:
         return self.__T_hypo
+
+    def add_auroral_emission_to(
+            self,
+            light_instance: LightGenenrator) -> None:
+
+        def find_rambda_obj_index(
+                rambda_: np.ndarray,
+                rambda_obj_: float) -> int:
+            """rambda_objに最も近いrambdaのindexを探す
+
+            Parameters
+            ----------
+            rambda_ : np.ndarray
+                LightGenerator.get_rambda()
+            rambda_obj_ : float
+                self.rambda_obj
+
+            Returns
+            -------
+            int
+                rambda_objに最も近いrambdaのindex
+            """
+
+            # rambda_obj と最も近いrambdaを探したい
+            # -> 差分の絶対値が最も小さいrambdaのインデックスを求めればよい
+            rambda_diff_abs = np.abs(rambda_ - rambda_obj_)
+            rambda_obj_index = np.argmin(rambda_diff_abs)
+            return rambda_obj_index
+
+        rambda_obj_index = find_rambda_obj_index(
+            rambda_=light_instance.get_rambda(),
+            rambda_obj_=self.__rambda_obj)
+
+        # 輝線の中心波長での分光放射強度を計算
+        I_prime_obj_in_center_wavelength: float = self.__I_obj / light_instance.get_rambda_division_width()
+
+        # 輝線の中心波長で上の分光放射強度、それ以外では値0の1次元arrayを作成
+        I_prime_obj = np.zeros(light_instance.get_len())
+        I_prime_obj[rambda_obj_index] = I_prime_obj_in_center_wavelength
+
+        # LightGeneratorのインスタンスに、I_prime_objを加える
+        light_instance.add_I_prime_to(I_prime_xx=I_prime_obj)
