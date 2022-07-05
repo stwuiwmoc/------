@@ -260,7 +260,8 @@ class H3plusAuroralEmission:
 
         oop観測見積もり.md
             └ 観測対象の発光 \n
-                └ H3+輝線の放射強度 \n
+                ├ H3+輝線の放射強度 \n
+                └ シミュレーション上での実装 \n
 
         Parameters
         ----------
@@ -400,10 +401,11 @@ class H3plusAuroralEmission:
             rambda_=light_instance.get_rambda(),
             rambda_obj_=self.__rambda_obj)
 
+        # 実際には輝線幅≃0を想定した見積もりだが、実装上は分光放射強度に直す必要がある
         # 輝線の中心波長での分光放射強度を計算
         I_prime_obj_in_center_wavelength: float = self.__I_obj / light_instance.get_rambda_division_width()
 
-        # 輝線の中心波長で上の分光放射強度、それ以外では値0の1次元arrayを作成
+        # 輝線の中心波長で上で計算した分光放射強度、それ以外では値0の1次元arrayを作成
         I_prime_obj = np.zeros(light_instance.get_len())
         I_prime_obj[rambda_obj_index] = I_prime_obj_in_center_wavelength
 
