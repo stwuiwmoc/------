@@ -417,8 +417,8 @@ class GroundBasedTelescope:
 
     def __init__(
             self,
-            D_t: float,
-            FNO_t: float,
+            D_GBT: float,
+            FNO_GBT: float,
             T_GBT: float,
             tau_GBT: float) -> None:
 
@@ -430,9 +430,9 @@ class GroundBasedTelescope:
 
         Parameters
         ----------
-        D_t : float
+        D_GBT : float
             [m] 望遠鏡主鏡の口径
-        FNO_t : float
+        FNO_GBT : float
             [無次元] 望遠鏡光学系の合成F値
         T_GBT : float
             [K] 望遠鏡光学系の温度
@@ -440,7 +440,32 @@ class GroundBasedTelescope:
             [無次元] 望遠鏡光学系の透過率
         """
 
-        pass
+        # 入力されたパラメータの代入
+        self.__D_GBT = D_GBT
+        self.__FNO_GBT = FNO_GBT
+        self.__T_GBT = T_GBT
+        self.__tau_GBT = tau_GBT
+
+        self.__f_GBT = self.__D_GBT * self.__FNO_GBT
+        self.__A_GBT = np.pi * (self.__D_GBT / 2) ** 2
 
     def h(self) -> None:
         mkhelp(self)
+
+    def get_D_GBT(self) -> float:
+        return self.__D_GBT
+
+    def get_FNO_GBT(self) -> float:
+        return self.__FNO_GBT
+
+    def get_T_GBT(self) -> float:
+        return self.__T_GBT
+
+    def get_tau_GBT(self) -> float:
+        return self.__tau_GBT
+
+    def get_f_GBT(self) -> float:
+        return self.__f_GBT
+
+    def get_A_GBT(self) -> float:
+        return self.__A_GBT
