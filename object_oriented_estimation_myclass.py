@@ -503,3 +503,8 @@ class GroundBasedTelescope:
 
     def get_A_GBT(self) -> float:
         return self.__A_GBT
+
+    def pass_through(
+            self,
+            light_instance: LightGenenrator) -> None:
+        pass
