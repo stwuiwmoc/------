@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+from scipy import constants as phys_consts
 
 
 def mkhelp(instance):
@@ -241,3 +242,172 @@ class LightGenenrator:
 
         fig.tight_layout()
         fig.show()
+
+
+class H3plusAuroralEmission:
+
+    def __init__(
+            self,
+            rambda_obj: float,
+            N_H3p: float,
+            g_ns: int,
+            J_prime: int,
+            A_if: float,
+            E_prime: float,
+            T_hypo: float) -> None:
+
+        """各輝線のパラメータから発光輝線強度 I_obj を導出
+
+        oop観測見積もり.md
+            └ 観測対象の発光 \n
+                ├ H3+輝線の放射強度 \n
+                └ シミュレーション上での実装 \n
+
+        Parameters
+        ----------
+        rambda_obj : float
+            [m] 輝線の中心波長
+        N_H3p : float
+            H3+のカラム密度
+        g_ns : int
+            [無次元] nuclear spin weight, 2 or 4
+        J_prime : int
+            [無次元] 回転準位
+        A_if : float
+            [/s] アインシュタインのA係数
+        E_prime : float
+            [/cm] energy of upper statement
+        T_hypo : float
+            [K] 想定するH3+温度
+        """
+
+        # 入力されたパラメータの代入
+        self.__rambda_obj = rambda_obj
+        self.__N_H3p = N_H3p
+        self.__g_ns = g_ns
+        self.__J_prime = J_prime
+        self.__A_if = A_if
+        self.__E_prime = E_prime
+        self.__T_hypo = T_hypo
+
+        # その他のパラメータの計算
+        self.__omega_if = 1 / self.__rambda_obj * 1e-2  # 波数 [/cm]
+        self.__Q_T = self.__calc_Q_T()
+
+        # 発光輝線強度 I_obj の計算
+        self.__I_obj = self.__calc_I_obj()
+
+    def h(self):
+        mkhelp(self)
+
+    def __calc_Q_T(self) -> float:
+        """Partition function Q(T) の導出
+
+        Returns
+        -------
+        float
+            partition function Q(T)
+        """
+        T = self.__T_hypo
+
+        A_0 = - 1.11391
+        A_1 = + 0.0581076
+        A_2 = + 0.000302967
+        A_3 = - 2.83724e-7
+        A_4 = + 2.31119e-10
+        A_5 = - 7.15895e-14
+        A_6 = + 1.00150e-17
+
+        Q_T = A_0 * T**0 + A_1 * T**1 + A_2 * T**2 + A_3 * T**3 + A_4 * T**4 + A_5 * T**5 + A_6 * T**6
+        return Q_T
+
+    def __calc_I_obj(self) -> float:
+        """H3+輝線の発光強度を計算
+
+        Returns
+        -------
+        float
+            [W / m^2 / sr] 輝線の発光強度
+        """
+
+        N_H3p = self.__N_H3p
+        g_ns = self.__g_ns
+        J_prime = self.__J_prime
+        h = phys_consts.h
+        c = phys_consts.c
+        omega_if = self.__omega_if
+        A_if = self.__A_if
+        E_prime = self.__E_prime
+        k_b = phys_consts.k
+        T_hypo = self.__T_hypo
+        Q_T = self.__Q_T
+
+        I_obj = N_H3p * g_ns * (2 * J_prime + 1) * h * c * (omega_if * 1e2) * A_if \
+            * np.exp(- h * c * (E_prime * 1e2) / (k_b * T_hypo)) \
+            / (4 * np.pi * Q_T)
+
+        return I_obj
+
+    def get_rambda_obj(self) -> float:
+        return self.__rambda_obj
+
+    def get_N_H3p(self) -> float:
+        return self.__N_H3p
+
+    def get_g_ns(self) -> int:
+        return self.__g_ns
+
+    def get_J_prime(self) -> int:
+        return self.__J_prime
+
+    def get_A_if(self) -> float:
+        return self.__A_if
+
+    def get_E_prime(self) -> float:
+        return self.__E_prime
+
+    def get_T_hypo(self) -> float:
+        return self.__T_hypo
+
+    def add_auroral_emission_to(
+            self,
+            light_instance: LightGenenrator) -> None:
+
+        def find_rambda_obj_index(
+                rambda_: np.ndarray,
+                rambda_obj_: float) -> int:
+            """rambda_objに最も近いrambdaのindexを探す
+
+            Parameters
+            ----------
+            rambda_ : np.ndarray
+                LightGenerator.get_rambda()
+            rambda_obj_ : float
+                self.rambda_obj
+
+            Returns
+            -------
+            int
+                rambda_objに最も近いrambdaのindex
+            """
+
+            # rambda_obj と最も近いrambdaを探したい
+            # -> 差分の絶対値が最も小さいrambdaのインデックスを求めればよい
+            rambda_diff_abs = np.abs(rambda_ - rambda_obj_)
+            rambda_obj_index = np.argmin(rambda_diff_abs)
+            return rambda_obj_index
+
+        rambda_obj_index = find_rambda_obj_index(
+            rambda_=light_instance.get_rambda(),
+            rambda_obj_=self.__rambda_obj)
+
+        # 実際には輝線幅≃0を想定した見積もりだが、実装上は分光放射強度に直す必要がある
+        # 輝線の中心波長での分光放射強度を計算
+        I_prime_obj_in_center_wavelength: float = self.__I_obj / light_instance.get_rambda_division_width()
+
+        # 輝線の中心波長で上で計算した分光放射強度、それ以外では値0の1次元arrayを作成
+        I_prime_obj = np.zeros(light_instance.get_len())
+        I_prime_obj[rambda_obj_index] = I_prime_obj_in_center_wavelength
+
+        # LightGeneratorのインスタンスに、I_prime_objを加える
+        light_instance.add_I_prime_to(I_prime_xx=I_prime_obj)
