@@ -411,3 +411,36 @@ class H3plusAuroralEmission:
 
         # LightGeneratorのインスタンスに、I_prime_objを加える
         light_instance.add_I_prime_to(I_prime_xx=I_prime_obj)
+
+
+class GroundBasedTelescope:
+
+    def __init__(
+            self,
+            T_GBT: float,
+            D_t: float,
+            FNO_t: float,
+            tau_GBT: float) -> None:
+
+        """望遠鏡のパラメータを保持
+
+        観測見積もり.md
+            └ 望遠鏡の発光 \n
+                └ 望遠鏡の熱輻射による放射輝度 \n
+
+        Parameters
+        ----------
+        T_GBT : float
+            [K] 望遠鏡光学系の温度
+        D_t : float
+            [m] 望遠鏡主鏡の口径
+        FNO_t : float
+            [無次元] 望遠鏡光学系の合成F値
+        tau_GBT : float
+            [無次元] 望遠鏡光学系の透過率
+        """
+
+        pass
+
+    def h(self) -> None:
+        mkhelp(self)
