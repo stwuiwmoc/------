@@ -417,9 +417,9 @@ class GroundBasedTelescope:
 
     def __init__(
             self,
-            T_GBT: float,
             D_t: float,
             FNO_t: float,
+            T_GBT: float,
             tau_GBT: float) -> None:
 
         """望遠鏡のパラメータを保持
@@ -430,12 +430,12 @@ class GroundBasedTelescope:
 
         Parameters
         ----------
-        T_GBT : float
-            [K] 望遠鏡光学系の温度
         D_t : float
             [m] 望遠鏡主鏡の口径
         FNO_t : float
             [無次元] 望遠鏡光学系の合成F値
+        T_GBT : float
+            [K] 望遠鏡光学系の温度
         tau_GBT : float
             [無次元] 望遠鏡光学系の透過率
         """
