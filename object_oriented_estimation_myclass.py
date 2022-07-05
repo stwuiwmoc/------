@@ -158,7 +158,7 @@ class LightGenenrator:
             stop=self.__rambda_upper_limit,
             step=self.__rambda_division_width)
 
-        # 分光放射強度の1次元arrayを生成
+        # 分光放射輝度の1次元arrayを生成
         self.__I_prime = np.zeros(len(self.__rambda))
 
     def h(self):
@@ -186,12 +186,12 @@ class LightGenenrator:
     def add_I_prime_to(
             self,
             I_prime_xx: np.ndarray) -> None:
-        """現在の分光放射強度 I' に対して他の分光放射強度を加算する
+        """現在の分光放射輝度 I' に対して他の分光放射輝度を加算する
 
         Parameters
         ----------
         I_prime_xx : np.ndarray
-            [W / m^2 / sr / m] 分光放射強度の1次元のarray、
+            [W / m^2 / sr / m] 分光放射輝度の1次元のarray、
             要素数は self.get_len() と一致している必要がある。
         """
         self.__I_prime = self.__I_prime + I_prime_xx
@@ -199,7 +199,7 @@ class LightGenenrator:
     def multiply_I_prime_to(
             self,
             magnification: np.ndarray) -> None:
-        """現在の分光放射強度 I' に対して任意の倍率を乗算する
+        """現在の分光放射輝度 I' に対して任意の倍率を乗算する
 
         Parameters
         ----------
@@ -210,12 +210,12 @@ class LightGenenrator:
         self.__I_prime = self.__I_prime * magnification
 
     def get_I(self) -> float:
-        """波長方向に self.__rambda_lower_limit から self.__upper_limit まで積分して放射強度を計算
+        """波長方向に self.__rambda_lower_limit から self.__upper_limit まで積分して放射輝度を計算
 
         Returns
         -------
         float
-            [W / m^2 / sr] 放射強度
+            [W / m^2 / sr] 放射輝度
         """
         # 各波長での微小面積要素の計算
         I_d_rambda = self.__I_prime * self.__rambda_division_width
@@ -260,7 +260,7 @@ class H3plusAuroralEmission:
 
         oop観測見積もり.md
             └ 観測対象の発光 \n
-                ├ H3+輝線の放射強度 \n
+                ├ H3+輝線の放射輝度 \n
                 └ シミュレーション上での実装 \n
 
         Parameters
@@ -401,11 +401,11 @@ class H3plusAuroralEmission:
             rambda_=light_instance.get_rambda(),
             rambda_obj_=self.__rambda_obj)
 
-        # 実際には輝線幅≃0を想定した見積もりだが、実装上は分光放射強度に直す必要がある
-        # 輝線の中心波長での分光放射強度を計算
+        # 実際には輝線幅≃0を想定した見積もりだが、実装上は分光放射輝度に直す必要がある
+        # 輝線の中心波長での分光放射輝度を計算
         I_prime_obj_in_center_wavelength: float = self.__I_obj / light_instance.get_rambda_division_width()
 
-        # 輝線の中心波長で上で計算した分光放射強度、それ以外では値0の1次元arrayを作成
+        # 輝線の中心波長で上で計算した分光放射輝度、それ以外では値0の1次元arrayを作成
         I_prime_obj = np.zeros(light_instance.get_len())
         I_prime_obj[rambda_obj_index] = I_prime_obj_in_center_wavelength
 
