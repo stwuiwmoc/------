@@ -77,6 +77,16 @@ if __name__ == "__main__":
         T_GBT=280,
         tau_GBT=0.66)
 
+    # GBTのテスト
+    # プランクの法則の確認用
+    light_test1 = ooem.LightGenenrator(
+        rambda_lower_limit=1e-6,
+        rambda_upper_limit=20e-6,
+        rambda_division_width=1e-9)
+
+    T60.pass_through(light_instance=light_test1)
+    light_test1.show_rambda_vs_I_prime_plot()
+
     # 輝線発光を加える
     light.show_rambda_vs_I_prime_plot()
 
