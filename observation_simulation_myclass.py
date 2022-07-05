@@ -173,7 +173,7 @@ class EmissionLineParameters:
 
         観測見積もり.md
             └ 観測対象の発光 \n
-                └ H3+輝線の放射強度 \n
+                └ H3+輝線の放射輝度 \n
 
         Parameters
         ----------
@@ -269,9 +269,9 @@ class TelescopeParameters:
 
         観測見積もり.md
             ├ 望遠鏡の発光 \n
-            │   └ 望遠鏡の熱輻射による放射強度 \n
+            │   └ 望遠鏡の熱輻射による放射輝度 \n
             └ 地球大気の発光 \n
-                └ 大気の熱輻射による放射強度 \n
+                └ 大気の熱輻射による放射輝度 \n
 
         Parameters
         ----------

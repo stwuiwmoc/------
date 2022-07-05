@@ -71,6 +71,12 @@ if __name__ == "__main__":
         E_prime=3332.4121,
         T_hypo=T_thermospheric_H3plus)
 
+    T60 = ooem.GroundBasedTelescope(
+        D_GBT=0.6,
+        FNO_GBT=12,
+        T_GBT=280,
+        tau_GBT=0.66)
+
     # 輝線発光を加える
     light.show_rambda_vs_I_prime_plot()
 
@@ -91,4 +97,8 @@ if __name__ == "__main__":
     light.show_rambda_vs_I_prime_plot()
 
     R_4_4.add_auroral_emission_to(light_instance=light)
+    light.show_rambda_vs_I_prime_plot()
+
+    # 望遠鏡を通る
+    T60.pass_through(light_instance=light)
     light.show_rambda_vs_I_prime_plot()

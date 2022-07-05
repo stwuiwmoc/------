@@ -128,6 +128,39 @@ def plot_parameter_table(
     return ax
 
 
+def calc_Plank_law_I_prime(
+        rambda: np.ndarray,
+        T: float) -> np.ndarray:
+    """プランクの法則から波長と温度の関数として分光放射輝度を計算
+
+    波長の1次元arrayに対応した、分光放射輝度の1次元arrayを返す
+
+    観測見積もり.md
+        └ 望遠鏡の発光 \n
+            └ プランクの法則 \n
+
+    Parameters
+    ----------
+    rambda : np.ndarray
+        [m] 波長
+    T : float
+        [K] 黒体の温度
+
+    Returns
+    -------
+    np.ndarray
+        [W / m^2 / sr / m] 黒体放射による分光放射輝度
+    """
+
+    h = phys_consts.h
+    c = phys_consts.c
+    k_B = phys_consts.k
+
+    I_prime = (2 * h * c**2 / rambda**5) * (1 / (np.exp(h * c / (rambda * k_B * T)) - 1))
+
+    return I_prime
+
+
 class LightGenenrator:
 
     def __init__(
@@ -158,7 +191,7 @@ class LightGenenrator:
             stop=self.__rambda_upper_limit,
             step=self.__rambda_division_width)
 
-        # 分光放射強度の1次元arrayを生成
+        # 分光放射輝度の1次元arrayを生成
         self.__I_prime = np.zeros(len(self.__rambda))
 
     def h(self):
@@ -186,12 +219,12 @@ class LightGenenrator:
     def add_I_prime_to(
             self,
             I_prime_xx: np.ndarray) -> None:
-        """現在の分光放射強度 I' に対して他の分光放射強度を加算する
+        """現在の分光放射輝度 I' に対して他の分光放射輝度を加算する
 
         Parameters
         ----------
         I_prime_xx : np.ndarray
-            [W / m^2 / sr / m] 分光放射強度の1次元のarray、
+            [W / m^2 / sr / m] 分光放射輝度の1次元のarray、
             要素数は self.get_len() と一致している必要がある。
         """
         self.__I_prime = self.__I_prime + I_prime_xx
@@ -199,7 +232,7 @@ class LightGenenrator:
     def multiply_I_prime_to(
             self,
             magnification: np.ndarray) -> None:
-        """現在の分光放射強度 I' に対して任意の倍率を乗算する
+        """現在の分光放射輝度 I' に対して任意の倍率を乗算する
 
         Parameters
         ----------
@@ -210,12 +243,12 @@ class LightGenenrator:
         self.__I_prime = self.__I_prime * magnification
 
     def get_I(self) -> float:
-        """波長方向に self.__rambda_lower_limit から self.__upper_limit まで積分して放射強度を計算
+        """波長方向に self.__rambda_lower_limit から self.__upper_limit まで積分して放射輝度を計算
 
         Returns
         -------
         float
-            [W / m^2 / sr] 放射強度
+            [W / m^2 / sr] 放射輝度
         """
         # 各波長での微小面積要素の計算
         I_d_rambda = self.__I_prime * self.__rambda_division_width
@@ -260,7 +293,7 @@ class H3plusAuroralEmission:
 
         oop観測見積もり.md
             └ 観測対象の発光 \n
-                ├ H3+輝線の放射強度 \n
+                ├ H3+輝線の放射輝度 \n
                 └ シミュレーション上での実装 \n
 
         Parameters
@@ -401,13 +434,112 @@ class H3plusAuroralEmission:
             rambda_=light_instance.get_rambda(),
             rambda_obj_=self.__rambda_obj)
 
-        # 実際には輝線幅≃0を想定した見積もりだが、実装上は分光放射強度に直す必要がある
-        # 輝線の中心波長での分光放射強度を計算
+        # 実際には輝線幅≃0を想定した見積もりだが、実装上は分光放射輝度に直す必要がある
+        # 輝線の中心波長での分光放射輝度を計算
         I_prime_obj_in_center_wavelength: float = self.__I_obj / light_instance.get_rambda_division_width()
 
-        # 輝線の中心波長で上で計算した分光放射強度、それ以外では値0の1次元arrayを作成
+        # 輝線の中心波長で上で計算した分光放射輝度、それ以外では値0の1次元arrayを作成
         I_prime_obj = np.zeros(light_instance.get_len())
         I_prime_obj[rambda_obj_index] = I_prime_obj_in_center_wavelength
 
         # LightGeneratorのインスタンスに、I_prime_objを加える
         light_instance.add_I_prime_to(I_prime_xx=I_prime_obj)
+
+
+class GroundBasedTelescope:
+
+    def __init__(
+            self,
+            D_GBT: float,
+            FNO_GBT: float,
+            T_GBT: float,
+            tau_GBT: float) -> None:
+
+        """望遠鏡のパラメータを保持
+
+        観測見積もり.md
+            └ 望遠鏡の発光 \n
+                ├ 望遠鏡光学系のパラメータ \n
+                └ 望遠鏡の熱輻射による放射輝度 \n
+
+        Parameters
+        ----------
+        D_GBT : float
+            [m] 望遠鏡主鏡の口径
+        FNO_GBT : float
+            [無次元] 望遠鏡光学系の合成F値
+        T_GBT : float
+            [K] 望遠鏡光学系の温度
+        tau_GBT : float
+            [無次元] 望遠鏡光学系の透過率
+        """
+
+        # 入力されたパラメータの代入
+        self.__D_GBT = D_GBT
+        self.__FNO_GBT = FNO_GBT
+        self.__T_GBT = T_GBT
+        self.__tau_GBT = tau_GBT
+
+        self.__f_GBT = self.__D_GBT * self.__FNO_GBT
+        self.__A_GBT = np.pi * (self.__D_GBT / 2) ** 2
+
+    def h(self) -> None:
+        mkhelp(self)
+
+    def get_D_GBT(self) -> float:
+        return self.__D_GBT
+
+    def get_FNO_GBT(self) -> float:
+        return self.__FNO_GBT
+
+    def get_T_GBT(self) -> float:
+        return self.__T_GBT
+
+    def get_tau_GBT(self) -> float:
+        return self.__tau_GBT
+
+    def get_f_GBT(self) -> float:
+        return self.__f_GBT
+
+    def get_A_GBT(self) -> float:
+        return self.__A_GBT
+
+    def pass_through(
+            self,
+            light_instance: LightGenenrator) -> None:
+        """光に望遠鏡透過率をかけ、望遠鏡の熱輻射による分光放射輝度を加える
+
+        Parameters
+        ----------
+        light_instance : LightGenenrator
+            自作インスタンス
+        """
+
+        def calc_I_prime_GBT(
+                rambda_: np.ndarray) -> np.ndarray:
+            """望遠鏡の熱輻射による分光放射輝度を計算
+
+            Parameters
+            ----------
+            rambda_ : np.ndarray
+                LightGenerator.get_rambda()
+
+            Returns
+            -------
+            np.ndarray
+                [W / m^2 / sr / m] 分光放射輝度
+            """
+
+            T_GBT = self.__T_GBT
+            tau_GBT = self.__tau_GBT
+
+            I_prime_GBT_ = (1 - tau_GBT) * calc_Plank_law_I_prime(rambda=rambda_, T=T_GBT)
+
+            return I_prime_GBT_
+
+        # 光に対して望遠鏡の透過率をかける
+        light_instance.multiply_I_prime_to(magnification=self.__tau_GBT)
+
+        # 光に対して望遠鏡の熱輻射による分光放射輝度を加える
+        I_prime_GBT = calc_I_prime_GBT(rambda_=light_instance.get_rambda())
+        light_instance.add_I_prime_to(I_prime_xx=I_prime_GBT)
