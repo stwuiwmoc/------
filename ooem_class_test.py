@@ -87,6 +87,16 @@ if __name__ == "__main__":
     T60.pass_through(light_instance=light_test1)
     light_test1.show_rambda_vs_I_prime_plot()
 
+    # 絶対値の概算用
+    light_test2 = ooem.LightGenenrator(
+        rambda_lower_limit=3.4128e-6,
+        rambda_upper_limit=3.4128e-6 + 0.1e-9,
+        rambda_division_width=0.1e-9)
+
+    T60.pass_through(light_instance=light_test2)
+    print(light_test2.get_I_prime() * 17e-9)
+    print(light_test2.get_I_prime() * 17e-9 * T60.get_tau_GBT())  # calc_S_xxの計算の中で間違ってI_GBTにも望遠鏡透過率を掛けて過小評価してる
+
     # 輝線発光を加える
     light.show_rambda_vs_I_prime_plot()
 
