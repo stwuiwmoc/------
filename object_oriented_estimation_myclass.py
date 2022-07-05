@@ -128,6 +128,39 @@ def plot_parameter_table(
     return ax
 
 
+def calc_Plank_law_I_prime(
+        rambda: np.ndarray,
+        T: float) -> np.ndarray:
+    """プランクの法則から波長と温度の関数として分光放射輝度を計算
+
+    波長の1次元arrayに対応した、分光放射輝度の1次元arrayを返す
+
+    観測見積もり.md
+        └ 望遠鏡の発光 \n
+            └ プランクの法則 \n
+
+    Parameters
+    ----------
+    rambda : np.ndarray
+        [m] 波長
+    T : float
+        [K] 黒体の温度
+
+    Returns
+    -------
+    np.ndarray
+        [W / m^2 / sr / m] 黒体放射による分光放射輝度
+    """
+
+    h = phys_consts.h
+    c = phys_consts.c
+    k_B = phys_consts.k
+
+    I_prime = (2 * h * c**2 / rambda**5) * (1 / (np.exp(h * c / (rambda * k_B * T)) - 1))
+
+    return I_prime
+
+
 class LightGenenrator:
 
     def __init__(
