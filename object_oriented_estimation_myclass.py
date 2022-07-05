@@ -507,4 +507,39 @@ class GroundBasedTelescope:
     def pass_through(
             self,
             light_instance: LightGenenrator) -> None:
-        pass
+        """光に望遠鏡透過率をかけ、望遠鏡の熱輻射による分光放射輝度を加える
+
+        Parameters
+        ----------
+        light_instance : LightGenenrator
+            自作インスタンス
+        """
+
+        def calc_I_prime_GBT(
+                rambda_: np.ndarray) -> np.ndarray:
+            """望遠鏡の熱輻射による分光放射輝度を計算
+
+            Parameters
+            ----------
+            rambda_ : np.ndarray
+                LightGenerator.get_rambda()
+
+            Returns
+            -------
+            np.ndarray
+                [W / m^2 / sr / m] 分光放射輝度
+            """
+
+            T_GBT = self.__T_GBT
+            tau_GBT = self.__tau_GBT
+
+            I_prime_GBT_ = (1 - tau_GBT) * calc_Plank_law_I_prime(rambda=rambda_, T=T_GBT)
+
+            return I_prime_GBT_
+
+        # 光に対して望遠鏡の透過率をかける
+        light_instance.multiply_I_prime_to(magnification=self.__tau_GBT)
+
+        # 光に対して望遠鏡の熱輻射による分光放射輝度を加える
+        I_prime_GBT = calc_I_prime_GBT(rambda_=light_instance.get_rambda())
+        light_instance.add_I_prime_to(I_prime_xx=I_prime_GBT)
