@@ -641,10 +641,51 @@ class ImagingInstrument:
         GBT_instance : GroundBasedTelescope
             GroundBasedTelescopeクラスのインスタンス
         """
+
+        def calc_theta_pix(f_GBT: float) -> float:
+            """1pixelが見込む角度（プレートスケール）を計算
+
+            Parameters
+            ----------
+            f_GBT : float
+                GroundBasedTelescope.get_f_GBT()
+
+            Returns
+            -------
+            float
+                [arcsec / pix] プレートスケール
+            """
+            m_i_all = 2  # [無次元]
+            s_pix = 30e-6  # [m / pix]
+
+            theta_pix = np.arctan(s_pix / (m_i_all * f_GBT)) * (180 / np.pi) * 3600
+            return theta_pix
+
         self.__GBT_instance = GBT_instance
+
+        # pixel数関連の導出
+        self.__theta_pix = calc_theta_pix(
+            f_GBT=self.__GBT_instance.get_f_GBT())
+        self.__Omega_pix = ((self.__theta_pix / 3600) * (np.pi / 180)) ** 2
 
     def is_set_to_GBT_instance(self) -> bool:
         if self.__GBT_instance is None:
             return False
         else:
             return True
+
+    def get_theta_pix(self):
+        if self.is_set_to_GBT_instance() is False:
+            print("Method 'set_ImagingInstrument_to()' is not used yet.")
+            return None
+
+        else:
+            return self.__theta_pix
+
+    def get_Omega_pix(self):
+        if self.is_set_to_GBT_instance() is False:
+            print("Method 'set_ImagingInstrument_to()' is not used yet.")
+            return None
+
+        else:
+            return self.__Omega_pix
