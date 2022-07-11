@@ -1,3 +1,13 @@
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML"></script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Config({
+ tex2jax: {
+ inlineMath: [["$","$"]],
+ displayMath: [ ['$$','$$']]
+ }
+ });
+</script>
+
 [Miller et al., 2010]: https://pubs.rsc.org/en/content/articlelanding/2010/FD/c004152c#!divAbstract
 [PPARC Blog]: https://pparc.gp.tohoku.ac.jp/post_8/
 
@@ -57,7 +67,7 @@ pparcの開発論文は以下の通りに省略する。ページ数はPDFのペ
 | $I$                         | W / m$^2$ / sr     | 各段階での光の放射輝度                 |
 |                             |                    |                                        |
 
-実際のシミュレーションでは $\lambda _{lower.limit}$ ～ $\lambda _{upper.limit}$ までの波長範囲を幅 $\lambda _{division.width}$ で均等に分割した配列を波長 $\lambda$ とする。そして $\lambda$ の配列の各要素に対応する分光放射輝度を $I' _{}$ とする。このとき、放射輝度 $I$ は $I' _{}$ の各要素に $\lambda _{division.width}$ を掛けたものを、 $\lambda _{lower.limit}$ ～ $\lambda _{upper.limit}$ まで足し合わせればよい。
+実際のシミュレーションでは $\lambda _ {lower.limit} $ ～ $\lambda _{upper.limit} $ までの波長範囲を幅 $\lambda _{division.width}$ で均等に分割した配列を波長 $\lambda$ とする。そして $\lambda$ の配列の各要素に対応する分光放射輝度を $I' _{}$ とする。このとき、放射輝度 $I$ は $I' _{}$ の各要素に $\lambda _{division.width}$ を掛けたものを、 $\lambda _{lower.limit}$ ～ $\lambda _{upper.limit}$ まで足し合わせればよい。
 
 $$
 I
