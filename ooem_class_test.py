@@ -90,7 +90,7 @@ if __name__ == "__main__":
 
     R_3_0.add_auroral_emission_to(light_instance=light)
     light.show_rambda_vs_I_prime_plot()
-    print(light.get_I())
+    print("Only R_3_0 emission, I = ", light.get_I())
 
     R_3_1.add_auroral_emission_to(light_instance=light)
     light.show_rambda_vs_I_prime_plot()
@@ -112,4 +112,18 @@ if __name__ == "__main__":
     light.show_rambda_vs_I_prime_plot()
 
     # 望遠鏡への撮像装置の設置
+
+    # F値が変わらなければAΩが変わらないことを確認するためのテスト
     TOPICS.set_ImagingInstrument_to(GBT_instance=T60)
+    print(TOPICS.get_theta_pix())
+    print("A * Omega = ", T60.get_A_GBT() * TOPICS.get_Omega_pix())
+
+    Pirika = ooem.GroundBasedTelescope(
+        D_GBT=1.6,
+        FNO_GBT=12,
+        T_GBT=273,
+        tau_GBT=0.66)
+
+    TOPICS.set_ImagingInstrument_to(GBT_instance=Pirika)
+    print(TOPICS.get_theta_pix())
+    print("A * Omega = ", Pirika.get_A_GBT() * TOPICS.get_Omega_pix())
