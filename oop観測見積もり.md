@@ -494,9 +494,9 @@ $$
 | $c$             | m / s              | 光速                                    |        | 物理定数   |
 | $\lambda$       | m                  | 波長                                    |        | 導出済     |
 | $\eta$          | e$^-$ / photon     | 量子効率                                | 0.889  | 神原M論p24 |
-| $N _{dark}$     | e$^-$ /s           | 検出器暗電流                            | 50     | 想定値     |
+| $I _{dark}$     | e$^-$ /s           | 検出器暗電流                            | 50     | 想定値     |
 | $t _{obs}$      | s                  | 積分時間                                |        | 任意       |
-| $G _{sys}$      | e$^-$              | 駆動回路読み出しノイズ                  | 1200   | 想定値     |
+| $N _{read}$     | e$^- _{rms}$ / pix | 駆動回路読み出しノイズ                  | 1200   | 想定値     |
 | $G _{sys}$      | e$^-$ / DN         | システムゲイン                          |        | 導出済     |
 | $S _{FW.pix}$   | DN / pix           | $FW$ に対応する1pixelあたりのカウント値 |        | 導出済     |
 |                 |                    |                                         |        |            |
@@ -514,7 +514,7 @@ S _{all.pix} =
             {I' _{all} \cdot A _{GBT} \cdot \Omega _{pix}}
             {h \cdot c / \lambda }
         \cdot \eta \cdot d \lambda
-        + N _{dark}
+        + I _{dark}
     \right )
     t _{obs}
     + N _{read}
