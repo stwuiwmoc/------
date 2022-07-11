@@ -461,9 +461,9 @@ $$
 
 $$
 I' _{all}
-= I' _{obj} \cdot \tau _{ATM} \cdot \tau _{GBT} \cdot \tau _i
-+ I' _{ATM} \cdot \tau _{GBT} \cdot \tau _i
-+ I' _{GBT} \cdot \tau _i
+= I' _{obj} \cdot \tau _{ATM} \cdot \tau _{GBT} \cdot \tau _i +
+    I' _{ATM} \cdot \tau _{GBT} \cdot \tau _i +
+    I' _{GBT} \cdot \tau _i
 $$
 
 となる。なお、撮像・分光装置の光学系は数10Kまで冷却されているため、熱輻射は無視できると仮定している。
@@ -489,8 +489,8 @@ I' _{sky}
     I' _{ATM}
     \cdot \tau _{GBT} + I' _{GBT} )
     \cdot \tau _i
-= I' _{ATM} \cdot \tau _{GBT} \cdot \tau _i
-+ I' _{GBT} \cdot \tau _i
+= I' _{ATM} \cdot \tau _{GBT} \cdot \tau _i +
+    I' _{GBT} \cdot \tau _i
 $$
 
 となる。
