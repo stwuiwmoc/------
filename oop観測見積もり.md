@@ -520,7 +520,7 @@ $$
 
 $$
 S _{all.pix} =
-\left \{
+\left \lbrace
     \left (
         \int \cfrac
             {I' _{all} \cdot A _{GBT} \cdot \Omega _{pix}}
@@ -530,7 +530,7 @@ S _{all.pix} =
     \right )
     t _{obs}
     + N _{read}
-\right \}
+\right \rbrace
 \cdot \cfrac{1}{G _{sys}}
 $$
 
