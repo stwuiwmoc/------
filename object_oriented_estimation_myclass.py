@@ -570,6 +570,9 @@ class ImagingInstrument:
         self.__N_read = N_read
 
         # --- その他の固定パラメータ ---
+        # ピクセル数関連のパラメータ
+        self.__n_bin_rambda = 1  # [pix]
+
         # システムゲインに関連するパラメータ
         self.__G_sys = self.__calc_G_sys()
         self.__FW = 152000  # [e- / pix]
@@ -622,3 +625,6 @@ class ImagingInstrument:
 
     def get_N_read(self) -> float:
         return self.__N_read
+
+    def get_n_bin_rambda(self) -> float:
+        return self.__n_bin_rambda
