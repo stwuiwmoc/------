@@ -274,7 +274,6 @@ class LightGenenrator:
         ax.set_ylabel("I' [W / m^2 / sr / m]")
 
         fig.tight_layout()
-        fig.show()
 
 
 class H3plusAuroralEmission:
