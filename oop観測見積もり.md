@@ -423,7 +423,7 @@ $$
 |               |                    |                                            |
 | $\tau _{ATM}$ | 無次元             | 地球大気の透過率                           |
 | $\tau _{GBT}$ | 無次元             | 望遠鏡光学系の透過率                       |
-| $\tau _{fi}$  | 無次元             | 分光装置導入ファイバーの透過率             |
+| $\tau _{fb}$  | 無次元             | 分光装置導入ファイバーの透過率             |
 | $\tau _{i}$   | 無次元             | 撮像・分光装置の透過率                     |
 |               |                    |                                            |
 | $I' _{all}$   | W / m$^2$ / sr / m | 検出器に到達した段階での分光放射輝度の合算 |
@@ -459,16 +459,16 @@ I' _{all} =
     I' _{obj}
     \cdot \tau _{ATM} + I' _{ATM} )
     \cdot \tau _{GBT} + I' _{GBT} )
-    \cdot \tau _i \cdot \tau _{fi}
+    \cdot \tau _i \cdot \tau _{fb}
 $$
 
 より、展開すると
 
 $$
 I' _{all}
-= I' _{obj} \cdot \tau _{ATM} \cdot \tau _{GBT} \cdot \tau _i \cdot \tau _{fi}
-+ I' _{ATM} \cdot \tau _{GBT} \cdot \tau _i \cdot \tau _{fi}
-+ I' _{GBT} \cdot \tau _i \cdot \tau _{fi}
+= I' _{obj} \cdot \tau _{ATM} \cdot \tau _{GBT} \cdot \tau _i \cdot \tau _{fb}
++ I' _{ATM} \cdot \tau _{GBT} \cdot \tau _i \cdot \tau _{fb}
++ I' _{GBT} \cdot \tau _i \cdot \tau _{fb}
 $$
 
 となる。なお、撮像・分光装置の光学系は数10Kまで冷却されているため、熱輻射は無視できるとした。
