@@ -646,5 +646,8 @@ class ImagingInstrument:
         """
         self.__GBT_instance = GBT_instance
 
-    def get_GBT_instance(self):
-        return self.__GBT_instance
+    def is_set_to_GBT_instance(self) -> bool:
+        if self.__GBT_instance is None:
+            return False
+        else:
+            return True

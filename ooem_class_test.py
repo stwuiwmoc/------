@@ -77,6 +77,14 @@ if __name__ == "__main__":
         T_GBT=280,
         tau_GBT=0.66)
 
+    TOPICS = ooem.ImagingInstrument(
+        rambda_fl_center=3.414e-6,
+        FWHM_fl=17e-9,
+        tau_fl_center=0.88,
+        G_Amp=9,
+        I_dark=50,
+        N_read=1200)
+
     # 輝線発光を加える
     light.show_rambda_vs_I_prime_plot()
 
@@ -102,3 +110,6 @@ if __name__ == "__main__":
     # 望遠鏡を通る
     T60.pass_through(light_instance=light)
     light.show_rambda_vs_I_prime_plot()
+
+    # 望遠鏡への撮像装置の設置
+    TOPICS.set_ImagingInstrument_to(GBT_instance=T60)
