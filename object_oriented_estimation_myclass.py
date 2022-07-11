@@ -554,6 +554,23 @@ class ImagingInstrument:
             G_Amp: float,
             I_dark: float,
             N_read: float) -> None:
+        """撮像装置のパラメータを保持
+
+        Parameters
+        ----------
+        rambda_fl_center : float
+            [m] 干渉フィルターの中心波長
+        FWHM_fl : float
+            [m] 干渉フィルターの半値全幅
+        tau_fl_center : float
+            [無次元] 干渉フィルターの中心透過率
+        G_Amp : float
+            [無次元] プリアンプ基板の倍率
+        I_dark : float
+            [e- / s / pix] 検出器暗電流
+        N_read : float
+            [e-rms / pix] 駆動回路の読み出しノイズ
+        """
 
         # --- 入力パラメータ・固定パラメータの代入 ---
         # 干渉フィルター透過率に関するパラメータ
