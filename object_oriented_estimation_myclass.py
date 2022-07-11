@@ -135,8 +135,8 @@ def calc_Plank_law_I_prime(
 
     波長の1次元arrayに対応した、分光放射輝度の1次元arrayを返す
 
-    観測見積もり.md
-        └ 望遠鏡の発光 \n
+    oop観測見積もり.md
+        └ 地球大気の発光 \n
             └ プランクの法則 \n
 
     Parameters
@@ -169,6 +169,10 @@ class LightGenenrator:
             rambda_upper_limit: float,
             rambda_division_width: float) -> None:
         """波長と分光放射輝度を保持するクラス
+
+        oop観測見積もり.md
+            └ 見積もりの概略 \n
+                └ シミュレーション上での分光放射輝度の扱い \n
 
         Parameters
         ----------
@@ -356,6 +360,10 @@ class H3plusAuroralEmission:
     def __calc_I_obj(self) -> float:
         """H3+輝線の発光強度を計算
 
+        oop観測見積もり.md
+            └ 観測対象の発光 \n
+                └ H3+輝線の放射輝度 \n
+
         Returns
         -------
         float
@@ -456,7 +464,7 @@ class GroundBasedTelescope:
 
         """望遠鏡のパラメータを保持
 
-        観測見積もり.md
+        oop観測見積もり.md
             └ 望遠鏡の発光 \n
                 ├ 望遠鏡光学系のパラメータ \n
                 └ 望遠鏡の熱輻射による放射輝度 \n
@@ -518,6 +526,10 @@ class GroundBasedTelescope:
                 rambda_: np.ndarray) -> np.ndarray:
             """望遠鏡の熱輻射による分光放射輝度を計算
 
+            oop観測見積もり.md
+                └ 望遠鏡の発光 \n
+                    └ 望遠鏡の熱輻射による放射輝度 \n
+
             Parameters
             ----------
             rambda_ : np.ndarray
@@ -555,6 +567,15 @@ class ImagingInstrument:
             I_dark: float,
             N_read: float) -> None:
         """撮像装置のパラメータを保持
+
+        oop観測見積もり.md
+            └ 近赤外装置による撮像・分光 \n
+                ├ 干渉フィルター透過率の導出 \n
+                ├ 装置透過率の導出（TOPICS） \n
+                ├ pixel数関連の導出 \n
+                ├ システムゲインの導出 \n
+                ├ 検出器に到達した段階での分光放射輝度 \n
+                └ Signalへの換算 \n
 
         Parameters
         ----------
@@ -601,6 +622,10 @@ class ImagingInstrument:
 
     def __calc_G_sys(self) -> float:
         """システムゲインの導出
+
+        oop観測見積もり.md
+            └ 近赤外装置による撮像・分光 \n
+                └ システムゲインの導出 \n
 
         Returns
         -------
@@ -660,6 +685,10 @@ class ImagingInstrument:
 
         def calc_theta_pix(f_GBT: float) -> float:
             """1pixelが見込む角度（プレートスケール）を計算
+
+        oop観測見積もり.md
+            └ 近赤外装置による撮像・分光 \n
+                └ pixel数関連の導出 \n
 
             Parameters
             ----------
