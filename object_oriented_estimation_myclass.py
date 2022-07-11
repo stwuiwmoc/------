@@ -556,27 +556,24 @@ class ImagingInstrument:
             I_dark: float,
             N_read: float) -> None:
 
-        # --- 入力パラメータの代入 ---
+        # --- 入力パラメータ・固定パラメータの代入 ---
         # 干渉フィルター透過率に関するパラメータ
         self.__rambda_fl_center = rambda_fl_center
         self.__FWHM_fl = FWHM_fl
         self.__tau_fl_center = tau_fl_center
 
-        # システムゲインに関連するパラメータ
-        self.__G_Amp = G_Amp
-
-        # Signalへの換算で必要なパラメータ
-        self.__I_dark = I_dark
-        self.__N_read = N_read
-
-        # --- その他の固定パラメータ ---
         # ピクセル数関連のパラメータ
         self.__n_bin_rambda = 1  # [pix]
 
         # システムゲインに関連するパラメータ
+        self.__G_Amp = G_Amp
         self.__G_sys = self.__calc_G_sys()
         self.__FW = 152000  # [e- / pix]
         self.__S_FW_pix = self.__FW / self.__G_sys
+
+        # Signalへの換算で必要なパラメータ
+        self.__I_dark = I_dark
+        self.__N_read = N_read
 
         # --- 望遠鏡への設置状況 ---
         # インスタンス生成時点では None としておく
