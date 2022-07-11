@@ -596,29 +596,29 @@ class ImagingInstrument:
         G_sys = (C_PD / (e * G_SF)) * (ADU_ADC / G_Amp)
         return G_sys
 
-    def get_rambda_fl_center(self):
+    def get_rambda_fl_center(self) -> float:
         return self.__rambda_fl_center
 
-    def get_FWHM_fl(self):
+    def get_FWHM_fl(self) -> float:
         return self.__FWHM_fl
 
-    def get_tau_fl_center(self):
+    def get_tau_fl_center(self) -> float:
         return self.__tau_fl_center
 
-    def get_G_Amp(self):
+    def get_G_Amp(self) -> float:
         return self.__G_Amp
 
-    def get_G_sys(self):
+    def get_G_sys(self) -> float:
         return self.__G_sys
 
-    def get_FW(self):
+    def get_FW(self) -> float:
         return self.__FW
 
-    def get_S_FW_pix(self):
+    def get_S_FW_pix(self) -> float:
         return self.__S_FW_pix
 
-    def get_I_dark(self):
+    def get_I_dark(self) -> float:
         return self.__I_dark
 
-    def get_N_read(self):
+    def get_N_read(self) -> float:
         return self.__N_read
