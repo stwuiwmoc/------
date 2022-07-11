@@ -543,3 +543,82 @@ class GroundBasedTelescope:
         # 光に対して望遠鏡の熱輻射による分光放射輝度を加える
         I_prime_GBT = calc_I_prime_GBT(rambda_=light_instance.get_rambda())
         light_instance.add_I_prime_to(I_prime_xx=I_prime_GBT)
+
+
+class ImagingInstrument:
+
+    def __init__(
+            self,
+            rambda_fl_center: float,
+            FWHM_fl: float,
+            tau_fl_center: float,
+            G_Amp: float,
+            I_dark: float,
+            N_read: float) -> None:
+
+        # --- 入力パラメータの代入 ---
+        # 干渉フィルター透過率に関するパラメータ
+        self.__rambda_fl_center = rambda_fl_center
+        self.__FWHM_fl = FWHM_fl
+        self.__tau_fl_center = tau_fl_center
+
+        # システムゲインに関連するパラメータ
+        self.__G_Amp = G_Amp
+
+        # Signalへの換算で必要なパラメータ
+        self.__I_dark = I_dark
+        self.__N_read = N_read
+
+        # --- その他の固定パラメータ ---
+        # システムゲインに関連するパラメータ
+        self.__G_sys = self.__calc_G_sys()
+        self.__FW = 152000  # [e- / pix]
+        self.__S_FW_pix = self.__FW / self.__G_sys
+
+    def h(self):
+        mkhelp(self)
+
+    def __calc_G_sys(self) -> float:
+        """システムゲインの導出
+
+        Returns
+        -------
+        float
+            [e- / DN] システムゲイン
+        """
+
+        C_PD = 7.20e-14  # [F]
+        ADU_ADC = 10 / 2**16  # [V / DN]
+        G_SF = 0.699  # [無次元]
+        G_Amp = self.__G_Amp
+        e = phys_consts.e
+
+        G_sys = (C_PD / (e * G_SF)) * (ADU_ADC / G_Amp)
+        return G_sys
+
+    def get_rambda_fl_center(self):
+        return self.__rambda_fl_center
+
+    def get_FWHM_fl(self):
+        return self.__FWHM_fl
+
+    def get_tau_fl_center(self):
+        return self.__tau_fl_center
+
+    def get_G_Amp(self):
+        return self.__G_Amp
+
+    def get_G_sys(self):
+        return self.__G_sys
+
+    def get_FW(self):
+        return self.__FW
+
+    def get_S_FW_pix(self):
+        return self.__S_FW_pix
+
+    def get_I_dark(self):
+        return self.__I_dark
+
+    def get_N_read(self):
+        return self.__N_read
