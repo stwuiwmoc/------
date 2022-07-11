@@ -578,6 +578,11 @@ class ImagingInstrument:
         self.__FW = 152000  # [e- / pix]
         self.__S_FW_pix = self.__FW / self.__G_sys
 
+        # --- 望遠鏡への設置状況 ---
+        # インスタンス生成時点では None としておく
+        # インスタンス生成後にメソッドを使って書き換える
+        self.__GBT_instance = None
+
     def h(self):
         mkhelp(self)
 
@@ -628,3 +633,18 @@ class ImagingInstrument:
 
     def get_n_bin_rambda(self) -> float:
         return self.__n_bin_rambda
+
+    def set_ImagingInstrument_to(
+            self,
+            GBT_instance: GroundBasedTelescope) -> None:
+        """望遠鏡に撮像装置を設置し、GBTのインスタンスを内部で呼び出せるようにする
+
+        Parameters
+        ----------
+        GBT_instance : GroundBasedTelescope
+            GroundBasedTelescopeクラスのインスタンス
+        """
+        self.__GBT_instance = GBT_instance
+
+    def get_GBT_instance(self):
+        return self.__GBT_instance
