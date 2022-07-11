@@ -77,24 +77,25 @@ if __name__ == "__main__":
         T_GBT=280,
         tau_GBT=0.66)
 
-    # 輝線発光を加える
-    light.show_rambda_vs_I_prime_plot()
+    TOPICS = ooem.ImagingInstrument(
+        rambda_fl_center=3.414e-6,
+        FWHM_fl=17e-9,
+        tau_fl_center=0.88,
+        G_Amp=9,
+        I_dark=50,
+        N_read=1200)
 
+    # 輝線発光を加える
     R_3_0.add_auroral_emission_to(light_instance=light)
-    light.show_rambda_vs_I_prime_plot()
-    print(light.get_I())
+    print("Only R_3_0 emission, I = ", light.get_I())
 
     R_3_1.add_auroral_emission_to(light_instance=light)
-    light.show_rambda_vs_I_prime_plot()
 
     R_3_2.add_auroral_emission_to(light_instance=light)
-    light.show_rambda_vs_I_prime_plot()
 
     R_3_3.add_auroral_emission_to(light_instance=light)
-    light.show_rambda_vs_I_prime_plot()
 
     R_4_3.add_auroral_emission_to(light_instance=light)
-    light.show_rambda_vs_I_prime_plot()
 
     R_4_4.add_auroral_emission_to(light_instance=light)
     light.show_rambda_vs_I_prime_plot()
@@ -102,3 +103,6 @@ if __name__ == "__main__":
     # 望遠鏡を通る
     T60.pass_through(light_instance=light)
     light.show_rambda_vs_I_prime_plot()
+
+    # 望遠鏡への撮像装置の設置
+    TOPICS.set_ImagingInstrument_to(GBT_instance=T60)

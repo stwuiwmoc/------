@@ -135,8 +135,8 @@ def calc_Plank_law_I_prime(
 
     波長の1次元arrayに対応した、分光放射輝度の1次元arrayを返す
 
-    観測見積もり.md
-        └ 望遠鏡の発光 \n
+    oop観測見積もり.md
+        └ 地球大気の発光 \n
             └ プランクの法則 \n
 
     Parameters
@@ -169,6 +169,10 @@ class LightGenenrator:
             rambda_upper_limit: float,
             rambda_division_width: float) -> None:
         """波長と分光放射輝度を保持するクラス
+
+        oop観測見積もり.md
+            └ 見積もりの概略 \n
+                └ シミュレーション上での分光放射輝度の扱い \n
 
         Parameters
         ----------
@@ -274,7 +278,6 @@ class LightGenenrator:
         ax.set_ylabel("I' [W / m^2 / sr / m]")
 
         fig.tight_layout()
-        fig.show()
 
 
 class H3plusAuroralEmission:
@@ -356,6 +359,10 @@ class H3plusAuroralEmission:
 
     def __calc_I_obj(self) -> float:
         """H3+輝線の発光強度を計算
+
+        oop観測見積もり.md
+            └ 観測対象の発光 \n
+                └ H3+輝線の放射輝度 \n
 
         Returns
         -------
@@ -457,7 +464,7 @@ class GroundBasedTelescope:
 
         """望遠鏡のパラメータを保持
 
-        観測見積もり.md
+        oop観測見積もり.md
             └ 望遠鏡の発光 \n
                 ├ 望遠鏡光学系のパラメータ \n
                 └ 望遠鏡の熱輻射による放射輝度 \n
@@ -519,6 +526,10 @@ class GroundBasedTelescope:
                 rambda_: np.ndarray) -> np.ndarray:
             """望遠鏡の熱輻射による分光放射輝度を計算
 
+            oop観測見積もり.md
+                └ 望遠鏡の発光 \n
+                    └ 望遠鏡の熱輻射による放射輝度 \n
+
             Parameters
             ----------
             rambda_ : np.ndarray
@@ -543,3 +554,183 @@ class GroundBasedTelescope:
         # 光に対して望遠鏡の熱輻射による分光放射輝度を加える
         I_prime_GBT = calc_I_prime_GBT(rambda_=light_instance.get_rambda())
         light_instance.add_I_prime_to(I_prime_xx=I_prime_GBT)
+
+
+class ImagingInstrument:
+
+    def __init__(
+            self,
+            rambda_fl_center: float,
+            FWHM_fl: float,
+            tau_fl_center: float,
+            G_Amp: float,
+            I_dark: float,
+            N_read: float) -> None:
+        """撮像装置のパラメータを保持
+
+        oop観測見積もり.md
+            └ 近赤外装置による撮像・分光 \n
+                ├ 干渉フィルター透過率の導出 \n
+                ├ 装置透過率の導出（TOPICS） \n
+                ├ pixel数関連の導出 \n
+                ├ システムゲインの導出 \n
+                ├ 検出器に到達した段階での分光放射輝度 \n
+                └ Signalへの換算 \n
+
+        Parameters
+        ----------
+        rambda_fl_center : float
+            [m] 干渉フィルターの中心波長
+        FWHM_fl : float
+            [m] 干渉フィルターの半値全幅
+        tau_fl_center : float
+            [無次元] 干渉フィルターの中心透過率
+        G_Amp : float
+            [無次元] プリアンプ基板の倍率
+        I_dark : float
+            [e- / s / pix] 検出器暗電流
+        N_read : float
+            [e-rms / pix] 駆動回路の読み出しノイズ
+        """
+
+        # --- 入力パラメータ・固定パラメータの代入 ---
+        # 干渉フィルター透過率に関するパラメータ
+        self.__rambda_fl_center = rambda_fl_center
+        self.__FWHM_fl = FWHM_fl
+        self.__tau_fl_center = tau_fl_center
+
+        # ピクセル数関連のパラメータ
+        self.__n_bin_rambda = 1  # [pix]
+
+        # システムゲインに関連するパラメータ
+        self.__G_Amp = G_Amp
+        self.__G_sys = self.__calc_G_sys()
+        self.__FW = 152000  # [e- / pix]
+        self.__S_FW_pix = self.__FW / self.__G_sys
+
+        # Signalへの換算で必要なパラメータ
+        self.__I_dark = I_dark
+        self.__N_read = N_read
+
+        # --- 望遠鏡への設置状況 ---
+        # インスタンス生成時点では None としておく
+        # インスタンス生成後にメソッドを使って書き換える
+        self.__GBT_instance = None
+
+    def h(self):
+        mkhelp(self)
+
+    def __calc_G_sys(self) -> float:
+        """システムゲインの導出
+
+        oop観測見積もり.md
+            └ 近赤外装置による撮像・分光 \n
+                └ システムゲインの導出 \n
+
+        Returns
+        -------
+        float
+            [e- / DN] システムゲイン
+        """
+
+        C_PD = 7.20e-14  # [F]
+        ADU_ADC = 10 / 2**16  # [V / DN]
+        G_SF = 0.699  # [無次元]
+        G_Amp = self.__G_Amp
+        e = phys_consts.e
+
+        G_sys = (C_PD / (e * G_SF)) * (ADU_ADC / G_Amp)
+        return G_sys
+
+    def get_rambda_fl_center(self) -> float:
+        return self.__rambda_fl_center
+
+    def get_FWHM_fl(self) -> float:
+        return self.__FWHM_fl
+
+    def get_tau_fl_center(self) -> float:
+        return self.__tau_fl_center
+
+    def get_G_Amp(self) -> float:
+        return self.__G_Amp
+
+    def get_G_sys(self) -> float:
+        return self.__G_sys
+
+    def get_FW(self) -> float:
+        return self.__FW
+
+    def get_S_FW_pix(self) -> float:
+        return self.__S_FW_pix
+
+    def get_I_dark(self) -> float:
+        return self.__I_dark
+
+    def get_N_read(self) -> float:
+        return self.__N_read
+
+    def get_n_bin_rambda(self) -> float:
+        return self.__n_bin_rambda
+
+    def set_ImagingInstrument_to(
+            self,
+            GBT_instance: GroundBasedTelescope) -> None:
+        """望遠鏡に撮像装置を設置し、GBTのインスタンスを内部で呼び出せるようにする
+
+        Parameters
+        ----------
+        GBT_instance : GroundBasedTelescope
+            GroundBasedTelescopeクラスのインスタンス
+        """
+
+        def calc_theta_pix(f_GBT: float) -> float:
+            """1pixelが見込む角度（プレートスケール）を計算
+
+        oop観測見積もり.md
+            └ 近赤外装置による撮像・分光 \n
+                └ pixel数関連の導出 \n
+
+            Parameters
+            ----------
+            f_GBT : float
+                GroundBasedTelescope.get_f_GBT()
+
+            Returns
+            -------
+            float
+                [arcsec / pix] プレートスケール
+            """
+            m_i_all = 2  # [無次元]
+            s_pix = 30e-6  # [m / pix]
+
+            theta_pix = np.arctan(s_pix / (m_i_all * f_GBT)) * (180 / np.pi) * 3600
+            return theta_pix
+
+        self.__GBT_instance = GBT_instance
+
+        # pixel数関連の導出
+        self.__theta_pix = calc_theta_pix(
+            f_GBT=self.__GBT_instance.get_f_GBT())
+        self.__Omega_pix = ((self.__theta_pix / 3600) * (np.pi / 180)) ** 2
+
+    def is_set_to_GBT_instance(self) -> bool:
+        if self.__GBT_instance is None:
+            return False
+        else:
+            return True
+
+    def get_theta_pix(self):
+        if self.is_set_to_GBT_instance() is False:
+            print("Method 'set_ImagingInstrument_to()' is not used yet.")
+            return None
+
+        else:
+            return self.__theta_pix
+
+    def get_Omega_pix(self):
+        if self.is_set_to_GBT_instance() is False:
+            print("Method 'set_ImagingInstrument_to()' is not used yet.")
+            return None
+
+        else:
+            return self.__Omega_pix
