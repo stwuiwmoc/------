@@ -280,6 +280,42 @@ class LightGenenrator:
         fig.tight_layout()
 
 
+class VirtualOutputFileGenerator:
+
+    def __init__(self) -> None:
+        self.__S_all_pix = None
+        self.__S_FW_pix = None
+        self.__t_obs = None
+        self.__n_bin_rambda = None
+
+    def h(self):
+        mkhelp(self)
+
+    def get_S_all_pix(self) -> float:
+        return self.__S_all_pix
+
+    def get_S_FW_pix(self) -> float:
+        return self.__S_FW_pix
+
+    def get_t_obs(self) -> float:
+        return self.__t_obs
+
+    def get_n_bin_rambda(self) -> float:
+        return self.__n_bin_rambda
+
+    def set_S_all_pix(self, S_all_pix) -> None:
+        self.__S_all_pix = S_all_pix
+
+    def set_S_FW_pix(self, S_FW_pix) -> None:
+        self.__S_FW_pix = S_FW_pix
+
+    def set_t_obs(self, t_obs) -> None:
+        self.__t_obs = t_obs
+
+    def set_n_bin_rambda(self, n_bin_rambda) -> None:
+        self.__n_bin_rambda = n_bin_rambda
+
+
 class H3plusAuroralEmission:
 
     def __init__(
