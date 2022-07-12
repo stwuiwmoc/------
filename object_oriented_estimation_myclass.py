@@ -283,6 +283,13 @@ class LightGenenrator:
 class VirtualOutputFileGenerator:
 
     def __init__(self) -> None:
+        """仮想的なFITSファイルとしてインスタンスを作成し、カウント値などを保持する
+
+        oop観測見積もり.md
+            └ 見積もりの概略 \n
+                └ シミュレーション上でのFITSファイルの扱い \n
+
+        """
         self.__S_all_pix = None
         self.__S_FW_pix = None
         self.__t_obs = None
