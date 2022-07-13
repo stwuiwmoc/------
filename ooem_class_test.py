@@ -123,7 +123,12 @@ if __name__ == "__main__":
     print("S_FW_pix =", fits.get_S_FW_pix())
 
     # osmでの結果と一致するかのテスト
-    test_light = ooem.LightGenenrator(
+    test_obj_light = ooem.LightGenenrator(
+        rambda_lower_limit=3.3e-6,
+        rambda_upper_limit=3.5e-6,
+        rambda_division_width=1e-9)
+
+    test_sky_light = ooem.LightGenenrator(
         rambda_lower_limit=3.3e-6,
         rambda_upper_limit=3.5e-6,
         rambda_division_width=1e-9)
@@ -137,48 +142,69 @@ if __name__ == "__main__":
         T_GBT=273,
         tau_GBT=0.744)
 
-    test_fits = ooem.VirtualOutputFileGenerator()
+    test_obj_image = ooem.VirtualOutputFileGenerator()
+    test_sky_image = ooem.VirtualOutputFileGenerator()
 
     test_t_obs = np.arange(0, 100)
 
+    # --- 観測対象の撮像 ---
     # osmと同じくR(3, 0)輝線発光だけを考える
-    R_3_0.add_auroral_emission_to(light_instance=test_light)
-    test_light.show_rambda_vs_I_prime_plot()
+    R_3_0.add_auroral_emission_to(light_instance=test_obj_light)
+    test_obj_light.show_rambda_vs_I_prime_plot()
 
-    T60.pass_through(light_instance=test_light)
-    test_light.show_rambda_vs_I_prime_plot()
+    Haleakala_good.pass_through(light_instance=test_obj_light)
+    test_obj_light.show_rambda_vs_I_prime_plot()
 
-    Haleakala_good.pass_through(light_instance=light)
-    test_light.show_rambda_vs_I_prime_plot()
+    T60.pass_through(light_instance=test_obj_light)
+    test_obj_light.show_rambda_vs_I_prime_plot()
 
     TOPICS.shoot_light_and_save_to_fits(
-        light_instance=test_light,
-        virtual_output_file_instance=test_fits,
+        light_instance=test_obj_light,
+        virtual_output_file_instance=test_obj_image,
         t_obs=test_t_obs)
 
-    test_light.show_rambda_vs_I_prime_plot()
+    test_obj_light.show_rambda_vs_I_prime_plot()
+
+    # --- skyイメージの撮像 ---
+    Haleakala_good.pass_through(light_instance=test_sky_light)
+
+    T60.pass_through(light_instance=test_sky_light)
+
+    TOPICS.shoot_light_and_save_to_fits(
+        light_instance=test_sky_light,
+        virtual_output_file_instance=test_sky_image,
+        t_obs=test_t_obs)
+    test_sky_light.show_rambda_vs_I_prime_plot()
 
     fig1 = plt.figure(figsize=(5, 8))
     gs1 = fig1.add_gridspec(2, 1)
 
     ax11 = fig1.add_subplot(gs1[0, 0])
-    ax11.plot(test_t_obs, test_fits.get_S_all_pix())
+    ax11.plot(test_t_obs, test_obj_image.get_S_all_pix(), label="obj")
+    ax11.plot(test_t_obs, test_sky_image.get_S_all_pix(), label="sky")
     ax11.hlines(
-        y=test_fits.get_S_FW_pix(),
+        y=test_obj_image.get_S_FW_pix(),
         xmin=test_t_obs.min(),
         xmax=test_t_obs.max())
     ax11.grid()
     ax11.set_ylabel("Signal [DN]")
+    ax11.legend()
 
     ax12 = fig1.add_subplot(gs1[1, 0])
     ax12.plot(
         test_t_obs,
-        test_fits.get_S_all_pix() * TOPICS.get_G_sys())
+        test_obj_image.get_S_all_pix() * TOPICS.get_G_sys(),
+        label="obj")
+    ax12.plot(
+        test_t_obs,
+        test_sky_image.get_S_all_pix() * TOPICS.get_G_sys(),
+        label="sky")
     ax12.hlines(
-        y=test_fits.get_S_FW_pix() * TOPICS.get_G_sys(),
+        y=test_obj_image.get_S_FW_pix() * TOPICS.get_G_sys(),
         xmin=test_t_obs.min(),
         xmax=test_t_obs.max())
     ax12.set_xscale("log")
     ax12.set_yscale("log")
     ax12.grid(which="both")
     ax12.set_ylabel("Signal [e-]")
+    ax12.legend()
