@@ -117,3 +117,21 @@ if __name__ == "__main__":
         t_obs=30)
 
     light.show_rambda_vs_I_prime_plot()
+
+    # VirtualOutputFileGeneratorの動作テスト
+    test_fits = ooem.VirtualOutputFileGenerator()
+    print("get_S_FW_pix ->", test_fits.get_S_FW_pix())
+    print("get_S_all_pix ->", test_fits.get_S_all_pix())
+    print("get_n_bin_rambda ->", test_fits.get_n_bin_rambda())
+    print("get_t_obs ->", test_fits.get_t_obs())
+
+    TOPICS.shoot_light_and_save_to_fits(
+        light_instance=light,
+        virtual_output_file_instance=test_fits,
+        t_obs=30)
+    print("get image")
+
+    print("get_S_FW_pix ->", test_fits.get_S_FW_pix())
+    print("get_S_all_pix ->", test_fits.get_S_all_pix())
+    print("get_n_bin_rambda ->", test_fits.get_n_bin_rambda())
+    print("get_t_obs ->", test_fits.get_t_obs())
