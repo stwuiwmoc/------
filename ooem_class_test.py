@@ -113,6 +113,7 @@ if __name__ == "__main__":
     # 撮像してfitsに保存
     TOPICS.shoot_light_and_save_to_fits(
         light_instance=light,
-        virtual_output_file_instance=fits)
+        virtual_output_file_instance=fits,
+        t_obs=30)
 
     light.show_rambda_vs_I_prime_plot()

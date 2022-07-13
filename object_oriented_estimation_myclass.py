@@ -822,6 +822,31 @@ class ImagingInstrument:
                 t_obs_: float,
                 N_read_: float,
                 G_sys_: float) -> float:
+            """カウント値 S_all_pixを計算
+
+            Parameters
+            ----------
+            light_instance_ : LightGenenrator
+                自作インスタンス,
+                I_all_primeの状態になっている（装置透過率までかけてある）もの
+            A_GBT_ : float
+                [m^2] 望遠鏡の開口面積
+            Omega_pix_ : float
+                [sr / pix] 1pixelが見込む立体角
+            I_dark_ : float
+                [e- / s / pix] 検出器の暗電流
+            t_obs_ : float
+                [s] 積分時間
+            N_read_ : float
+                [e-rms / pix] 駆動回路読み出しノイズ
+            G_sys_ : float
+                [e- / DN]システムゲイン
+
+            Returns
+            -------
+            float
+                [DN] 1pixelあたりのカウント値
+            """
 
             # 入力パラメータ以外の文字の定義
             I_prime_all_ = light_instance_.get_I_prime()
@@ -838,7 +863,7 @@ class ImagingInstrument:
             integration_result = np.sum(integrand_ * light_instance_.get_rambda_division_width())
 
             # カウント値の残りの部分を計算
-            S_all_pix_ = ((integration_result * I_dark_) * t_obs_ + N_read_) * (1 / G_sys_)
+            S_all_pix_ = ((integration_result + I_dark_) * t_obs_ + N_read_) * (1 / G_sys_)
 
             return S_all_pix_
 
@@ -867,6 +892,7 @@ class ImagingInstrument:
             N_read_=self.__N_read,
             G_sys_=self.__G_sys)
 
-        print(S_all_pix)
+        print("S_all_pix=", S_all_pix)
+        print("S_FW_pix=", self.__S_FW_pix)
 
         # fitsへの保存
