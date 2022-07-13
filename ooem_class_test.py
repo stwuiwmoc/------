@@ -117,3 +117,6 @@ if __name__ == "__main__":
         t_obs=30)
 
     light.show_rambda_vs_I_prime_plot()
+
+    print("S_all_pix =", fits.get_S_all_pix())
+    print("S_FW_pix =", fits.get_S_FW_pix())
