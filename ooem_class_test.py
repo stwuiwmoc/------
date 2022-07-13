@@ -198,7 +198,7 @@ if __name__ == "__main__":
         label="obj")
     ax12.plot(
         test_t_obs,
-        test_sky_image.get_S_all_pix() * TOPICS.get_G_sys(),
+        np.sqrt(test_sky_image.get_S_all_pix()) * TOPICS.get_G_sys(),
         label="sky")
     ax12.hlines(
         y=test_obj_image.get_S_FW_pix() * TOPICS.get_G_sys(),
