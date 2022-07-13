@@ -816,8 +816,8 @@ class ImagingInstrument:
 
         def calc_S_all_pix(
                 light_instance_: LightGenenrator,
-                A_GBT_: float,
                 Omega_pix_: float,
+                A_GBT_: float,
                 I_dark_: float,
                 t_obs_: float,
                 N_read_: float,
@@ -885,8 +885,8 @@ class ImagingInstrument:
         # カウント値への変換
         S_all_pix = calc_S_all_pix(
             light_instance_=light_instance,
-            A_GBT_=self.__GBT_instance.get_A_GBT(),
             Omega_pix_=self.get_Omega_pix(),
+            A_GBT_=self.__GBT_instance.get_A_GBT(),
             I_dark_=self.__I_dark,
             t_obs_=t_obs,
             N_read_=self.__N_read,
