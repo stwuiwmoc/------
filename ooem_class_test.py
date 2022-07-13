@@ -176,8 +176,9 @@ if __name__ == "__main__":
         t_obs=test_t_obs)
     test_sky_light.show_rambda_vs_I_prime_plot()
 
-    fig1 = plt.figure(figsize=(5, 8))
-    gs1 = fig1.add_gridspec(2, 1)
+    # --- plot ---
+    fig1 = plt.figure(figsize=(11, 8))
+    gs1 = fig1.add_gridspec(2, 2)
 
     ax11 = fig1.add_subplot(gs1[0, 0])
     ax11.plot(test_t_obs, test_obj_image.get_S_all_pix(), label="obj")
@@ -190,7 +191,7 @@ if __name__ == "__main__":
     ax11.set_ylabel("Signal [DN]")
     ax11.legend()
 
-    ax12 = fig1.add_subplot(gs1[1, 0])
+    ax12 = fig1.add_subplot(gs1[0, 1])
     ax12.plot(
         test_t_obs,
         test_obj_image.get_S_all_pix() * TOPICS.get_G_sys(),
@@ -208,3 +209,11 @@ if __name__ == "__main__":
     ax12.grid(which="both")
     ax12.set_ylabel("Signal [e-]")
     ax12.legend()
+
+    ax13 = fig1.add_subplot(gs1[1, 1])
+    ax13.plot(
+        test_t_obs,
+        (test_obj_image.get_S_all_pix() - test_sky_image.get_S_all_pix()) / np.sqrt(test_sky_image.get_S_all_pix()))
+    ax13.set_xscale("log")
+    ax13.grid(which="both")
+    ax13.set_ylabel("S/N")
