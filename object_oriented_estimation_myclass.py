@@ -892,9 +892,6 @@ class ImagingInstrument:
             N_read_=self.__N_read,
             G_sys_=self.__G_sys)
 
-        print("S_all_pix=", S_all_pix)
-        print("S_FW_pix=", self.__S_FW_pix)
-
         # fitsへの保存
         virtual_output_file_instance.set_S_all_pix(S_all_pix=S_all_pix)
         virtual_output_file_instance.set_S_FW_pix(S_FW_pix=self.__S_FW_pix)
