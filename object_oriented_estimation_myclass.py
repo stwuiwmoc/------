@@ -820,8 +820,13 @@ class ImagingInstrument:
             FWHM_=self.__FWHM_fl,
             x_center=self.__rambda_fl_center)
 
-        # テスト：フィルター透過率だけをlight_instanceにかける
-        light_instance.multiply_I_prime_to(magnification=tau_i_filter)
+        # 装置透過率の導出
+        tau_i_lens = 0.9 ** 3
+        tau_i_mirror = 1
+        tau_i = tau_i_lens * tau_i_mirror * tau_i_filter
+
+        # 装置透過率を光にかける
+        light_instance.multiply_I_prime_to(magnification=tau_i)
 
         # カウント値への変換
 
