@@ -1,6 +1,5 @@
 # %%
 import importlib
-import numpy as np
 
 import object_oriented_estimation_myclass as ooem
 
