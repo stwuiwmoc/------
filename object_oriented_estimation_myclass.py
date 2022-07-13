@@ -808,14 +808,21 @@ class ImagingInstrument:
             """
 
             y_gaussian = y_max * np.exp(
-                - (x_array - x_center)**2 / (2 * (FWHM_ / (2 * np.sqrt(2 * np.log(2)))))
+                - (x_array - x_center)**2 / (2 * (FWHM_ / (2 * np.sqrt(2 * np.log(2)))))**2
             )
 
             return y_gaussian
 
         # 干渉フィルターの定義
+        tau_i_filter = calc_gaussian(
+            y_max=self.__tau_fl_center,
+            x_array=light_instance.get_rambda(),
+            FWHM_=self.__FWHM_fl,
+            x_center=self.__rambda_fl_center)
+
+        # テスト：フィルター透過率だけをlight_instanceにかける
+        light_instance.multiply_I_prime_to(magnification=tau_i_filter)
 
         # カウント値への変換
 
         # fitsへの保存
-        pass
