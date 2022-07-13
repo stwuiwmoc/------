@@ -823,7 +823,16 @@ class ImagingInstrument:
                 N_read_: float,
                 G_sys_: float) -> float:
 
-            pass
+            # 入力パラメータ以外の文字の定義
+            I_prime_all_ = light_instance_.get_I_prime()
+            h_ = phys_consts.h
+            c_ = phys_consts.c
+            rambda_ = light_instance_.get_rambda()
+            eta_ = 0.889  # [e- / photon] 検出器の量子効率
+
+            # 波長積分での被積分関数の導出
+
+            integrand = ((I_prime_all_ * A_GBT_ * Omega_pix_) / (h_ * (c_ / rambda_))) * eta_
 
         # 干渉フィルターの定義
         tau_i_filter = calc_gaussian(
