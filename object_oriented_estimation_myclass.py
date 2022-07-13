@@ -785,6 +785,11 @@ class ImagingInstrument:
             t_obs: float) -> None:
         """光を受け取って、カウント値を計算し、仮想的なfitsファイルに値を保存
 
+        oop観測見積もり.md
+            └ 近赤外装置による撮像・分光 \n
+                ├ 検出器に到達した段階での分光放射輝度 \n
+                └ Signalへの換算 \n
+
         Parameters
         ----------
         light_instance : LightGenenrator
