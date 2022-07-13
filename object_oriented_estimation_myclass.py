@@ -807,6 +807,10 @@ class ImagingInstrument:
                 x_center: float) -> np.ndarray:
             """横軸x、縦軸y としてガウシアンを計算
 
+            oop観測見積もり.md
+                └ 近赤外装置による撮像・分光 \n
+                    └ 干渉フィルター透過率の導出 \n
+
             Parameters
             ----------
             y_max : float
@@ -839,6 +843,10 @@ class ImagingInstrument:
                 N_read_: float,
                 G_sys_: float) -> float:
             """カウント値 S_all_pixを計算
+
+            oop観測見積もり.md
+                └ 近赤外装置による撮像・分光 \n
+                    └ Signalへの換算 \n
 
             Parameters
             ----------
