@@ -783,6 +783,17 @@ class ImagingInstrument:
             light_instance: LightGenenrator,
             virtual_output_file_instance: VirtualOutputFileGenerator,
             t_obs: float) -> None:
+        """光を受け取って、カウント値を計算し、仮想的なfitsファイルに値を保存
+
+        Parameters
+        ----------
+        light_instance : LightGenenrator
+            自作インスタンス
+        virtual_output_file_instance : VirtualOutputFileGenerator
+            自作インスタンス
+        t_obs : float
+            [s] 積分時間、floatでも1次元のarrayでもよい
+        """
 
         def calc_gaussian(
                 y_max: float,
