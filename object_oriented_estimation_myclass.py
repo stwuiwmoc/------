@@ -781,7 +781,8 @@ class ImagingInstrument:
     def shoot_light_and_save_to_fits(
             self,
             light_instance: LightGenenrator,
-            virtual_output_file_instance: VirtualOutputFileGenerator) -> None:
+            virtual_output_file_instance: VirtualOutputFileGenerator,
+            t_obs: float) -> None:
 
         def calc_gaussian(
                 y_max: float,
@@ -813,6 +814,17 @@ class ImagingInstrument:
 
             return y_gaussian
 
+        def calc_S_all_pix(
+                light_instance_: LightGenenrator,
+                A_GBT_: float,
+                Omega_pix_: float,
+                I_dark_: float,
+                t_obs_: float,
+                N_read_: float,
+                G_sys_: float) -> float:
+
+            pass
+
         # 干渉フィルターの定義
         tau_i_filter = calc_gaussian(
             y_max=self.__tau_fl_center,
@@ -829,5 +841,13 @@ class ImagingInstrument:
         light_instance.multiply_I_prime_to(magnification=tau_i)
 
         # カウント値への変換
+        S_all_pix = calc_S_all_pix(
+            light_instance_=light_instance,
+            A_GBT_=self.__GBT_instance.get_A_GBT(),
+            Omega_pix_=self.get_Omega_pix(),
+            I_dark_=self.__I_dark,
+            t_obs_=t_obs,
+            N_read_=self.__N_read,
+            G_sys_=self.__G_sys)
 
         # fitsへの保存
