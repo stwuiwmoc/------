@@ -140,7 +140,7 @@ if __name__ == "__main__":
         D_GBT=1,
         FNO_GBT=1,
         T_GBT=273,
-        tau_GBT=0.744)
+        tau_GBT=0.967)
 
     test_obj_image = ooem.VirtualOutputFileGenerator()
     test_sky_image = ooem.VirtualOutputFileGenerator()
@@ -148,8 +148,8 @@ if __name__ == "__main__":
     test_t_obs = np.arange(0, 100)
 
     # --- 観測対象の撮像 ---
-    # osmと同じくR(3, 0)輝線発光だけを考える
-    R_3_0.add_auroral_emission_to(light_instance=test_obj_light)
+    # osmと同じくR(3, 2)輝線発光だけを考える
+    R_3_2.add_auroral_emission_to(light_instance=test_obj_light)
     test_obj_light.show_rambda_vs_I_prime_plot()
 
     Haleakala_good.pass_through(light_instance=test_obj_light)
