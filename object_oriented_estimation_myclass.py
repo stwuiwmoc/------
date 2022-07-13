@@ -777,3 +777,45 @@ class ImagingInstrument:
 
         else:
             return self.__Omega_pix
+
+    def shoot_light_and_save_to_fits(
+            self,
+            light_instance: LightGenenrator,
+            virtual_output_file_instance: VirtualOutputFileGenerator) -> None:
+
+        def calc_gaussian(
+                y_max: float,
+                x_array: np.ndarray,
+                FWHM_: float,
+                x_center: float) -> np.ndarray:
+            """横軸x、縦軸y としてガウシアンを計算
+
+            Parameters
+            ----------
+            y_max : float
+                yの最大値（ガウシアンのピークでの値）
+            x_array : np.ndarray
+                x方向の1次元array
+            FWHM_ : float
+                ガウシアンの半値全幅
+            x_center : float
+                ガウシアンがピークをとるときの x の値
+
+            Returns
+            -------
+            np.ndarray
+                横軸x_arrayに対するガウシアンの値の1次元array
+            """
+
+            y_gaussian = y_max * np.exp(
+                - (x_array - x_center)**2 / (2 * (FWHM_ / (2 * np.sqrt(2 * np.log(2)))))
+            )
+
+            return y_gaussian
+
+        # 干渉フィルターの定義
+
+        # カウント値への変換
+
+        # fitsへの保存
+        pass
