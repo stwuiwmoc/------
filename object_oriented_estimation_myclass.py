@@ -310,16 +310,16 @@ class VirtualOutputFileGenerator:
     def get_n_bin_rambda(self) -> float:
         return self.__n_bin_rambda
 
-    def set_S_all_pix(self, S_all_pix) -> None:
+    def set_S_all_pix(self, S_all_pix: float) -> None:
         self.__S_all_pix = S_all_pix
 
-    def set_S_FW_pix(self, S_FW_pix) -> None:
+    def set_S_FW_pix(self, S_FW_pix: float) -> None:
         self.__S_FW_pix = S_FW_pix
 
-    def set_t_obs(self, t_obs) -> None:
+    def set_t_obs(self, t_obs: float) -> None:
         self.__t_obs = t_obs
 
-    def set_n_bin_rambda(self, n_bin_rambda) -> None:
+    def set_n_bin_rambda(self, n_bin_rambda: float) -> None:
         self.__n_bin_rambda = n_bin_rambda
 
 
@@ -896,3 +896,7 @@ class ImagingInstrument:
         print("S_FW_pix=", self.__S_FW_pix)
 
         # fitsへの保存
+        virtual_output_file_instance.set_S_all_pix(S_all_pix=S_all_pix)
+        virtual_output_file_instance.set_S_FW_pix(S_FW_pix=self.__S_FW_pix)
+        virtual_output_file_instance.set_t_obs(t_obs=t_obs)
+        virtual_output_file_instance.set_n_bin_rambda(n_bin_rambda=self.__n_bin_rambda)
