@@ -126,13 +126,13 @@ if __name__ == "__main__":
     test_imager = ooem.ImagingInstrument(
         rambda_fl_center=3.40e-6,
         FWHM_fl=20e-9,
-        tau_fl_center=1,
+        tau_fl_center=0.5,
         G_Amp=9,
         I_dark=50,
         N_read=1200)
 
     test_light.add_I_prime_to(
-        I_prime_xx=np.ones(test_light.get_len()))
+        I_prime_xx=np.ones(test_light.get_len()) * 12)
 
     test_light.show_rambda_vs_I_prime_plot()
 
