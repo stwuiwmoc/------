@@ -831,8 +831,16 @@ class ImagingInstrument:
             eta_ = 0.889  # [e- / photon] 検出器の量子効率
 
             # 波長積分での被積分関数の導出
+            integrand_ = ((I_prime_all_ * A_GBT_ * Omega_pix_) / (h_ * (c_ / rambda_))) * eta_
 
-            integrand = ((I_prime_all_ * A_GBT_ * Omega_pix_) / (h_ * (c_ / rambda_))) * eta_
+            # 波長方向積分
+            # 被積分関数の1次元arrayの各要素に対して波長方向の分割幅をかけてから総和をとる
+            integration_result = np.sum(integrand_ * light_instance_.get_rambda_division_width())
+
+            # カウント値の残りの部分を計算
+            S_all_pix_ = ((integration_result * I_dark_) * t_obs_ + N_read_) * (1 / G_sys_)
+
+            return S_all_pix_
 
         # 干渉フィルターの定義
         tau_i_filter = calc_gaussian(
@@ -858,5 +866,7 @@ class ImagingInstrument:
             t_obs_=t_obs,
             N_read_=self.__N_read,
             G_sys_=self.__G_sys)
+
+        print(S_all_pix)
 
         # fitsへの保存
