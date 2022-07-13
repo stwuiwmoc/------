@@ -118,17 +118,26 @@ if __name__ == "__main__":
     light.show_rambda_vs_I_prime_plot()
 
     # 透過率の動作テスト
-    light_test = ooem.LightGenenrator(
-        rambda_lower_limit=3.3e-6,
-        rambda_upper_limit=3.5e-6,
+    test_light = ooem.LightGenenrator(
+        rambda_lower_limit=3.36e-6,
+        rambda_upper_limit=3.44e-6,
         rambda_division_width=1e-9)
 
-    light_test.add_I_prime_to(
-        I_prime_xx=np.ones(light_test.get_len()))
-    light_test.show_rambda_vs_I_prime_plot()
+    test_imager = ooem.ImagingInstrument(
+        rambda_fl_center=3.40e-6,
+        FWHM_fl=20e-9,
+        tau_fl_center=1,
+        G_Amp=9,
+        I_dark=50,
+        N_read=1200)
 
-    TOPICS.shoot_light_and_save_to_fits(
-        light_instance=light_test,
+    test_light.add_I_prime_to(
+        I_prime_xx=np.ones(test_light.get_len()))
+
+    test_light.show_rambda_vs_I_prime_plot()
+
+    test_imager.shoot_light_and_save_to_fits(
+        light_instance=test_light,
         virtual_output_file_instance=fits)
 
-    light_test.show_rambda_vs_I_prime_plot()
+    test_light.show_rambda_vs_I_prime_plot()

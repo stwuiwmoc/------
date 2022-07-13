@@ -808,7 +808,7 @@ class ImagingInstrument:
             """
 
             y_gaussian = y_max * np.exp(
-                - (x_array - x_center)**2 / (2 * (FWHM_ / (2 * np.sqrt(2 * np.log(2)))))**2
+                - (x_array - x_center)**2 / (2 * (FWHM_ / (2 * np.sqrt(2 * np.log(2))))**2)
             )
 
             return y_gaussian
