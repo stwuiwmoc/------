@@ -135,12 +135,12 @@ if __name__ == "__main__":
 
     # 大気透過率を計算するクラスはまだ実装してないのでGBTのクラスで代用
     # osmでは大気透過率、大気の熱輻射もガウシアンとして近似しているのでこれでokのはず
-    # 観測見積もり.mdから、ハレアカラ10月、PWV=2000umでの透過率を使用
-    Haleakala_good = ooem.GroundBasedTelescope(
+    # 観測見積もり.mdから、名寄11月、PWV=8000umでの透過率を使用
+    Nayoro_good = ooem.GroundBasedTelescope(
         D_GBT=1,
         FNO_GBT=1,
         T_GBT=273,
-        tau_GBT=0.967)
+        tau_GBT=0.286)
 
     test_obj_image = ooem.VirtualOutputFileGenerator()
     test_sky_image = ooem.VirtualOutputFileGenerator()
@@ -148,11 +148,11 @@ if __name__ == "__main__":
     test_t_obs = np.arange(0, 100)
 
     # --- 観測対象の撮像 ---
-    # osmと同じくR(3, 2)輝線発光だけを考える
-    R_3_2.add_auroral_emission_to(light_instance=test_obj_light)
+    # osmと同じくR(3, 0)輝線発光だけを考える
+    R_3_0.add_auroral_emission_to(light_instance=test_obj_light)
     test_obj_light.show_rambda_vs_I_prime_plot()
 
-    Haleakala_good.pass_through(light_instance=test_obj_light)
+    Nayoro_good.pass_through(light_instance=test_obj_light)
     test_obj_light.show_rambda_vs_I_prime_plot()
 
     T60.pass_through(light_instance=test_obj_light)
@@ -166,7 +166,7 @@ if __name__ == "__main__":
     test_obj_light.show_rambda_vs_I_prime_plot()
 
     # --- skyイメージの撮像 ---
-    Haleakala_good.pass_through(light_instance=test_sky_light)
+    Nayoro_good.pass_through(light_instance=test_sky_light)
 
     T60.pass_through(light_instance=test_sky_light)
 
