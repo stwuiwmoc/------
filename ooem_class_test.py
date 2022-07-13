@@ -85,6 +85,8 @@ if __name__ == "__main__":
         I_dark=50,
         N_read=1200)
 
+    fits = ooem.VirtualOutputFileGenerator()
+
     # 輝線発光を加える
     R_3_0.add_auroral_emission_to(light_instance=light)
     print("Only R_3_0 emission, I = ", light.get_I())
@@ -106,3 +108,14 @@ if __name__ == "__main__":
 
     # 望遠鏡への撮像装置の設置
     TOPICS.set_ImagingInstrument_to(GBT_instance=T60)
+
+    # 撮像してfitsに保存
+    TOPICS.shoot_light_and_save_to_fits(
+        light_instance=light,
+        virtual_output_file_instance=fits,
+        t_obs=30)
+
+    light.show_rambda_vs_I_prime_plot()
+
+    print("S_all_pix =", fits.get_S_all_pix())
+    print("S_FW_pix =", fits.get_S_FW_pix())

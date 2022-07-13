@@ -310,16 +310,16 @@ class VirtualOutputFileGenerator:
     def get_n_bin_rambda(self) -> float:
         return self.__n_bin_rambda
 
-    def set_S_all_pix(self, S_all_pix) -> None:
+    def set_S_all_pix(self, S_all_pix: float) -> None:
         self.__S_all_pix = S_all_pix
 
-    def set_S_FW_pix(self, S_FW_pix) -> None:
+    def set_S_FW_pix(self, S_FW_pix: float) -> None:
         self.__S_FW_pix = S_FW_pix
 
-    def set_t_obs(self, t_obs) -> None:
+    def set_t_obs(self, t_obs: float) -> None:
         self.__t_obs = t_obs
 
-    def set_n_bin_rambda(self, n_bin_rambda) -> None:
+    def set_n_bin_rambda(self, n_bin_rambda: float) -> None:
         self.__n_bin_rambda = n_bin_rambda
 
 
@@ -777,3 +777,147 @@ class ImagingInstrument:
 
         else:
             return self.__Omega_pix
+
+    def shoot_light_and_save_to_fits(
+            self,
+            light_instance: LightGenenrator,
+            virtual_output_file_instance: VirtualOutputFileGenerator,
+            t_obs: float) -> None:
+        """光を受け取って、カウント値を計算し、仮想的なfitsファイルに値を保存
+
+        oop観測見積もり.md
+            └ 近赤外装置による撮像・分光 \n
+                ├ 検出器に到達した段階での分光放射輝度 \n
+                └ Signalへの換算 \n
+
+        Parameters
+        ----------
+        light_instance : LightGenenrator
+            自作インスタンス
+        virtual_output_file_instance : VirtualOutputFileGenerator
+            自作インスタンス
+        t_obs : float
+            [s] 積分時間、floatでも1次元のarrayでもよい
+        """
+
+        def calc_gaussian(
+                y_max: float,
+                x_array: np.ndarray,
+                FWHM_: float,
+                x_center: float) -> np.ndarray:
+            """横軸x、縦軸y としてガウシアンを計算
+
+            oop観測見積もり.md
+                └ 近赤外装置による撮像・分光 \n
+                    └ 干渉フィルター透過率の導出 \n
+
+            Parameters
+            ----------
+            y_max : float
+                yの最大値（ガウシアンのピークでの値）
+            x_array : np.ndarray
+                x方向の1次元array
+            FWHM_ : float
+                ガウシアンの半値全幅
+            x_center : float
+                ガウシアンがピークをとるときの x の値
+
+            Returns
+            -------
+            np.ndarray
+                横軸x_arrayに対するガウシアンの値の1次元array
+            """
+
+            y_gaussian = y_max * np.exp(
+                - (x_array - x_center)**2 / (2 * (FWHM_ / (2 * np.sqrt(2 * np.log(2))))**2)
+            )
+
+            return y_gaussian
+
+        def calc_S_all_pix(
+                light_instance_: LightGenenrator,
+                Omega_pix_: float,
+                A_GBT_: float,
+                I_dark_: float,
+                t_obs_: float,
+                N_read_: float,
+                G_sys_: float) -> float:
+            """カウント値 S_all_pixを計算
+
+            oop観測見積もり.md
+                └ 近赤外装置による撮像・分光 \n
+                    └ Signalへの換算 \n
+
+            Parameters
+            ----------
+            light_instance_ : LightGenenrator
+                自作インスタンス,
+                I_all_primeの状態になっている（装置透過率までかけてある）もの
+            A_GBT_ : float
+                [m^2] 望遠鏡の開口面積
+            Omega_pix_ : float
+                [sr / pix] 1pixelが見込む立体角
+            I_dark_ : float
+                [e- / s / pix] 検出器の暗電流
+            t_obs_ : float
+                [s] 積分時間
+            N_read_ : float
+                [e-rms / pix] 駆動回路読み出しノイズ
+            G_sys_ : float
+                [e- / DN]システムゲイン
+
+            Returns
+            -------
+            float
+                [DN] 1pixelあたりのカウント値
+            """
+
+            # 入力パラメータ以外の文字の定義
+            I_prime_all_ = light_instance_.get_I_prime()
+            h_ = phys_consts.h
+            c_ = phys_consts.c
+            rambda_ = light_instance_.get_rambda()
+            eta_ = 0.889  # [e- / photon] 検出器の量子効率
+
+            # 波長積分での被積分関数の導出
+            integrand_ = ((I_prime_all_ * A_GBT_ * Omega_pix_) / (h_ * (c_ / rambda_))) * eta_
+
+            # 波長方向積分
+            # 被積分関数の1次元arrayの各要素に対して波長方向の分割幅をかけてから総和をとる
+            integration_result = np.sum(integrand_ * light_instance_.get_rambda_division_width())
+
+            # カウント値の残りの部分を計算
+            S_all_pix_ = ((integration_result + I_dark_) * t_obs_ + N_read_) * (1 / G_sys_)
+
+            return S_all_pix_
+
+        # 干渉フィルターの定義
+        tau_i_filter = calc_gaussian(
+            y_max=self.__tau_fl_center,
+            x_array=light_instance.get_rambda(),
+            FWHM_=self.__FWHM_fl,
+            x_center=self.__rambda_fl_center)
+
+        # 装置透過率の導出
+        tau_i_lens = 0.9 ** 3
+        tau_i_mirror = 1
+        tau_i = tau_i_lens * tau_i_mirror * tau_i_filter
+
+        # 装置透過率を光にかける
+        light_instance.multiply_I_prime_to(magnification=tau_i)
+
+        # カウント値への変換
+        S_all_pix = calc_S_all_pix(
+            light_instance_=light_instance,
+            Omega_pix_=self.get_Omega_pix(),
+            A_GBT_=self.__GBT_instance.get_A_GBT(),
+            I_dark_=self.__I_dark,
+            t_obs_=t_obs,
+            N_read_=self.__N_read,
+            G_sys_=self.__G_sys)
+
+        # fitsへの保存
+        virtual_output_file_instance.set_S_all_pix(S_all_pix=S_all_pix)
+        virtual_output_file_instance.set_S_FW_pix(S_FW_pix=self.__S_FW_pix)
+        virtual_output_file_instance.set_t_obs(t_obs=t_obs)
+        virtual_output_file_instance.set_n_bin_rambda(n_bin_rambda=self.__n_bin_rambda)
