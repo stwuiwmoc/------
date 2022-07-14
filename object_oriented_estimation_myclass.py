@@ -940,4 +940,5 @@ class ImagingInstrument:
         virtual_output_file_instance.set_t_obs(t_obs=t_obs)
         virtual_output_file_instance.set_n_bin_rambda(n_bin_rambda=self.__n_bin_rambda)
         virtual_output_file_instance.set_N_read_pix(N_read_pix=self.__N_read)
-        virtual_output_file_instance.set_N_dark_pix(N_dark_pix=np.sqrt(self.__I_dark * t_obs))
+        virtual_output_file_instance.set_N_dark_pix(
+            N_dark_pix=np.sqrt(self.__I_dark * t_obs / self.__G_sys))
