@@ -520,19 +520,19 @@ class EarthAtmosphere:
             self,
             T_ATM: float,
             observatory_name: str,
-            ATRAN_PWV: float,
-            ATRAN_zenith_angle: float,
-            ATRAN_wavelength_range_min: float,
-            ATRAN_wavelength_range_max: float,
+            ATRAN_PWV_um: float,
+            ATRAN_zenith_angle_deg: float,
+            ATRAN_wavelength_range_min_um: float,
+            ATRAN_wavelength_range_max_um: float,
             ATRAN_Resolution_R: float) -> None:
 
         # 入力されたパラメータの代入
         self.__T_ATM = T_ATM
         self.__observatory_name = observatory_name
-        self.__ATRAN_PWV = ATRAN_PWV
-        self.__ATRAN_zenith_angle = ATRAN_zenith_angle
-        self.__ATRAN_wavelength_range_min = ATRAN_wavelength_range_min
-        self.__ATRAN_wavelength_range_max = ATRAN_wavelength_range_max
+        self.__ATRAN_PWV_um = ATRAN_PWV_um
+        self.__ATRAN_zenith_angle_deg = ATRAN_zenith_angle_deg
+        self.__ATRAN_wavelength_range_min_um = ATRAN_wavelength_range_min_um
+        self.__ATRAN_wavelength_range_max_um = ATRAN_wavelength_range_max_um
         self.__ATRAN_Resolution_R = ATRAN_Resolution_R
 
     def h(self):
@@ -544,25 +544,47 @@ class EarthAtmosphere:
     def get_observatory_name(self) -> str:
         return self.__observatory_name
 
-    def get_ATRAN_PWV(self) -> float:
-        return self.__ATRAN_PWV
+    def get_ATRAN_PWV_um(self) -> float:
+        return self.__ATRAN_PWV_um
 
-    def get_ATRAN_zenith_angle(self) -> float:
-        return self.__ATRAN_zenith_angle
+    def get_ATRAN_zenith_angle_deg(self) -> float:
+        return self.__ATRAN_zenith_angle_deg
 
-    def get_ATRAN_wavelength_range_min(self) -> float:
-        return self.__ATRAN_wavelength_range_min
+    def get_ATRAN_wavelength_range_min_um(self) -> float:
+        return self.__ATRAN_wavelength_range_min_um
 
-    def get_ATRAN_wavelength_range_max(self) -> float:
-        return self.__ATRAN_wavelength_range_max
+    def get_ATRAN_wavelength_range_max_um(self) -> float:
+        return self.__ATRAN_wavelength_range_max_um
 
     def get_ATRAN_Resolution_R(self) -> float:
         return self.__ATRAN_Resolution_R
 
     def __make_tau_ATM_function(self):
 
-        def make_ATRAN_result_filepath() -> str:
-            pass
+        def make_ATRAN_result_filepath(
+                observatory_name_,
+                ATRAN_PWV_um_,
+                ATRAN_zenith_angle_deg_,
+                ATRAN_wavelength_range_min_um_,
+                ATRAN_wavelength_range_max_um_,
+                ATRAN_Resolution_R_) -> str:
+
+            ATRAN_PWV_um_str = str(ATRAN_PWV_um_)
+            ATRAN_zenith_angle_deg_str = str(ATRAN_zenith_angle_deg_)
+            ATRAN_wavelength_range_min_um_str = str(ATRAN_wavelength_range_min_um_)
+            ATRAN_wavelength_range_max_um_str = str(ATRAN_wavelength_range_max_um_)
+            ATRAN_Resolution_R_str = str(ATRAN_Resolution_R_)
+
+            filepath_ = "raw_data/"\
+                + observatory_name_\
+                + "_PWV" + ATRAN_PWV_um_str\
+                + "_ZA" + ATRAN_zenith_angle_deg_str\
+                + "_Range" + ATRAN_wavelength_range_min_um_str\
+                + "to" + ATRAN_wavelength_range_max_um_str\
+                + "_R" + ATRAN_Resolution_R_str\
+                + ".txt"
+
+            return filepath_
 
         def get_ATRAN_rambda_and_ATRAN_tau_ATM(
                 ATRAN_result_filepath: str) -> list[np.ndarray, np.ndarray]:
