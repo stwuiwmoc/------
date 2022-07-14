@@ -514,6 +514,52 @@ class H3plusAuroralEmission:
         light_instance.add_I_prime_to(I_prime_xx=I_prime_obj)
 
 
+class EarthAtmosphere:
+
+    def __init__(
+            self,
+            T_ATM: float,
+            observatory_name: str,
+            ATRAN_PWV: float,
+            ATRAN_zenith_angle: float,
+            ATRAN_wavelength_range_min: float,
+            ATRAN_wavelength_range_max: float,
+            ATRAN_Resolution_R: float) -> None:
+
+        # 入力されたパラメータの代入
+        self.__T_ATM = T_ATM
+        self.__observatory_name = observatory_name
+        self.__ATRAN_PWV = ATRAN_PWV
+        self.__ATRAN_zenith_angle = ATRAN_zenith_angle
+        self.__ATRAN_wavelength_range_min = ATRAN_wavelength_range_min
+        self.__ATRAN_wavelength_range_max = ATRAN_wavelength_range_max
+        self.__ATRAN_Resolution_R = ATRAN_Resolution_R
+
+    def h(self):
+        mkhelp(self)
+
+    def get_T_ATM(self) -> float:
+        return self.__T_ATM
+
+    def get_observatory_name(self) -> str:
+        return self.__observatory_name
+
+    def get_ATRAN_PWV(self) -> float:
+        return self.__ATRAN_PWV
+
+    def get_ATRAN_zenith_angle(self) -> float:
+        return self.__ATRAN_zenith_angle
+
+    def get_ATRAN_wavelength_range_min(self) -> float:
+        return self.__ATRAN_wavelength_range_min
+
+    def get_ATRAN_wavelength_range_max(self) -> float:
+        return self.__ATRAN_wavelength_range_max
+
+    def get_ATRAN_Resolution_R(self) -> float:
+        return self.__ATRAN_Resolution_R
+
+
 class GroundBasedTelescope:
 
     def __init__(
