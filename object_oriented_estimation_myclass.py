@@ -528,7 +528,7 @@ class GroundBasedTelescope:
         oop観測見積もり.md
             └ 望遠鏡の発光 \n
                 ├ 望遠鏡光学系のパラメータ \n
-                └ 望遠鏡の熱輻射による放射輝度 \n
+                └ 望遠鏡の熱輻射による分光放射輝度 \n
 
         Parameters
         ----------
@@ -589,7 +589,7 @@ class GroundBasedTelescope:
 
             oop観測見積もり.md
                 └ 望遠鏡の発光 \n
-                    └ 望遠鏡の熱輻射による放射輝度 \n
+                    └ 望遠鏡の熱輻射による分光放射輝度 \n
 
             Parameters
             ----------
