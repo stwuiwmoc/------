@@ -89,7 +89,7 @@ if __name__ == "__main__":
 
     # 輝線発光を加える
     R_3_0.add_auroral_emission_to(light_instance=light)
-    print("Only R_3_0 emission, I = ", light.get_I())
+    print("Only R_3_0 emission, I =", light.get_I())
 
     R_3_1.add_auroral_emission_to(light_instance=light)
 
@@ -119,3 +119,4 @@ if __name__ == "__main__":
 
     print("S_all_pix =", fits.get_S_all_pix())
     print("S_FW_pix =", fits.get_S_FW_pix())
+    print("N_dark_pix =", fits.get_N_dark_pix())

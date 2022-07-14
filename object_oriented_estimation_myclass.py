@@ -294,6 +294,8 @@ class VirtualOutputFileGenerator:
         self.__S_FW_pix = None
         self.__t_obs = None
         self.__n_bin_rambda = None
+        self.__N_dark_pix = None
+        self.__N_read_pix = None
 
     def h(self):
         mkhelp(self)
@@ -310,6 +312,16 @@ class VirtualOutputFileGenerator:
     def get_n_bin_rambda(self) -> float:
         return self.__n_bin_rambda
 
+    def get_N_dark_pix(self) -> float:
+        return self.__N_dark_pix
+
+    def get_N_read_pix(self) -> float:
+        return self.__N_read_pix
+
+    def get_N_all_pix(self) -> float:
+        N_all_pix = np.sqrt(self.__S_all_pix)
+        return N_all_pix
+
     def set_S_all_pix(self, S_all_pix: float) -> None:
         self.__S_all_pix = S_all_pix
 
@@ -321,6 +333,12 @@ class VirtualOutputFileGenerator:
 
     def set_n_bin_rambda(self, n_bin_rambda: float) -> None:
         self.__n_bin_rambda = n_bin_rambda
+
+    def set_N_dark_pix(self, N_dark_pix: float) -> None:
+        self.__N_dark_pix = N_dark_pix
+
+    def set_N_read_pix(self, N_read_pix: float) -> None:
+        self.__N_read_pix = N_read_pix
 
 
 class H3plusAuroralEmission:
@@ -921,3 +939,6 @@ class ImagingInstrument:
         virtual_output_file_instance.set_S_FW_pix(S_FW_pix=self.__S_FW_pix)
         virtual_output_file_instance.set_t_obs(t_obs=t_obs)
         virtual_output_file_instance.set_n_bin_rambda(n_bin_rambda=self.__n_bin_rambda)
+        virtual_output_file_instance.set_N_read_pix(N_read_pix=self.__N_read)
+        virtual_output_file_instance.set_N_dark_pix(
+            N_dark_pix=np.sqrt(self.__I_dark * t_obs / self.__G_sys))
