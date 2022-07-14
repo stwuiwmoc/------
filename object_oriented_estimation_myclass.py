@@ -559,6 +559,30 @@ class EarthAtmosphere:
     def get_ATRAN_Resolution_R(self) -> float:
         return self.__ATRAN_Resolution_R
 
+    def __make_tau_ATM_function(self):
+
+        def make_ATRAN_result_filepath() -> str:
+            pass
+
+        def get_ATRAN_rambda_and_ATRAN_tau_ATM(
+                ATRAN_result_filepath: str) -> list[np.ndarray, np.ndarray]:
+
+            ATRAN_rambda_array_ = None
+            ATRAN_tau_ATM_array_ = None
+            return ATRAN_rambda_array_, ATRAN_tau_ATM_array_
+
+        def calc_tau_ATM_function(
+                ATRAN_rambda_array_: np.ndarray,
+                ATRAN_tau_ATM_array_: np.ndarray):
+            pass
+
+        # 透過率計算結果のファイルパス文字列を作成する
+
+        # 透過率計算結果のファイルを読み込む
+
+        # 関数にする
+        pass
+
 
 class GroundBasedTelescope:
 
