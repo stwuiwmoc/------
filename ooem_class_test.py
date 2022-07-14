@@ -119,3 +119,4 @@ if __name__ == "__main__":
 
     print("S_all_pix =", fits.get_S_all_pix())
     print("S_FW_pix =", fits.get_S_FW_pix())
+    print("N_dark_pix =", fits.get_N_dark_pix())
