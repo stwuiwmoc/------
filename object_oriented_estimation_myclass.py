@@ -601,20 +601,23 @@ class EarthAtmosphere:
             Returns
             -------
             list[np.ndarray, np.ndarray]
-                list[0] 波長の1次元array,
-                list[1] 透過率の1次元array
+                list[0] [m] 波長の1次元array,
+                list[1] [無次元] 透過率の1次元array
             """
 
             # 想定する.txtの内部構造は空白区切りで
-            # idx0 波長0 透過率0
-            # idx1 波長1 透過率1
+            # idx0 波長um0 透過率0
+            # idx1 波長um1 透過率1
+            # idx2 波長um2 透過率2
             # ...
             # という形（ATRANの出力をCtrl+Sでtxtとして保存したもの）
 
             raw = np.loadtxt(fname=ATRAN_result_filepath_)
 
-            ATRAN_rambda_array_ = raw[:, 1]
+            ATRAN_rambda_array_um = raw[:, 1]  # ATRANで出力される波長はum単位
             ATRAN_tau_ATM_array_ = raw[:, 2]
+
+            ATRAN_rambda_array_ = ATRAN_rambda_array_um * 1e-6  # 波長の単位をmに直す
             return ATRAN_rambda_array_, ATRAN_tau_ATM_array_
 
         def calc_tau_ATM_function(
