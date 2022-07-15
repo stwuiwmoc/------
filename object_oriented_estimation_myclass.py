@@ -571,6 +571,11 @@ class EarthAtmosphere:
         ATRAN出力結果のtxtファイルを読み込み、
         波長を代入すると大気透過率を返す関数を作成する
 
+        oop観測見積もり.md
+            └ 地球大気の発光 \n
+                ├ 地球大気のパラメータ \n
+                └ ATRANによる大気透過率の計算 \n
+
         Returns
         -------
         interpolate.interpolate.interp1d
