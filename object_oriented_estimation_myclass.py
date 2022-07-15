@@ -590,10 +590,25 @@ class EarthAtmosphere:
             return filepath_
 
         def get_ATRAN_rambda_and_ATRAN_tau_ATM(
-                ATRAN_result_filepath: str) -> list[np.ndarray, np.ndarray]:
+                ATRAN_result_filepath_: str) -> list[np.ndarray, np.ndarray]:
+            """ATRANの計算結果のファイルを読み込んで波長と透過率それぞれ1次元のarrayを返す
 
-            ATRAN_rambda_array_ = None
-            ATRAN_tau_ATM_array_ = None
+            Parameters
+            ----------
+            ATRAN_result_filepath_ : str
+                ATRANの計算結果のファイルパス（.txt）
+
+            Returns
+            -------
+            list[np.ndarray, np.ndarray]
+                list[0] 波長の1次元array,
+                list[1] 透過率の1次元array
+            """
+
+            raw = np.loadtxt(fname=ATRAN_result_filepath_)
+
+            ATRAN_rambda_array_ = raw[:, 1]
+            ATRAN_tau_ATM_array_ = raw[:, 2]
             return ATRAN_rambda_array_, ATRAN_tau_ATM_array_
 
         def calc_tau_ATM_function(
@@ -611,6 +626,8 @@ class EarthAtmosphere:
             ATRAN_Resolution_R_=self.__ATRAN_Resolution_R)
 
         # 透過率計算結果のファイルを読み込む
+        ATRAN_rambda_array, ATRAN_tau_ATM_array = get_ATRAN_rambda_and_ATRAN_tau_ATM(
+            ATRAN_result_filepath_=ATRAN_result_filepath)
 
         # 関数にする
         pass
