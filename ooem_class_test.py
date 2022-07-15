@@ -111,6 +111,10 @@ if __name__ == "__main__":
     R_4_4.add_auroral_emission_to(light_instance=light)
     light.show_rambda_vs_I_prime_plot()
 
+    # 地球大気を通る
+    Haleakala_good.pass_through(light_instance=light)
+    light.show_rambda_vs_I_prime_plot()
+
     # 望遠鏡を通る
     T60.pass_through(light_instance=light)
     light.show_rambda_vs_I_prime_plot()

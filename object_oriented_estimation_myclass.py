@@ -683,6 +683,57 @@ class EarthAtmosphere:
 
         return tau_ATM_function
 
+    def pass_through(
+            self,
+            light_instance: LightGenenrator) -> None:
+        """光に大気透過率をかけ、大気の熱輻射による分光放射輝度を加える
+
+        Parameters
+        ----------
+        light_instance : LightGenenrator
+            自作インスタンス
+        """
+
+        def calc_I_prime_ATM(
+                rambda_: np.ndarray,
+                tau_ATM_: np.ndarray) -> np.ndarray:
+            """望遠鏡の熱輻射による分光放射輝度を計算
+
+            oop観測見積もり.md
+                └ 地球大気の発光 \n
+                    └ 地球大気の熱輻射による分光放射輝度 \n
+
+            Parameters
+            ----------
+            rambda_ : np.ndarray
+                LightGenerator.get_rambda()
+            tau_ATM_ : np.ndarray
+                [無次元] 大気透過率の1次元array
+
+            Returns
+            -------
+            np.ndarray
+                [W / m^2 / sr / m] 分光放射輝度
+            """
+            T_ATM = self.__T_ATM
+
+            I_prime_ATM_ = (1 - tau_ATM_) * calc_Plank_law_I_prime(rambda=rambda_, T=T_ATM)
+
+            return I_prime_ATM_
+
+        # 光の波長範囲・波長幅に対応した大気透過率の1次元arrayを計算する
+        tau_ATM = self.__tau_ATM_function(light_instance.get_rambda())
+
+        # 光に対して大気の透過率をかける
+        light_instance.multiply_I_prime_to(magnification=tau_ATM)
+
+        # 光に対して大気の熱輻射による分光放射輝度を加える
+        I_prime_ATM = calc_I_prime_ATM(
+            rambda_=light_instance.get_rambda(),
+            tau_ATM_=tau_ATM)
+
+        light_instance.add_I_prime_to(I_prime_xx=I_prime_ATM)
+
 
 class GroundBasedTelescope:
 
