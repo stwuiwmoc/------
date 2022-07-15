@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 from scipy import constants as phys_consts
+from scipy import interpolate
 
 
 def mkhelp(instance):
@@ -536,7 +537,7 @@ class EarthAtmosphere:
         self.__ATRAN_Resolution_R = ATRAN_Resolution_R
 
         # 透過率関数の作成
-        self.__make_tau_ATM_function()
+        self.__tau_ATM_function = self.__make_tau_ATM_function()
 
     def h(self):
         mkhelp(self)
@@ -562,7 +563,10 @@ class EarthAtmosphere:
     def get_ATRAN_Resolution_R(self) -> float:
         return self.__ATRAN_Resolution_R
 
-    def __make_tau_ATM_function(self):
+    def get_tau_ATM_function(self) -> interpolate.interpolate.interp1d:
+        return self.__tau_ATM_function
+
+    def __make_tau_ATM_function(self) -> interpolate.interpolate.interp1d:
 
         def make_ATRAN_result_filepath(
                 observatory_name_,
@@ -622,8 +626,14 @@ class EarthAtmosphere:
 
         def calc_tau_ATM_function(
                 ATRAN_rambda_array_: np.ndarray,
-                ATRAN_tau_ATM_array_: np.ndarray):
-            pass
+                ATRAN_tau_ATM_array_: np.ndarray) -> interpolate.interpolate.interp1d:
+
+            tau_ATM_function_ = interpolate.interp1d(
+                x=ATRAN_rambda_array_,
+                y=ATRAN_tau_ATM_array_,
+                kind="linear")
+
+            return tau_ATM_function_
 
         # 透過率計算結果のファイルパス文字列を作成する
         ATRAN_result_filepath = make_ATRAN_result_filepath(
@@ -639,7 +649,11 @@ class EarthAtmosphere:
             ATRAN_result_filepath_=ATRAN_result_filepath)
 
         # 関数にする
-        pass
+        tau_ATM_function = calc_tau_ATM_function(
+            ATRAN_rambda_array_=ATRAN_rambda_array,
+            ATRAN_tau_ATM_array_=ATRAN_tau_ATM_array)
+
+        return tau_ATM_function
 
 
 class GroundBasedTelescope:
