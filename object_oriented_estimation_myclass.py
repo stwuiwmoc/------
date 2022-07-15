@@ -567,6 +567,15 @@ class EarthAtmosphere:
         return self.__tau_ATM_function
 
     def __make_tau_ATM_function(self) -> interpolate.interpolate.interp1d:
+        """initで入力されたATRANのパラメータに応じて、
+        ATRAN出力結果のtxtファイルを読み込み、
+        波長を代入すると大気透過率を返す関数を作成する
+
+        Returns
+        -------
+        interpolate.interpolate.interp1d
+            関数（波長を入力するとその波長に対する大気透過率を出力する）
+        """
 
         def make_ATRAN_result_filepath(
                 observatory_name_,
@@ -627,6 +636,20 @@ class EarthAtmosphere:
         def calc_tau_ATM_function(
                 ATRAN_rambda_array_: np.ndarray,
                 ATRAN_tau_ATM_array_: np.ndarray) -> interpolate.interpolate.interp1d:
+            """ATRANの離散的な出力（波長と透過率）を線形補間し、波長を入れると透過率を返す関数を作る
+
+            Parameters
+            ----------
+            ATRAN_rambda_array_ : np.ndarray
+                [m] ATRANの出力した計算結果のうち、波長をum -> mに単位換算した1次元array
+            ATRAN_tau_ATM_array_ : np.ndarray
+                [透過率] ATRANの出力した計算結果のうち、透過率の1次元array
+
+            Returns
+            -------
+            interpolate.interpolate.interp1d
+                関数（波長を入力するとその波長に対する大気透過率を出力する）
+            """
 
             tau_ATM_function_ = interpolate.interp1d(
                 x=ATRAN_rambda_array_,
