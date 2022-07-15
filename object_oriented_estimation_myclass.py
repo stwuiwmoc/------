@@ -535,6 +535,9 @@ class EarthAtmosphere:
         self.__ATRAN_wavelength_range_max_um = ATRAN_wavelength_range_max_um
         self.__ATRAN_Resolution_R = ATRAN_Resolution_R
 
+        # 透過率関数の作成
+        self.__make_tau_ATM_function()
+
     def h(self):
         mkhelp(self)
 
@@ -599,6 +602,13 @@ class EarthAtmosphere:
             pass
 
         # 透過率計算結果のファイルパス文字列を作成する
+        ATRAN_result_filepath = make_ATRAN_result_filepath(
+            observatory_name_=self.__observatory_name,
+            ATRAN_PWV_um_=self.__ATRAN_PWV_um,
+            ATRAN_zenith_angle_deg_=self.__ATRAN_zenith_angle_deg,
+            ATRAN_wavelength_range_min_um_=self.__ATRAN_wavelength_range_min_um,
+            ATRAN_wavelength_range_max_um_=self.__ATRAN_wavelength_range_max_um,
+            ATRAN_Resolution_R_=self.__ATRAN_Resolution_R)
 
         # 透過率計算結果のファイルを読み込む
 

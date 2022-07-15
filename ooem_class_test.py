@@ -71,6 +71,15 @@ if __name__ == "__main__":
         E_prime=3332.4121,
         T_hypo=T_thermospheric_H3plus)
 
+    Haleakala_good = ooem.EarthAtmosphere(
+        T_ATM=273,
+        observatory_name="Ha",
+        ATRAN_PWV_um=2000,
+        ATRAN_zenith_angle_deg=22,
+        ATRAN_wavelength_range_min_um=3,
+        ATRAN_wavelength_range_max_um=4,
+        ATRAN_Resolution_R=0)
+
     T60 = ooem.GroundBasedTelescope(
         D_GBT=0.6,
         FNO_GBT=12,
