@@ -71,11 +71,38 @@ if __name__ == "__main__":
         E_prime=3332.4121,
         T_hypo=T_thermospheric_H3plus)
 
-    Haleakala_good = ooem.EarthAtmosphere(
+    Haleakala_Oct_good = ooem.EarthAtmosphere(
         T_ATM=273,
         observatory_name="Ha",
         ATRAN_PWV_um=2000,
         ATRAN_zenith_angle_deg=22,
+        ATRAN_wavelength_range_min_um=3,
+        ATRAN_wavelength_range_max_um=4,
+        ATRAN_Resolution_R=0)
+
+    Haleakala_Oct_average = ooem.EarthAtmosphere(
+        T_ATM=273,
+        observatory_name="Ha",
+        ATRAN_PWV_um=5000,
+        ATRAN_zenith_angle_deg=22,
+        ATRAN_wavelength_range_min_um=3,
+        ATRAN_wavelength_range_max_um=4,
+        ATRAN_Resolution_R=0)
+
+    Nayoro_Oct = ooem.EarthAtmosphere(
+        T_ATM=273,
+        observatory_name="Na",
+        ATRAN_PWV_um=15000,
+        ATRAN_zenith_angle_deg=45,
+        ATRAN_wavelength_range_min_um=3,
+        ATRAN_wavelength_range_max_um=4,
+        ATRAN_Resolution_R=0)
+
+    Nayoro_Nov = ooem.EarthAtmosphere(
+        T_ATM=273,
+        observatory_name="Na",
+        ATRAN_PWV_um=8000,
+        ATRAN_zenith_angle_deg=46,
         ATRAN_wavelength_range_min_um=3,
         ATRAN_wavelength_range_max_um=4,
         ATRAN_Resolution_R=0)
@@ -112,7 +139,7 @@ if __name__ == "__main__":
     light.show_rambda_vs_I_prime_plot()
 
     # 地球大気を通る
-    Haleakala_good.pass_through(light_instance=light)
+    Haleakala_Oct_good.pass_through(light_instance=light)
     light.show_rambda_vs_I_prime_plot()
 
     # 望遠鏡を通る
