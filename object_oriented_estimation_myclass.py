@@ -605,6 +605,12 @@ class EarthAtmosphere:
                 list[1] 透過率の1次元array
             """
 
+            # 想定する.txtの内部構造は空白区切りで
+            # idx0 波長0 透過率0
+            # idx1 波長1 透過率1
+            # ...
+            # という形（ATRANの出力をCtrl+Sでtxtとして保存したもの）
+
             raw = np.loadtxt(fname=ATRAN_result_filepath_)
 
             ATRAN_rambda_array_ = raw[:, 1]
