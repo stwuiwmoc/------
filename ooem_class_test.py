@@ -97,6 +97,10 @@ if __name__ == "__main__":
 
     fits = ooem.VirtualOutputFileGenerator()
 
+    # plot作成の準備
+    fig1 = plt.figure(figsize=(10, 12))
+    gs1 = fig1.add_gridspec(4, 2)
+
     # 輝線発光を加える
     R_3_0.add_auroral_emission_to(light_instance=light)
     print("Only R_3_0 emission, I =", light.get_I())
@@ -110,15 +114,15 @@ if __name__ == "__main__":
     R_4_3.add_auroral_emission_to(light_instance=light)
 
     R_4_4.add_auroral_emission_to(light_instance=light)
-    light.show_rambda_vs_I_prime_plot()
+    ax11 = light.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[0, 0])
 
     # 地球大気を通る
     Haleakala_Oct_good.pass_through(light_instance=light)
-    light.show_rambda_vs_I_prime_plot()
+    ax12 = light.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[1, 0])
 
     # 望遠鏡を通る
     T60.pass_through(light_instance=light)
-    light.show_rambda_vs_I_prime_plot()
+    ax13 = light.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[2, 0])
 
     # 望遠鏡への撮像装置の設置
     TOPICS.set_ImagingInstrument_to(GBT_instance=T60)
@@ -129,15 +133,21 @@ if __name__ == "__main__":
         virtual_output_file_instance=fits,
         t_obs=20)
 
-    light.show_rambda_vs_I_prime_plot()
+    ax14 = light.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[3, 0])
 
     print("S_all_pix =", fits.get_S_all_pix())
     print("S_FW_pix =", fits.get_S_FW_pix())
     print("N_dark_pix =", fits.get_N_dark_pix())
 
-    # rambda vs I_prime plotのテスト
-    fig1 = plt.figure()
-    gs1 = fig1.add_gridspec(1, 1)
+    # plot
+    ax11.set_title("H3+ emission lines")
+    ax12.set_title("pass thruogh Earth Atmosphre")
+    ax13.set_title("Pass through Ground-based-telescope")
+    ax14.set_title("Pass through imaging instrument")
+    parametar_table_list = [
+        ["", "", ""]
+    ]
+    ax15 = ooem.plot_parameter_table(
+        fig=fig1, position=gs1[:, 1], parameter_table=parametar_table_list, fontsize=5)
 
-    ax11 = light.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[0, 0])
-    ax11.set_title("hoge")
+    fig1.tight_layout()
