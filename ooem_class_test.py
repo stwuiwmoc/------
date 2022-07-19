@@ -5,6 +5,25 @@ import matplotlib.pyplot as plt
 import object_oriented_estimation_myclass as ooem
 
 
+def mkfolder(suffix=""):
+    import os
+    """
+    Parameters
+    ----------
+    suffix : str, optional
+        The default is "".
+
+    Returns
+    -------
+    str ( script name + suffix )
+    """
+    filename = os.path.basename(__file__)
+    filename = filename.replace(".py", "") + suffix
+    folder = "mkfolder/" + filename + "/"
+    os.makedirs(folder, exist_ok=True)
+    return folder
+
+
 if __name__ == "__main__":
     importlib.reload(ooem)
 
@@ -98,7 +117,7 @@ if __name__ == "__main__":
     fits = ooem.VirtualOutputFileGenerator()
 
     # plot作成の準備
-    fig1 = plt.figure(figsize=(10, 12))
+    fig1 = plt.figure(figsize=(10, 10))
     gs1 = fig1.add_gridspec(4, 2)
 
     # 輝線発光を加える
@@ -144,10 +163,30 @@ if __name__ == "__main__":
     ax12.set_title("pass thruogh Earth Atmosphre")
     ax13.set_title("Pass through Ground-based-telescope")
     ax14.set_title("Pass through imaging instrument")
+
     parametar_table_list = [
-        ["", "", ""]
+        ooem.get_latest_commit_datetime(),
+        ["Have some change", "from above commit", ooem.have_some_change_in_git_status()],
+        ["", "", ""],
+        ["EarthAtmosphre", "", ""],
+        ["ATRAN result filename", Haleakala_Oct_good.get_ATRAN_result_filepath()[9:24], Haleakala_Oct_good.get_ATRAN_result_filepath()[24:]],
+        ["T_ATM", Haleakala_Oct_good.get_T_ATM(), "K"],
+        ["", "", ""],
+        ["GroundBasedTelescope", "", ""],
+        ["D_GBT", T60.get_D_GBT(), "m^2"],
+        ["FNO_GBT", T60.get_FNO_GBT(), ""],
+        ["T_GBT", T60.get_T_GBT(), "K"],
+        ["", "", ""],
+        ["ImagingInstrument", "", ""],
+        ["rambda_fl_center", TOPICS.get_rambda_fl_center(), "m"],
+        ["FWHM_fl", TOPICS.get_FWHM_fl(), "m"],
+        ["tau_fl_center", TOPICS.get_tau_fl_center(), ""],
+        ["I_dark_pix", TOPICS.get_I_dark(), "e- / s"],
+        ["N_read_pix", TOPICS.get_N_read(), "e-rms"]
     ]
+
     ax15 = ooem.plot_parameter_table(
-        fig=fig1, position=gs1[:, 1], parameter_table=parametar_table_list, fontsize=5)
+        fig=fig1, position=gs1[:, 1], parameter_table=parametar_table_list, fontsize=7)
 
     fig1.tight_layout()
+    fig1.savefig(mkfolder() + "fig1.png")
