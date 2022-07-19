@@ -80,33 +80,6 @@ if __name__ == "__main__":
         ATRAN_wavelength_range_max_um=4,
         ATRAN_Resolution_R=0)
 
-    Haleakala_Oct_average = ooem.EarthAtmosphere(
-        T_ATM=273,
-        observatory_name="Ha",
-        ATRAN_PWV_um=5000,
-        ATRAN_zenith_angle_deg=22,
-        ATRAN_wavelength_range_min_um=3,
-        ATRAN_wavelength_range_max_um=4,
-        ATRAN_Resolution_R=0)
-
-    Nayoro_Oct = ooem.EarthAtmosphere(
-        T_ATM=273,
-        observatory_name="Na",
-        ATRAN_PWV_um=15000,
-        ATRAN_zenith_angle_deg=45,
-        ATRAN_wavelength_range_min_um=3,
-        ATRAN_wavelength_range_max_um=4,
-        ATRAN_Resolution_R=0)
-
-    Nayoro_Nov = ooem.EarthAtmosphere(
-        T_ATM=273,
-        observatory_name="Na",
-        ATRAN_PWV_um=8000,
-        ATRAN_zenith_angle_deg=46,
-        ATRAN_wavelength_range_min_um=3,
-        ATRAN_wavelength_range_max_um=4,
-        ATRAN_Resolution_R=0)
-
     T60 = ooem.GroundBasedTelescope(
         D_GBT=0.6,
         FNO_GBT=12,
@@ -153,7 +126,7 @@ if __name__ == "__main__":
     TOPICS.shoot_light_and_save_to_fits(
         light_instance=light,
         virtual_output_file_instance=fits,
-        t_obs=30)
+        t_obs=20)
 
     light.show_rambda_vs_I_prime_plot()
 
