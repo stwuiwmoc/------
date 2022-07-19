@@ -536,6 +536,9 @@ class EarthAtmosphere:
         self.__ATRAN_wavelength_range_max_um = ATRAN_wavelength_range_max_um
         self.__ATRAN_Resolution_R = ATRAN_Resolution_R
 
+        # 透過率計算結果のファイルパス文字列を作成する
+        self.__ATRAN_result_filepath = self.__make_ATRAN_result_filepath()
+
         # 透過率関数の作成
         self.__tau_ATM_function = self.__make_tau_ATM_function()
 
@@ -563,12 +566,47 @@ class EarthAtmosphere:
     def get_ATRAN_Resolution_R(self) -> float:
         return self.__ATRAN_Resolution_R
 
+    def get_ATRAN_result_filepath(self) -> str:
+        return self.__ATRAN_result_filepath
+
     def get_tau_ATM_function(self) -> interpolate.interpolate.interp1d:
         return self.__tau_ATM_function
 
-    def __make_tau_ATM_function(self) -> interpolate.interpolate.interp1d:
+    def __make_ATRAN_result_filepath(self) -> str:
         """initで入力されたATRANのパラメータに応じて、
-        ATRAN出力結果のtxtファイルを読み込み、
+        ATRAN出力結果のtxtファイルパスを作成する
+
+        oop観測見積もり.md
+            └ 地球大気の発光 \n
+                ├ 地球大気のパラメータ \n
+                └ ATRANによる大気透過率の計算 \n
+
+        Returns
+        -------
+        str
+            ATRAN出力結果のtxtファイルのパス
+        """
+
+        observatory_name = self.__observatory_name
+        ATRAN_PWV_um_str = str(self.__ATRAN_PWV_um)
+        ATRAN_zenith_angle_deg_str = str(self.__ATRAN_zenith_angle_deg)
+        ATRAN_wavelength_range_min_um_str = str(self.__ATRAN_wavelength_range_min_um)
+        ATRAN_wavelength_range_max_um_str = str(self.__ATRAN_wavelength_range_max_um)
+        ATRAN_Resolution_R_str = str(self.__ATRAN_Resolution_R)
+
+        filepath_ = "raw_data/"\
+            + observatory_name\
+            + "_PWV" + ATRAN_PWV_um_str\
+            + "_ZA" + ATRAN_zenith_angle_deg_str\
+            + "_Range" + ATRAN_wavelength_range_min_um_str\
+            + "to" + ATRAN_wavelength_range_max_um_str\
+            + "_R" + ATRAN_Resolution_R_str\
+            + ".txt"
+
+        return filepath_
+
+    def __make_tau_ATM_function(self) -> interpolate.interpolate.interp1d:
+        """ATRAN出力結果のtxtファイルを読み込み、
         波長を代入すると大気透過率を返す関数を作成する
 
         oop観測見積もり.md
@@ -581,31 +619,6 @@ class EarthAtmosphere:
         interpolate.interpolate.interp1d
             関数（波長を入力するとその波長に対する大気透過率を出力する）
         """
-
-        def make_ATRAN_result_filepath(
-                observatory_name_,
-                ATRAN_PWV_um_,
-                ATRAN_zenith_angle_deg_,
-                ATRAN_wavelength_range_min_um_,
-                ATRAN_wavelength_range_max_um_,
-                ATRAN_Resolution_R_) -> str:
-
-            ATRAN_PWV_um_str = str(ATRAN_PWV_um_)
-            ATRAN_zenith_angle_deg_str = str(ATRAN_zenith_angle_deg_)
-            ATRAN_wavelength_range_min_um_str = str(ATRAN_wavelength_range_min_um_)
-            ATRAN_wavelength_range_max_um_str = str(ATRAN_wavelength_range_max_um_)
-            ATRAN_Resolution_R_str = str(ATRAN_Resolution_R_)
-
-            filepath_ = "raw_data/"\
-                + observatory_name_\
-                + "_PWV" + ATRAN_PWV_um_str\
-                + "_ZA" + ATRAN_zenith_angle_deg_str\
-                + "_Range" + ATRAN_wavelength_range_min_um_str\
-                + "to" + ATRAN_wavelength_range_max_um_str\
-                + "_R" + ATRAN_Resolution_R_str\
-                + ".txt"
-
-            return filepath_
 
         def get_ATRAN_rambda_and_ATRAN_tau_ATM(
                 ATRAN_result_filepath_: str) -> list[np.ndarray, np.ndarray]:
@@ -663,18 +676,9 @@ class EarthAtmosphere:
 
             return tau_ATM_function_
 
-        # 透過率計算結果のファイルパス文字列を作成する
-        ATRAN_result_filepath = make_ATRAN_result_filepath(
-            observatory_name_=self.__observatory_name,
-            ATRAN_PWV_um_=self.__ATRAN_PWV_um,
-            ATRAN_zenith_angle_deg_=self.__ATRAN_zenith_angle_deg,
-            ATRAN_wavelength_range_min_um_=self.__ATRAN_wavelength_range_min_um,
-            ATRAN_wavelength_range_max_um_=self.__ATRAN_wavelength_range_max_um,
-            ATRAN_Resolution_R_=self.__ATRAN_Resolution_R)
-
         # 透過率計算結果のファイルを読み込む
         ATRAN_rambda_array, ATRAN_tau_ATM_array = get_ATRAN_rambda_and_ATRAN_tau_ATM(
-            ATRAN_result_filepath_=ATRAN_result_filepath)
+            ATRAN_result_filepath_=self.__ATRAN_result_filepath)
 
         # 関数にする
         tau_ATM_function = calc_tau_ATM_function(
