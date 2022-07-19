@@ -1,5 +1,6 @@
 # %%
 import importlib
+import matplotlib.pyplot as plt
 
 import object_oriented_estimation_myclass as ooem
 
@@ -133,3 +134,10 @@ if __name__ == "__main__":
     print("S_all_pix =", fits.get_S_all_pix())
     print("S_FW_pix =", fits.get_S_FW_pix())
     print("N_dark_pix =", fits.get_N_dark_pix())
+
+    # rambda vs I_prime plotのテスト
+    fig1 = plt.figure()
+    gs1 = fig1.add_gridspec(1, 1)
+
+    ax11 = light.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[0, 0])
+    ax11.set_title("hoge")

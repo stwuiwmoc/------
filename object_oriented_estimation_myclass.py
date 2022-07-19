@@ -262,13 +262,39 @@ class LightGenenrator:
         I_ = np.sum(I_d_rambda)
         return I_
 
-    def show_rambda_vs_I_prime_plot(self) -> None:
-        """横軸波長、縦軸分光放射輝度のグラフを表示
-        """
-        fig = plt.figure()
-        gs = fig.add_gridspec(1, 1)
+    def show_rambda_vs_I_prime_plot(
+            self,
+            fig: matplotlib.figure.Figure = None,
+            position: matplotlib.gridspec.GridSpec = None) -> matplotlib.axes._subplots.Axes:
+        """横軸波長、縦軸分光放射輝度のグラフを作成
 
-        ax = fig.add_subplot(gs[0, 0])
+        Parameters
+        ----------
+        fig : matplotlib.figure.Figure, optional
+            Figureインスタンス, by default None
+        position : matplotlib.gridspec.GridSpec, optional
+            GridSpecインスタンス, by default None
+
+        Returns
+        -------
+        matplotlib.axes._subplots.Axes
+            axインスタンス
+        """
+
+        if fig is None:
+            # figに明示的に代入しない場合は、単独のfigureとして作成
+            fig = plt.figure()
+        else:
+            # figにfigureインスタンスが代入されている場合は、それをそのまま使う
+            pass
+
+        if position is None:
+            # positionに明示的に代入しない場合は、
+            # 単独のfigureの中に1つのaxだけがあるものとして作成
+            ax = fig.add_subplot(111)
+        else:
+            # positionにgridspecが代入されている場合は、それをそのまま使う
+            ax = fig.add_subplot(position)
 
         ax.plot(
             self.__rambda,
@@ -279,6 +305,8 @@ class LightGenenrator:
         ax.set_ylabel("I' [W / m^2 / sr / m]")
 
         fig.tight_layout()
+
+        return ax
 
 
 class VirtualOutputFileGenerator:
