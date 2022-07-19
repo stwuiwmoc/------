@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 from scipy import constants as phys_consts
+from scipy import interpolate
 
 
 def mkhelp(instance):
@@ -514,6 +515,230 @@ class H3plusAuroralEmission:
         light_instance.add_I_prime_to(I_prime_xx=I_prime_obj)
 
 
+class EarthAtmosphere:
+
+    def __init__(
+            self,
+            T_ATM: float,
+            observatory_name: str,
+            ATRAN_PWV_um: float,
+            ATRAN_zenith_angle_deg: float,
+            ATRAN_wavelength_range_min_um: float,
+            ATRAN_wavelength_range_max_um: float,
+            ATRAN_Resolution_R: float) -> None:
+
+        # 入力されたパラメータの代入
+        self.__T_ATM = T_ATM
+        self.__observatory_name = observatory_name
+        self.__ATRAN_PWV_um = ATRAN_PWV_um
+        self.__ATRAN_zenith_angle_deg = ATRAN_zenith_angle_deg
+        self.__ATRAN_wavelength_range_min_um = ATRAN_wavelength_range_min_um
+        self.__ATRAN_wavelength_range_max_um = ATRAN_wavelength_range_max_um
+        self.__ATRAN_Resolution_R = ATRAN_Resolution_R
+
+        # 透過率計算結果のファイルパス文字列を作成する
+        self.__ATRAN_result_filepath = self.__make_ATRAN_result_filepath()
+
+        # 透過率関数の作成
+        self.__tau_ATM_function = self.__make_tau_ATM_function()
+
+    def h(self):
+        mkhelp(self)
+
+    def get_T_ATM(self) -> float:
+        return self.__T_ATM
+
+    def get_observatory_name(self) -> str:
+        return self.__observatory_name
+
+    def get_ATRAN_PWV_um(self) -> float:
+        return self.__ATRAN_PWV_um
+
+    def get_ATRAN_zenith_angle_deg(self) -> float:
+        return self.__ATRAN_zenith_angle_deg
+
+    def get_ATRAN_wavelength_range_min_um(self) -> float:
+        return self.__ATRAN_wavelength_range_min_um
+
+    def get_ATRAN_wavelength_range_max_um(self) -> float:
+        return self.__ATRAN_wavelength_range_max_um
+
+    def get_ATRAN_Resolution_R(self) -> float:
+        return self.__ATRAN_Resolution_R
+
+    def get_ATRAN_result_filepath(self) -> str:
+        return self.__ATRAN_result_filepath
+
+    def get_tau_ATM_function(self) -> interpolate.interpolate.interp1d:
+        return self.__tau_ATM_function
+
+    def __make_ATRAN_result_filepath(self) -> str:
+        """initで入力されたATRANのパラメータに応じて、
+        ATRAN出力結果のtxtファイルパスを作成する
+
+        oop観測見積もり.md
+            └ 地球大気の発光 \n
+                ├ 地球大気のパラメータ \n
+                └ ATRANによる大気透過率の計算 \n
+
+        Returns
+        -------
+        str
+            ATRAN出力結果のtxtファイルのパス
+        """
+
+        observatory_name = self.__observatory_name
+        ATRAN_PWV_um_str = str(self.__ATRAN_PWV_um)
+        ATRAN_zenith_angle_deg_str = str(self.__ATRAN_zenith_angle_deg)
+        ATRAN_wavelength_range_min_um_str = str(self.__ATRAN_wavelength_range_min_um)
+        ATRAN_wavelength_range_max_um_str = str(self.__ATRAN_wavelength_range_max_um)
+        ATRAN_Resolution_R_str = str(self.__ATRAN_Resolution_R)
+
+        filepath_ = "raw_data/"\
+            + observatory_name\
+            + "_PWV" + ATRAN_PWV_um_str\
+            + "_ZA" + ATRAN_zenith_angle_deg_str\
+            + "_Range" + ATRAN_wavelength_range_min_um_str\
+            + "to" + ATRAN_wavelength_range_max_um_str\
+            + "_R" + ATRAN_Resolution_R_str\
+            + ".txt"
+
+        return filepath_
+
+    def __make_tau_ATM_function(self) -> interpolate.interpolate.interp1d:
+        """ATRAN出力結果のtxtファイルを読み込み、
+        波長を代入すると大気透過率を返す関数を作成する
+
+        oop観測見積もり.md
+            └ 地球大気の発光 \n
+                ├ 地球大気のパラメータ \n
+                └ ATRANによる大気透過率の計算 \n
+
+        Returns
+        -------
+        interpolate.interpolate.interp1d
+            関数（波長を入力するとその波長に対する大気透過率を出力する）
+        """
+
+        def get_ATRAN_rambda_and_ATRAN_tau_ATM(
+                ATRAN_result_filepath_: str) -> list[np.ndarray, np.ndarray]:
+            """ATRANの計算結果のファイルを読み込んで波長と透過率それぞれ1次元のarrayを返す
+
+            Parameters
+            ----------
+            ATRAN_result_filepath_ : str
+                ATRANの計算結果のファイルパス（.txt）
+
+            Returns
+            -------
+            list[np.ndarray, np.ndarray]
+                list[0] [m] 波長の1次元array,
+                list[1] [無次元] 透過率の1次元array
+            """
+
+            # 想定する.txtの内部構造は空白区切りで
+            # idx0 波長um0 透過率0
+            # idx1 波長um1 透過率1
+            # idx2 波長um2 透過率2
+            # ...
+            # という形（ATRANの出力をCtrl+Sでtxtとして保存したもの）
+
+            raw = np.loadtxt(fname=ATRAN_result_filepath_)
+
+            ATRAN_rambda_array_um = raw[:, 1]  # ATRANで出力される波長はum単位
+            ATRAN_tau_ATM_array_ = raw[:, 2]
+
+            ATRAN_rambda_array_ = ATRAN_rambda_array_um * 1e-6  # 波長の単位をmに直す
+            return ATRAN_rambda_array_, ATRAN_tau_ATM_array_
+
+        def calc_tau_ATM_function(
+                ATRAN_rambda_array_: np.ndarray,
+                ATRAN_tau_ATM_array_: np.ndarray) -> interpolate.interpolate.interp1d:
+            """ATRANの離散的な出力（波長と透過率）を線形補間し、波長を入れると透過率を返す関数を作る
+
+            Parameters
+            ----------
+            ATRAN_rambda_array_ : np.ndarray
+                [m] ATRANの出力した計算結果のうち、波長をum -> mに単位換算した1次元array
+            ATRAN_tau_ATM_array_ : np.ndarray
+                [透過率] ATRANの出力した計算結果のうち、透過率の1次元array
+
+            Returns
+            -------
+            interpolate.interpolate.interp1d
+                関数（波長を入力するとその波長に対する大気透過率を出力する）
+            """
+
+            tau_ATM_function_ = interpolate.interp1d(
+                x=ATRAN_rambda_array_,
+                y=ATRAN_tau_ATM_array_,
+                kind="linear")
+
+            return tau_ATM_function_
+
+        # 透過率計算結果のファイルを読み込む
+        ATRAN_rambda_array, ATRAN_tau_ATM_array = get_ATRAN_rambda_and_ATRAN_tau_ATM(
+            ATRAN_result_filepath_=self.__ATRAN_result_filepath)
+
+        # 関数にする
+        tau_ATM_function = calc_tau_ATM_function(
+            ATRAN_rambda_array_=ATRAN_rambda_array,
+            ATRAN_tau_ATM_array_=ATRAN_tau_ATM_array)
+
+        return tau_ATM_function
+
+    def pass_through(
+            self,
+            light_instance: LightGenenrator) -> None:
+        """光に大気透過率をかけ、大気の熱輻射による分光放射輝度を加える
+
+        Parameters
+        ----------
+        light_instance : LightGenenrator
+            自作インスタンス
+        """
+
+        def calc_I_prime_ATM(
+                rambda_: np.ndarray,
+                tau_ATM_: np.ndarray) -> np.ndarray:
+            """望遠鏡の熱輻射による分光放射輝度を計算
+
+            oop観測見積もり.md
+                └ 地球大気の発光 \n
+                    └ 地球大気の熱輻射による分光放射輝度 \n
+
+            Parameters
+            ----------
+            rambda_ : np.ndarray
+                LightGenerator.get_rambda()
+            tau_ATM_ : np.ndarray
+                [無次元] 大気透過率の1次元array
+
+            Returns
+            -------
+            np.ndarray
+                [W / m^2 / sr / m] 分光放射輝度
+            """
+            T_ATM = self.__T_ATM
+
+            I_prime_ATM_ = (1 - tau_ATM_) * calc_Plank_law_I_prime(rambda=rambda_, T=T_ATM)
+
+            return I_prime_ATM_
+
+        # 光の波長範囲・波長幅に対応した大気透過率の1次元arrayを計算する
+        tau_ATM = self.__tau_ATM_function(light_instance.get_rambda())
+
+        # 光に対して大気の透過率をかける
+        light_instance.multiply_I_prime_to(magnification=tau_ATM)
+
+        # 光に対して大気の熱輻射による分光放射輝度を加える
+        I_prime_ATM = calc_I_prime_ATM(
+            rambda_=light_instance.get_rambda(),
+            tau_ATM_=tau_ATM)
+
+        light_instance.add_I_prime_to(I_prime_xx=I_prime_ATM)
+
+
 class GroundBasedTelescope:
 
     def __init__(
@@ -528,7 +753,7 @@ class GroundBasedTelescope:
         oop観測見積もり.md
             └ 望遠鏡の発光 \n
                 ├ 望遠鏡光学系のパラメータ \n
-                └ 望遠鏡の熱輻射による放射輝度 \n
+                └ 望遠鏡の熱輻射による分光放射輝度 \n
 
         Parameters
         ----------
@@ -589,7 +814,7 @@ class GroundBasedTelescope:
 
             oop観測見積もり.md
                 └ 望遠鏡の発光 \n
-                    └ 望遠鏡の熱輻射による放射輝度 \n
+                    └ 望遠鏡の熱輻射による分光放射輝度 \n
 
             Parameters
             ----------

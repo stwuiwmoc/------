@@ -71,6 +71,15 @@ if __name__ == "__main__":
         E_prime=3332.4121,
         T_hypo=T_thermospheric_H3plus)
 
+    Haleakala_Oct_good = ooem.EarthAtmosphere(
+        T_ATM=273,
+        observatory_name="Ha",
+        ATRAN_PWV_um=2000,
+        ATRAN_zenith_angle_deg=22,
+        ATRAN_wavelength_range_min_um=3,
+        ATRAN_wavelength_range_max_um=4,
+        ATRAN_Resolution_R=0)
+
     T60 = ooem.GroundBasedTelescope(
         D_GBT=0.6,
         FNO_GBT=12,
@@ -102,6 +111,10 @@ if __name__ == "__main__":
     R_4_4.add_auroral_emission_to(light_instance=light)
     light.show_rambda_vs_I_prime_plot()
 
+    # 地球大気を通る
+    Haleakala_Oct_good.pass_through(light_instance=light)
+    light.show_rambda_vs_I_prime_plot()
+
     # 望遠鏡を通る
     T60.pass_through(light_instance=light)
     light.show_rambda_vs_I_prime_plot()
@@ -113,7 +126,7 @@ if __name__ == "__main__":
     TOPICS.shoot_light_and_save_to_fits(
         light_instance=light,
         virtual_output_file_instance=fits,
-        t_obs=30)
+        t_obs=20)
 
     light.show_rambda_vs_I_prime_plot()
 
