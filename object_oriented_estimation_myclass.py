@@ -554,6 +554,34 @@ class EarthAtmosphere:
             ATRAN_wavelength_range_min_um: float,
             ATRAN_wavelength_range_max_um: float,
             ATRAN_Resolution_R: float) -> None:
+        """地球大気の透過率と熱輻射の計算
+
+        oop観測見積もり.md
+            └ 地球大気の発光 \n
+                ├ 地球大気のパラメータ \n
+                ├ ATRANによる大気透過率の計算 \n
+                └ 地球大気の熱輻射による分光放射輝度 \n
+
+        Parameters
+        ----------
+        T_ATM : float
+            [K] 大気の温度
+        observatory_name : str
+            想定する観測所の名前の先頭2文字,
+            Ha : ハレアカラ,
+            Na : 名寄,
+            Hi : 東広島
+        ATRAN_PWV_um : float
+            [um] ATRANに入力した可降水量
+        ATRAN_zenith_angle_deg : float
+            [deg] ATRANに入力した天頂角
+        ATRAN_wavelength_range_min_um : float
+            [um] ATRANに入力した計算波長の最小値側
+        ATRAN_wavelength_range_max_um : float
+            [um] ATRANに入力した計算波長の最大値側
+        ATRAN_Resolution_R : float
+            [無次元] ATRANに入力したスムージングの半値幅
+        """
 
         # 入力されたパラメータの代入
         self.__T_ATM = T_ATM
