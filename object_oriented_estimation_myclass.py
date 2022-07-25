@@ -1134,15 +1134,13 @@ class ImagingInstrument:
 
             return y_gaussian
 
-        def calc_S_all_pix(
+        def calc_S_photon_pix(
                 light_instance_: LightGenenrator,
                 Omega_pix_: float,
                 A_GBT_: float,
                 t_obs_: float,
-                G_sys_: float,
-                S_dark_pix_: float,
-                S_read_pix_: float) -> float:
-            """カウント値 S_all_pixを計算
+                G_sys_: float) -> float:
+            """光によるカウント値 S_photon_pixを計算
 
             oop観測見積もり.md
                 └ 近赤外装置による撮像・分光 \n
@@ -1161,15 +1159,11 @@ class ImagingInstrument:
                 [s] 積分時間
             G_sys_ : float
                 [e- / DN]システムゲイン
-            S_dark_pix_ : float
-                [DN / pix] 検出器の暗電流によるカウント値
-            S_read_pix_ : float
-                [DN / pix] 駆動回路読み出しノイズによるカウント値
 
             Returns
             -------
             float
-                [DN / pix] 1pixelあたりのカウント値
+                [DN / pix] 光による1pixelあたりのカウント値
             """
 
             # 入力パラメータ以外の文字の定義
@@ -1186,10 +1180,10 @@ class ImagingInstrument:
             # 被積分関数の1次元arrayの各要素に対して波長方向の分割幅をかけてから総和をとる
             integration_result = np.sum(integrand_ * light_instance_.get_rambda_division_width())
 
-            # カウント値の残りの部分を計算
-            S_all_pix_ = integration_result * t_obs_ / G_sys_ + S_dark_pix_ + S_read_pix_
+            # S_photon.pixの導出
+            S_photon_pix_ = integration_result * t_obs_ / G_sys_
 
-            return S_all_pix_
+            return S_photon_pix_
 
         # 干渉フィルターの定義
         tau_i_filter = calc_gaussian(
@@ -1206,21 +1200,22 @@ class ImagingInstrument:
         # 装置透過率を光にかける
         light_instance.multiply_I_prime_to(magnification=tau_i)
 
+        # 光によるカウント値の計算
+        S_photon_pix = calc_S_photon_pix(
+            light_instance_=light_instance,
+            Omega_pix_=self.get_Omega_pix(),
+            A_GBT_=self.__GBT_instance.get_A_GBT(),
+            t_obs_=t_obs,
+            G_sys_=self.__G_sys)
+
         # 暗電流によるカウント値の計算
         S_dark_pix = self.__I_dark * t_obs / self.__G_sys
 
         # 読み出しノイズによるカウント値の計算
         S_read_pix = (self.__N_e_read / self.__G_sys)**2
 
-        # カウント値への変換
-        S_all_pix = calc_S_all_pix(
-            light_instance_=light_instance,
-            Omega_pix_=self.get_Omega_pix(),
-            A_GBT_=self.__GBT_instance.get_A_GBT(),
-            t_obs_=t_obs,
-            G_sys_=self.__G_sys,
-            S_dark_pix_=S_dark_pix,
-            S_read_pix_=S_read_pix)
+        # カウント値の総和を計算
+        S_all_pix = S_photon_pix + S_dark_pix + S_read_pix
 
         # fitsへの保存
         virtual_output_file_instance.set_S_all_pix(S_all_pix=S_all_pix)
