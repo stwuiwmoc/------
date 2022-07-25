@@ -30,6 +30,7 @@ if __name__ == "__main__":
     # グローバル変数の定義
     column_density_H3plus = 2.0e+16  # [/m^2] H3+カラム密度
     T_thermospheric_H3plus = 1200  # [K] H3+熱圏温度
+    t_obs = 1  # [s] 積分時間
 
     # 各インスタンス生成
     light = ooem.LightGenenrator(
@@ -150,7 +151,7 @@ if __name__ == "__main__":
     TOPICS.shoot_light_and_save_to_fits(
         light_instance=light,
         virtual_output_file_instance=fits,
-        t_obs=1)
+        t_obs=t_obs)
 
     ax14 = light.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[3, 0])
 
