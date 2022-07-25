@@ -118,7 +118,7 @@ if __name__ == "__main__":
     fits = ooem.VirtualOutputFileGenerator()
 
     # plot作成の準備
-    fig1 = plt.figure(figsize=(10, 10))
+    fig1 = plt.figure(figsize=(15, 15))
     gs1 = fig1.add_gridspec(4, 2)
 
     # 輝線発光を加える
@@ -184,11 +184,20 @@ if __name__ == "__main__":
         ["FWHM_fl", TOPICS.get_FWHM_fl(), "m"],
         ["tau_fl_center", TOPICS.get_tau_fl_center(), ""],
         ["I_dark_pix", TOPICS.get_I_dark(), "e- / s"],
-        ["N_e_read_pix", TOPICS.get_N_e_read(), "e-rms"]
+        ["N_e_read_pix", TOPICS.get_N_e_read(), "e-rms"],
+        ["", "", ""],
+        ["Other parameters", "", ""],
+        ["t_obs", t_obs, "s"],
+        ["", "", ""],
+        ["Results", "", ""],
+        ["S_FW_pix", fits.get_S_FW_pix(), "DN / pix"],
+        ["S_all_pix", fits.get_S_all_pix(), "DN / pix"],
+        ["S_dark_pix", fits.get_S_dark_pix(), "DN / pix"],
+        ["S_read_pix", fits.get_S_read_pix(), "DN / pix"],
     ]
 
     ax15 = ooem.plot_parameter_table(
-        fig=fig1, position=gs1[:, 1], parameter_table=parametar_table_list, fontsize=7)
+        fig=fig1, position=gs1[:, 1], parameter_table=parametar_table_list, fontsize=12)
 
     fig1.tight_layout()
     fig1.savefig(mkfolder() + "fig1.png")
