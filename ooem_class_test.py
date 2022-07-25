@@ -156,7 +156,8 @@ if __name__ == "__main__":
 
     print("S_all_pix =", fits.get_S_all_pix())
     print("S_FW_pix =", fits.get_S_FW_pix())
-    print("N_dark_pix =", fits.get_N_dark_pix())
+    print("S_dark_pix =", fits.get_S_dark_pix())
+    print("S_read_pix =", fits.get_S_read_pix())
 
     # plot
     ax11.set_title("H3+ emission lines")
