@@ -48,6 +48,8 @@
   - [検出器に到達した段階での分光放射輝度](#検出器に到達した段階での分光放射輝度)
   - [Signalへの換算](#signalへの換算)
   - [フルウェルによるカウント値の制限](#フルウェルによるカウント値の制限)
+- [SNRの導出](#snrの導出)
+  - [各Signalの導出](#各signalの導出)
 
 # 注釈
 
@@ -716,3 +718,49 @@ S _{all.pix} \leqq 2 ^{16} = 65536
 $$
 
 である。
+
+# SNRの導出
+
+## 各Signalの導出
+
+| 文字            | 単位     | 意味                                                       |
+| --------------- | -------- | ---------------------------------------------------------- |
+| $S _{obj.pix} $ | DN / pix | 観測対象の分光放射輝度による1pixel当たりのカウント値       |
+| $S _{ATM.pix} $ | DN / pix | 大気の熱輻射の分光放射輝度による1pixel当たりのカウント値   |
+| $S _{GBT.pix} $ | DN / pix | 望遠鏡の熱輻射の分光放射輝度による1pixel当たりのカウント値 |
+|                 |          |                                                            |
+
+前節で述べた通り、 $S _{photon.pix} $ は光 $I' _{all} $ によるカウント値である。ここで、導入ファイバーを介さない場合の光 $I' _{all} $ が
+
+$$
+I' _{all}
+= I' _{obj} \cdot \tau _{ATM} \cdot \tau _{GBT} \cdot \tau _i +
+    I' _{ATM} \cdot \tau _{GBT} \cdot \tau _i +
+    I' _{GBT} \cdot \tau _i
+$$
+
+と書けることから、例えば上の式の第一項に対して
+
+$$
+S _{obj.pix} =
+\int \cfrac
+    { ( I' _{obj} \cdot \tau _{ATM} \cdot \tau _{GBT} \cdot \tau _i ) \cdot A _{GBT} \cdot \Omega _{pix}}
+    {h \cdot c / \lambda }
+\cdot \eta \cdot d \lambda \cdot \cfrac{t _{obs}}{G _{sys}}
+$$
+
+と定義できる。（透過率の部分はファイバーの有無などで変わることに注意）
+
+同様に、第二項と第三項についても $S_ {ATM.pix} $ と $S _{GBT.pix}$ を定義すれば、
+
+$$
+S _{photon.pix} = S _{obj.pix} + S _{ATM.pix} + S _{GBT.pix}
+$$
+
+と整理できるため、これを $S _{all.pix} $ の式に代入すれば、
+
+$$
+S _{all.pix} = S _{obj.pix} + S _{ATM.pix} + S _{GBT.pix} + S _{dark.pix} + S _{read.pix}
+$$
+
+と整理できる。
