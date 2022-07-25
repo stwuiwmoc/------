@@ -156,9 +156,9 @@ if __name__ == "__main__":
     ax14 = light.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[3, 0])
 
     print("S_all_pix =", fits.get_S_all_pix())
-    print("S_FW_pix =", fits.get_S_FW_pix())
     print("S_dark_pix =", fits.get_S_dark_pix())
     print("S_read_pix =", fits.get_S_read_pix())
+    print("R_electron/FW", fits.get_R_electron_FW())
 
     # plot
     ax11.set_title("H3+ emission lines")
@@ -190,10 +190,10 @@ if __name__ == "__main__":
         ["t_obs", t_obs, "s"],
         ["", "", ""],
         ["Results", "", ""],
-        ["S_FW_pix", fits.get_S_FW_pix(), "DN / pix"],
         ["S_all_pix", fits.get_S_all_pix(), "DN / pix"],
         ["S_dark_pix", fits.get_S_dark_pix(), "DN / pix"],
         ["S_read_pix", fits.get_S_read_pix(), "DN / pix"],
+        ["R_electron/FW", fits.get_R_electron_FW(), ""],
     ]
 
     ax15 = ooem.plot_parameter_table(

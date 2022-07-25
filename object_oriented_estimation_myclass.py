@@ -320,20 +320,17 @@ class VirtualOutputFileGenerator:
 
         """
         self.__S_all_pix = None
-        self.__S_FW_pix = None
         self.__t_obs = None
         self.__n_bin_rambda = None
         self.__S_dark_pix = None
         self.__S_read_pix = None
+        self.__R_electron_FW = None
 
     def h(self):
         mkhelp(self)
 
     def get_S_all_pix(self) -> float:
         return self.__S_all_pix
-
-    def get_S_FW_pix(self) -> float:
-        return self.__S_FW_pix
 
     def get_t_obs(self) -> float:
         return self.__t_obs
@@ -347,15 +344,11 @@ class VirtualOutputFileGenerator:
     def get_S_read_pix(self) -> float:
         return self.__S_read_pix
 
-    def get_N_all_pix(self) -> float:
-        N_all_pix = np.sqrt(self.__S_all_pix)
-        return N_all_pix
+    def get_R_electron_FW(self) -> float:
+        return self.__R_electron_FW
 
     def set_S_all_pix(self, S_all_pix: float) -> None:
         self.__S_all_pix = S_all_pix
-
-    def set_S_FW_pix(self, S_FW_pix: float) -> None:
-        self.__S_FW_pix = S_FW_pix
 
     def set_t_obs(self, t_obs: float) -> None:
         self.__t_obs = t_obs
@@ -368,6 +361,9 @@ class VirtualOutputFileGenerator:
 
     def set_S_read_pix(self, S_read_pix: float) -> None:
         self.__S_read_pix = S_read_pix
+
+    def set_R_electron_FW(self, R_electron_FW: float) -> None:
+        self.__R_electron_FW = R_electron_FW
 
 
 class H3plusAuroralEmission:
@@ -1217,10 +1213,13 @@ class ImagingInstrument:
         # カウント値の総和を計算
         S_all_pix = S_photon_pix + S_dark_pix + S_read_pix
 
+        # PDに蓄積された電荷とフルウェルの比を計算
+        R_electron_FW = (S_photon_pix + S_dark_pix) / self.__S_FW_pix
+
         # fitsへの保存
         virtual_output_file_instance.set_S_all_pix(S_all_pix=S_all_pix)
-        virtual_output_file_instance.set_S_FW_pix(S_FW_pix=self.__S_FW_pix)
         virtual_output_file_instance.set_t_obs(t_obs=t_obs)
         virtual_output_file_instance.set_n_bin_rambda(n_bin_rambda=self.__n_bin_rambda)
         virtual_output_file_instance.set_S_read_pix(S_read_pix=S_read_pix)
         virtual_output_file_instance.set_S_dark_pix(S_dark_pix=S_dark_pix)
+        virtual_output_file_instance.set_R_electron_FW(R_electron_FW=R_electron_FW)
