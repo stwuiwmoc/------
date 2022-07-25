@@ -50,6 +50,7 @@
   - [フルウェルによるカウント値の制限](#フルウェルによるカウント値の制限)
 - [SNRの導出](#snrの導出)
   - [各Signalの導出](#各signalの導出)
+  - [各Noiseの導出](#各noiseの導出)
 
 # 注釈
 
@@ -764,3 +765,37 @@ S _{all.pix} = S _{obj.pix} + S _{ATM.pix} + S _{GBT.pix} + S _{dark.pix} + S _{
 $$
 
 と整理できる。
+
+## 各Noiseの導出
+
+| 文字             | 単位               | 導出                                               |
+| ---------------- | ------------------ | -------------------------------------------------- |
+| $N _{obj.pix} $  | DN $_{rms} $ / pix | $\sqrt{S _{obj.pix}} $                             |
+| $N _{ATM.pix} $  | DN $_{rms} $ / pix | $\sqrt{S _{ATM.pix}} $                             |
+| $N _{GBT.pix} $  | DN $_{rms} $ / pix | $\sqrt{S _{GBT.pix}} $                             |
+| $N _{dark.pix} $ | DN $_{rms} $ / pix | $\sqrt{S _{dark.pix}} $                            |
+| $N _{read.pix} $ | DN $_{rms} $ / pix | $\sqrt{S _{read.pix}} (= N _{e.read} / G _{sys}) $ |
+|                  |                    |                                                    |
+| $N _{all.pix} $  | DN $_{rms} $ / pix |                                                    |
+|                  |                    |                                                    |
+
+$S _{all.pix} $ に含まれる各Signalはそれぞれ独立なため、それぞれに対して平方根を取ることでノイズを計算できる。互いに相関の無い複数のノイズが重畳する場合の全体のノイズは、エネルギー的に加算されるため、二乗加算平方根として求められることから、
+
+$$
+N _{all.pix} =
+\sqrt{
+  N _{obj.pix} ^2 + N _{ATM.pix} ^2 + N _{GBT.pix} ^2 + N _{dark.pix} ^2 + N _{read.pix} ^2
+}
+$$
+
+これをさらに整理すると
+
+$$
+N _{all.pix} =
+\sqrt{
+  S _{obj.pix} + S _{ATM.pix} + S _{GBT.pix} + S _{dark.pix} + S _{read.pix}
+} =
+\sqrt{S _{all.pix}}
+$$
+
+となる。
