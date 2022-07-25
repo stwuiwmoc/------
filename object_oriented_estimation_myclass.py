@@ -918,7 +918,7 @@ class ImagingInstrument:
                 ├ システムゲインの導出 \n
                 ├ 検出器に到達した段階での分光放射輝度 \n
                 ├ Signalへの換算 \n
-                └ フルウェルリミットの導出 \n
+                └ フルウェルによるカウント値の制限 \n
 
         Parameters
         ----------
