@@ -1138,10 +1138,10 @@ class ImagingInstrument:
                 light_instance_: LightGenenrator,
                 Omega_pix_: float,
                 A_GBT_: float,
-                I_dark_: float,
                 t_obs_: float,
-                N_e_read_: float,
-                G_sys_: float) -> float:
+                G_sys_: float,
+                S_dark_pix_: float,
+                S_read_pix_: float) -> float:
             """カウント値 S_all_pixを計算
 
             oop観測見積もり.md
@@ -1157,19 +1157,19 @@ class ImagingInstrument:
                 [m^2] 望遠鏡の開口面積
             Omega_pix_ : float
                 [sr / pix] 1pixelが見込む立体角
-            I_dark_ : float
-                [e- / s / pix] 検出器の暗電流
             t_obs_ : float
                 [s] 積分時間
-            N_e_read_ : float
-                [e-rms / pix] 駆動回路読み出しノイズ
             G_sys_ : float
                 [e- / DN]システムゲイン
+            S_dark_pix_ : float
+                [DN / pix] 検出器の暗電流によるカウント値
+            S_read_pix_ : float
+                [DN / pix] 駆動回路読み出しノイズによるカウント値
 
             Returns
             -------
             float
-                [DN] 1pixelあたりのカウント値
+                [DN / pix] 1pixelあたりのカウント値
             """
 
             # 入力パラメータ以外の文字の定義
@@ -1187,7 +1187,7 @@ class ImagingInstrument:
             integration_result = np.sum(integrand_ * light_instance_.get_rambda_division_width())
 
             # カウント値の残りの部分を計算
-            S_all_pix_ = (integration_result + I_dark_) * t_obs_ / G_sys_ + (N_e_read_ / G_sys_)**2
+            S_all_pix_ = integration_result * t_obs_ / G_sys_ + S_dark_pix_ + S_read_pix_
 
             return S_all_pix_
 
@@ -1206,15 +1206,21 @@ class ImagingInstrument:
         # 装置透過率を光にかける
         light_instance.multiply_I_prime_to(magnification=tau_i)
 
+        # 暗電流によるカウント値の計算
+        S_dark_pix = self.__I_dark * t_obs / self.__G_sys
+
+        # 読み出しノイズによるカウント値の計算
+        S_read_pix = (self.__N_e_read / self.__G_sys)**2
+
         # カウント値への変換
         S_all_pix = calc_S_all_pix(
             light_instance_=light_instance,
             Omega_pix_=self.get_Omega_pix(),
             A_GBT_=self.__GBT_instance.get_A_GBT(),
-            I_dark_=self.__I_dark,
             t_obs_=t_obs,
-            N_e_read_=self.__N_e_read,
-            G_sys_=self.__G_sys)
+            G_sys_=self.__G_sys,
+            S_dark_pix_=S_dark_pix,
+            S_read_pix_=S_read_pix)
 
         # fitsへの保存
         virtual_output_file_instance.set_S_all_pix(S_all_pix=S_all_pix)
