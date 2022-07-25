@@ -112,7 +112,7 @@ if __name__ == "__main__":
         tau_fl_center=0.88,
         G_Amp=9,
         I_dark=50,
-        N_read=1200)
+        N_e_read=1200)
 
     fits = ooem.VirtualOutputFileGenerator()
 
@@ -182,7 +182,7 @@ if __name__ == "__main__":
         ["FWHM_fl", TOPICS.get_FWHM_fl(), "m"],
         ["tau_fl_center", TOPICS.get_tau_fl_center(), ""],
         ["I_dark_pix", TOPICS.get_I_dark(), "e- / s"],
-        ["N_read_pix", TOPICS.get_N_read(), "e-rms"]
+        ["N_e_read_pix", TOPICS.get_N_e_read(), "e-rms"]
     ]
 
     ax15 = ooem.plot_parameter_table(
