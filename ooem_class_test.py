@@ -150,7 +150,7 @@ if __name__ == "__main__":
     TOPICS.shoot_light_and_save_to_fits(
         light_instance=light,
         virtual_output_file_instance=fits,
-        t_obs=20)
+        t_obs=1)
 
     ax14 = light.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[3, 0])
 
