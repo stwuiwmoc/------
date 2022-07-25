@@ -1186,7 +1186,7 @@ class ImagingInstrument:
             integration_result = np.sum(integrand_ * light_instance_.get_rambda_division_width())
 
             # カウント値の残りの部分を計算
-            S_all_pix_ = ((integration_result + I_dark_) * t_obs_ + N_read_) * (1 / G_sys_)
+            S_all_pix_ = (integration_result + I_dark_) * t_obs_ / G_sys_ + (N_read_ / G_sys_)**2
 
             return S_all_pix_
 
