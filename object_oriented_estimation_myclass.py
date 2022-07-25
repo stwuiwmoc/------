@@ -323,8 +323,8 @@ class VirtualOutputFileGenerator:
         self.__S_FW_pix = None
         self.__t_obs = None
         self.__n_bin_rambda = None
-        self.__N_dark_pix = None
-        self.__N_read_pix = None
+        self.__S_dark_pix = None
+        self.__S_read_pix = None
 
     def h(self):
         mkhelp(self)
@@ -341,11 +341,11 @@ class VirtualOutputFileGenerator:
     def get_n_bin_rambda(self) -> float:
         return self.__n_bin_rambda
 
-    def get_N_dark_pix(self) -> float:
-        return self.__N_dark_pix
+    def get_S_dark_pix(self) -> float:
+        return self.__S_dark_pix
 
-    def get_N_read_pix(self) -> float:
-        return self.__N_read_pix
+    def get_S_read_pix(self) -> float:
+        return self.__S_read_pix
 
     def get_N_all_pix(self) -> float:
         N_all_pix = np.sqrt(self.__S_all_pix)
@@ -363,11 +363,11 @@ class VirtualOutputFileGenerator:
     def set_n_bin_rambda(self, n_bin_rambda: float) -> None:
         self.__n_bin_rambda = n_bin_rambda
 
-    def set_N_dark_pix(self, N_dark_pix: float) -> None:
-        self.__N_dark_pix = N_dark_pix
+    def set_S_dark_pix(self, S_dark_pix: float) -> None:
+        self.__S_dark_pix = S_dark_pix
 
-    def set_N_read_pix(self, N_read_pix: float) -> None:
-        self.__N_read_pix = N_read_pix
+    def set_S_read_pix(self, S_read_pix: float) -> None:
+        self.__S_read_pix = S_read_pix
 
 
 class H3plusAuroralEmission:
@@ -907,7 +907,7 @@ class ImagingInstrument:
             tau_fl_center: float,
             G_Amp: float,
             I_dark: float,
-            N_read: float) -> None:
+            N_e_read: float) -> None:
         """撮像装置のパラメータを保持
 
         oop観測見積もり.md
@@ -917,7 +917,8 @@ class ImagingInstrument:
                 ├ pixel数関連の導出 \n
                 ├ システムゲインの導出 \n
                 ├ 検出器に到達した段階での分光放射輝度 \n
-                └ Signalへの換算 \n
+                ├ Signalへの換算 \n
+                └ フルウェルリミットの導出 \n
 
         Parameters
         ----------
@@ -931,7 +932,7 @@ class ImagingInstrument:
             [無次元] プリアンプ基板の倍率
         I_dark : float
             [e- / s / pix] 検出器暗電流
-        N_read : float
+        N_e_read : float
             [e-rms / pix] 駆動回路の読み出しノイズ
         """
 
@@ -952,7 +953,7 @@ class ImagingInstrument:
 
         # Signalへの換算で必要なパラメータ
         self.__I_dark = I_dark
-        self.__N_read = N_read
+        self.__N_e_read = N_e_read
 
         # --- 望遠鏡への設置状況 ---
         # インスタンス生成時点では None としておく
@@ -1008,8 +1009,8 @@ class ImagingInstrument:
     def get_I_dark(self) -> float:
         return self.__I_dark
 
-    def get_N_read(self) -> float:
-        return self.__N_read
+    def get_N_e_read(self) -> float:
+        return self.__N_e_read
 
     def get_n_bin_rambda(self) -> float:
         return self.__n_bin_rambda
@@ -1137,10 +1138,10 @@ class ImagingInstrument:
                 light_instance_: LightGenenrator,
                 Omega_pix_: float,
                 A_GBT_: float,
-                I_dark_: float,
                 t_obs_: float,
-                N_read_: float,
-                G_sys_: float) -> float:
+                G_sys_: float,
+                S_dark_pix_: float,
+                S_read_pix_: float) -> float:
             """カウント値 S_all_pixを計算
 
             oop観測見積もり.md
@@ -1156,19 +1157,19 @@ class ImagingInstrument:
                 [m^2] 望遠鏡の開口面積
             Omega_pix_ : float
                 [sr / pix] 1pixelが見込む立体角
-            I_dark_ : float
-                [e- / s / pix] 検出器の暗電流
             t_obs_ : float
                 [s] 積分時間
-            N_read_ : float
-                [e-rms / pix] 駆動回路読み出しノイズ
             G_sys_ : float
                 [e- / DN]システムゲイン
+            S_dark_pix_ : float
+                [DN / pix] 検出器の暗電流によるカウント値
+            S_read_pix_ : float
+                [DN / pix] 駆動回路読み出しノイズによるカウント値
 
             Returns
             -------
             float
-                [DN] 1pixelあたりのカウント値
+                [DN / pix] 1pixelあたりのカウント値
             """
 
             # 入力パラメータ以外の文字の定義
@@ -1186,7 +1187,7 @@ class ImagingInstrument:
             integration_result = np.sum(integrand_ * light_instance_.get_rambda_division_width())
 
             # カウント値の残りの部分を計算
-            S_all_pix_ = ((integration_result + I_dark_) * t_obs_ + N_read_) * (1 / G_sys_)
+            S_all_pix_ = integration_result * t_obs_ / G_sys_ + S_dark_pix_ + S_read_pix_
 
             return S_all_pix_
 
@@ -1205,21 +1206,26 @@ class ImagingInstrument:
         # 装置透過率を光にかける
         light_instance.multiply_I_prime_to(magnification=tau_i)
 
+        # 暗電流によるカウント値の計算
+        S_dark_pix = self.__I_dark * t_obs / self.__G_sys
+
+        # 読み出しノイズによるカウント値の計算
+        S_read_pix = (self.__N_e_read / self.__G_sys)**2
+
         # カウント値への変換
         S_all_pix = calc_S_all_pix(
             light_instance_=light_instance,
             Omega_pix_=self.get_Omega_pix(),
             A_GBT_=self.__GBT_instance.get_A_GBT(),
-            I_dark_=self.__I_dark,
             t_obs_=t_obs,
-            N_read_=self.__N_read,
-            G_sys_=self.__G_sys)
+            G_sys_=self.__G_sys,
+            S_dark_pix_=S_dark_pix,
+            S_read_pix_=S_read_pix)
 
         # fitsへの保存
         virtual_output_file_instance.set_S_all_pix(S_all_pix=S_all_pix)
         virtual_output_file_instance.set_S_FW_pix(S_FW_pix=self.__S_FW_pix)
         virtual_output_file_instance.set_t_obs(t_obs=t_obs)
         virtual_output_file_instance.set_n_bin_rambda(n_bin_rambda=self.__n_bin_rambda)
-        virtual_output_file_instance.set_N_read_pix(N_read_pix=self.__N_read)
-        virtual_output_file_instance.set_N_dark_pix(
-            N_dark_pix=np.sqrt(self.__I_dark * t_obs / self.__G_sys))
+        virtual_output_file_instance.set_S_read_pix(S_read_pix=S_read_pix)
+        virtual_output_file_instance.set_S_dark_pix(S_dark_pix=S_dark_pix)

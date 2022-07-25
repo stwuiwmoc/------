@@ -30,6 +30,7 @@ if __name__ == "__main__":
     # グローバル変数の定義
     column_density_H3plus = 2.0e+16  # [/m^2] H3+カラム密度
     T_thermospheric_H3plus = 1200  # [K] H3+熱圏温度
+    t_obs = 1  # [s] 積分時間
 
     # 各インスタンス生成
     light = ooem.LightGenenrator(
@@ -112,12 +113,12 @@ if __name__ == "__main__":
         tau_fl_center=0.88,
         G_Amp=9,
         I_dark=50,
-        N_read=1200)
+        N_e_read=1200)
 
     fits = ooem.VirtualOutputFileGenerator()
 
     # plot作成の準備
-    fig1 = plt.figure(figsize=(10, 10))
+    fig1 = plt.figure(figsize=(15, 15))
     gs1 = fig1.add_gridspec(4, 2)
 
     # 輝線発光を加える
@@ -150,13 +151,14 @@ if __name__ == "__main__":
     TOPICS.shoot_light_and_save_to_fits(
         light_instance=light,
         virtual_output_file_instance=fits,
-        t_obs=20)
+        t_obs=t_obs)
 
     ax14 = light.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[3, 0])
 
     print("S_all_pix =", fits.get_S_all_pix())
     print("S_FW_pix =", fits.get_S_FW_pix())
-    print("N_dark_pix =", fits.get_N_dark_pix())
+    print("S_dark_pix =", fits.get_S_dark_pix())
+    print("S_read_pix =", fits.get_S_read_pix())
 
     # plot
     ax11.set_title("H3+ emission lines")
@@ -182,11 +184,20 @@ if __name__ == "__main__":
         ["FWHM_fl", TOPICS.get_FWHM_fl(), "m"],
         ["tau_fl_center", TOPICS.get_tau_fl_center(), ""],
         ["I_dark_pix", TOPICS.get_I_dark(), "e- / s"],
-        ["N_read_pix", TOPICS.get_N_read(), "e-rms"]
+        ["N_e_read_pix", TOPICS.get_N_e_read(), "e-rms"],
+        ["", "", ""],
+        ["Other parameters", "", ""],
+        ["t_obs", t_obs, "s"],
+        ["", "", ""],
+        ["Results", "", ""],
+        ["S_FW_pix", fits.get_S_FW_pix(), "DN / pix"],
+        ["S_all_pix", fits.get_S_all_pix(), "DN / pix"],
+        ["S_dark_pix", fits.get_S_dark_pix(), "DN / pix"],
+        ["S_read_pix", fits.get_S_read_pix(), "DN / pix"],
     ]
 
     ax15 = ooem.plot_parameter_table(
-        fig=fig1, position=gs1[:, 1], parameter_table=parametar_table_list, fontsize=7)
+        fig=fig1, position=gs1[:, 1], parameter_table=parametar_table_list, fontsize=12)
 
     fig1.tight_layout()
     fig1.savefig(mkfolder() + "fig1.png")
