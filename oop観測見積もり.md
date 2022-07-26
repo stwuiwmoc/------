@@ -48,10 +48,11 @@
   - [検出器に到達した段階での分光放射輝度](#検出器に到達した段階での分光放射輝度)
   - [Signalへの換算](#signalへの換算)
   - [フルウェルによるカウント値の制限](#フルウェルによるカウント値の制限)
-- [SNRの導出](#snrの導出)
+- [SNRの計算](#snrの計算)
   - [各Signalの導出](#各signalの導出)
   - [binning後のSignalの導出](#binning後のsignalの導出)
   - [各Noiseの導出](#各noiseの導出)
+  - [SNRの導出](#snrの導出)
 
 # 注釈
 
@@ -561,7 +562,6 @@ $$
 | $\tau _{i} $   | 無次元               | 撮像・分光装置の透過率                     |
 |                |                      |                                            |
 | $I' _{all} $   | W / m $^2 $ / sr / m | 検出器に到達した段階での分光放射輝度の合算 |
-| $I' _{sky} $   | W / m $^2 $ / sr / m | sky画像での分光放射輝度の合算              |
 |                |                      |                                            |
 
 上記は全て導出済みである。
@@ -597,20 +597,6 @@ I' _{all} =
     \cdot \tau _{ATM} + I' _{ATM} )
     \cdot \tau _{GBT} + I' _{GBT} )
     \cdot \tau _i \cdot \tau _{fb}
-$$
-
-となる。
-
-また、実際の観測では、sky backgroundを除去するためにsky画像が取得されるが、この場合の分光放射輝度 $I' _{sky} $ は
-
-$$
-I' _{sky}
-= (
-    I' _{ATM}
-    \cdot \tau _{GBT} + I' _{GBT} )
-    \cdot \tau _i
-= I' _{ATM} \cdot \tau _{GBT} \cdot \tau _i +
-    I' _{GBT} \cdot \tau _i
 $$
 
 となる。
@@ -721,7 +707,7 @@ $$
 
 である。
 
-# SNRの導出
+# SNRの計算
 
 ## 各Signalの導出
 
@@ -803,6 +789,14 @@ $$
 | $S _{all} $  | DN   | $S _{all.pix} \cdot n _{bin.total} $  |
 |              |      |                                       |
 
+上記より、
+
+$$
+S _{all} = S _{obj} + S _{ATM} + S _{GBT} + S _{dark} + S _{read}
+$$
+
+である。
+
 ## 各Noiseの導出
 
 | 文字         | 単位         | 導出                |
@@ -836,3 +830,46 @@ N _{all} =
 $$
 
 となる。
+
+## SNRの導出
+| 文字           | 単位                 | 意味                                   |
+| -------------- | -------------------- | -------------------------------------- |
+| $I' _{ATM} $   | W / m $^2 $ / sr / m | 大気の熱輻射による分光放射輝度         |
+| $I' _{GBT} $   | W / m $^2 $ / sr / m | 望遠鏡光学系の熱輻射による分光放射輝度 |
+| $\tau _{ATM} $ | 無次元               | 地球大気の透過率                       |
+| $\tau _{GBT} $ | 無次元               | 望遠鏡光学系の透過率                   |
+| $\tau _{i} $   | 無次元               | 撮像・分光装置の透過率                 |
+|                |                      |                                        |
+| $I' _{sky} $   | W / m $^2 $ / sr / m | sky画像での分光放射輝度の合算          |
+| $S _{sky}$     | DN                   | sky画像の総カウント値                  |
+|                |                      |                                        |
+
+SNRの計算は、観測対象のSignalである $S _{obj} $ を全Noise $N _{all} $ で割ればよい。
+
+ここで、実際の観測では、 $S _{obj} $ のみを観測することはできないため、sky引きで $S _{obj} $ だけを取り出す必要がある。sky backgroundを撮像した場合の分光放射輝度 $I' _{sky} $ は
+
+$$
+I' _{sky}
+= (
+    I' _{ATM}
+    \cdot \tau _{GBT} + I' _{GBT} )
+    \cdot \tau _i
+= I' _{ATM} \cdot \tau _{GBT} \cdot \tau _i +
+    I' _{GBT} \cdot \tau _i
+$$
+
+となるため、 $I' _{all} $ から最終的に $S _{all} = S _{obj} + S _{ATM} + S _{GBT} + S _{dark} + S _{read} $ を得たときと同様に
+
+$$
+S _{sky} = S _{ATM} + S _{GBT} + S _{dark} + S _{read}
+$$
+
+を得られる。これを用いて
+
+$$
+SNR =
+\cfrac{S _{obj}}{N _{all}} =
+\cfrac{S _{all} - S _{sky}}{\sqrt{S _{all}}}
+$$
+
+である。
