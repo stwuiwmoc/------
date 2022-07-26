@@ -1223,3 +1223,15 @@ class ImagingInstrument:
         virtual_output_file_instance.set_S_read_pix(S_read_pix=S_read_pix)
         virtual_output_file_instance.set_S_dark_pix(S_dark_pix=S_dark_pix)
         virtual_output_file_instance.set_R_electron_FW(R_electron_FW=R_electron_FW)
+
+
+class SNRCalculator:
+
+    def __init__(
+            self,
+            all_image_instance: VirtualOutputFileGenerator,
+            sky_image_instance: VirtualOutputFileGenerator) -> None:
+        pass
+
+    def h(self):
+        mkhelp(self)
