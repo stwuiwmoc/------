@@ -769,6 +769,40 @@ $$
 
 ## binning後のSignalの導出
 
+| 文字                 | 単位 | 意味                               | 代入値 | 参照元 |
+| -------------------- | ---- | ---------------------------------- | ------ | ------ |
+| $n _{bin. \lambda} $ | pix  | 波長方向にbinningするpixel数の合計 | 導出済 |        |
+| $n _{bin.spatial} $  | pix  | 空間方向にbinningする1辺のpixel数  | 任意   |        |
+|                      |      |                                    |        |        |
+| $n _{bin.total} $    | pix  | binningするpixel数合計             |        |        |
+|                      |      |                                    |        |        |
+
+空間方向のbinningは、 $\theta _{pix} $ と $n _{bin.spatial} $ の積が観測所のシーイングを上回る程度の値を任意に決めればよい。
+
+撮像の場合は、正方形のbinを作るため
+
+$$
+n _{bin.total} = n _[bin.spatial] ^2
+$$
+
+となる。分光の場合は、波長方向と空間方向で長方形のbinを作るため
+
+$$
+n _{bin.total} = n _[bin.spatial] \cdot n _{bin. \lambda }
+$$
+
+となる。これを用いて、binning後の各Signalは以下の表のように計算できる。
+
+| 文字         | 単位 | 導出                                  |
+| ------------ | ---- | ------------------------------------- |
+| $S _{obj} $  | DN   | $S _{obj.pix} \cdot n _{bin.total} $  |
+| $S _{ATM} $  | DN   | $S _{ATM.pix} \cdot n _{bin.total} $  |
+| $S _{GBT} $  | DN   | $S _{GBT.pix} \cdot n _{bin.total} $  |
+| $S _{dark} $ | DN   | $S _{dark.pix} \cdot n _{bin.total} $ |
+| $S _{read} $ | DN   | $S _{read.pix} \cdot n _{bin.total} $ |
+| $S _{all} $  | DN   | $S _{all.pix} \cdot n _{bin.total} $  |
+|              |      |                                       |
+
 ## 各Noiseの導出
 
 | 文字         | 単位         | 導出                |
