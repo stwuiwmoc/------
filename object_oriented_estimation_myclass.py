@@ -322,6 +322,7 @@ class VirtualOutputFileGenerator:
         self.__S_all_pix = None
         self.__t_obs = None
         self.__n_bin_rambda = None
+        self.__theta_pix = None
         self.__S_dark_pix = None
         self.__S_read_pix = None
         self.__R_electron_FW = None
@@ -337,6 +338,9 @@ class VirtualOutputFileGenerator:
 
     def get_n_bin_rambda(self) -> float:
         return self.__n_bin_rambda
+
+    def get_theta_pix(self) -> float:
+        return self.__theta_pix
 
     def get_S_dark_pix(self) -> float:
         return self.__S_dark_pix
@@ -355,6 +359,9 @@ class VirtualOutputFileGenerator:
 
     def set_n_bin_rambda(self, n_bin_rambda: float) -> None:
         self.__n_bin_rambda = n_bin_rambda
+
+    def set_n_theta_pix(self, theta_pix: float) -> None:
+        self.__theta_pix = theta_pix
 
     def set_S_dark_pix(self, S_dark_pix: float) -> None:
         self.__S_dark_pix = S_dark_pix
@@ -1220,6 +1227,7 @@ class ImagingInstrument:
         virtual_output_file_instance.set_S_all_pix(S_all_pix=S_all_pix)
         virtual_output_file_instance.set_t_obs(t_obs=t_obs)
         virtual_output_file_instance.set_n_bin_rambda(n_bin_rambda=self.__n_bin_rambda)
+        virtual_output_file_instance.set_n_theta_pix(theta_pix=self.__theta_pix)
         virtual_output_file_instance.set_S_read_pix(S_read_pix=S_read_pix)
         virtual_output_file_instance.set_S_dark_pix(S_dark_pix=S_dark_pix)
         virtual_output_file_instance.set_R_electron_FW(R_electron_FW=R_electron_FW)
