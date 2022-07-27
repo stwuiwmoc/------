@@ -30,7 +30,8 @@ if __name__ == "__main__":
     # グローバル変数の定義
     column_density_H3plus = 2.0e+16  # [/m^2] H3+カラム密度
     T_thermospheric_H3plus = 1200  # [K] H3+熱圏温度
-    t_obs = 1  # [s] 積分時間
+    t_obs = 15  # [s] 積分時間
+    n_bin_spatial = 3
 
     # 各インスタンス生成
     light_all = ooem.LightGenenrator(
@@ -167,10 +168,10 @@ if __name__ == "__main__":
 
     ax14 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[3, 0])
 
-    print("S_all_pix =", fits_all.get_S_all_pix())
-    print("S_dark_pix =", fits_all.get_S_dark_pix())
-    print("S_read_pix =", fits_all.get_S_read_pix())
-    print("R_electron/FW", fits_all.get_R_electron_FW())
+    # SNR計算
+    SNRCalc = ooem.SNRCalculator(
+        all_image_instance=fits_all,
+        sky_image_instance=fits_sky)
 
     # plot
     ax11.set_title("H3+ emission lines")
@@ -200,12 +201,15 @@ if __name__ == "__main__":
         ["", "", ""],
         ["Other parameters", "", ""],
         ["t_obs", t_obs, "s"],
+        ["n_bin_spatial", n_bin_spatial, "pix"],
         ["", "", ""],
         ["Results", "", ""],
         ["S_all_pix", fits_all.get_S_all_pix(), "DN / pix"],
         ["S_dark_pix", fits_all.get_S_dark_pix(), "DN / pix"],
         ["S_read_pix", fits_all.get_S_read_pix(), "DN / pix"],
         ["R_electron/FW", fits_all.get_R_electron_FW(), ""],
+        ["spatial_resolution", SNRCalc.calc_spatial_resolution_for(n_bin_spatial=n_bin_spatial), "arcsec"],
+        ["SNR", SNRCalc.calc_SNR_for(n_bin_spatial=n_bin_spatial), ""],
     ]
 
     ax15 = ooem.plot_parameter_table(
