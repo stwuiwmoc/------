@@ -48,6 +48,11 @@
   - [検出器に到達した段階での分光放射輝度](#検出器に到達した段階での分光放射輝度)
   - [Signalへの換算](#signalへの換算)
   - [フルウェルによるカウント値の制限](#フルウェルによるカウント値の制限)
+- [SNRの計算](#snrの計算)
+  - [各Signalの導出](#各signalの導出)
+  - [binning後のSignalの導出](#binning後のsignalの導出)
+  - [各Noiseの導出](#各noiseの導出)
+  - [SNRの導出](#snrの導出)
 
 # 注釈
 
@@ -557,7 +562,6 @@ $$
 | $\tau _{i} $   | 無次元               | 撮像・分光装置の透過率                     |
 |                |                      |                                            |
 | $I' _{all} $   | W / m $^2 $ / sr / m | 検出器に到達した段階での分光放射輝度の合算 |
-| $I' _{sky} $   | W / m $^2 $ / sr / m | sky画像での分光放射輝度の合算              |
 |                |                      |                                            |
 
 上記は全て導出済みである。
@@ -593,20 +597,6 @@ I' _{all} =
     \cdot \tau _{ATM} + I' _{ATM} )
     \cdot \tau _{GBT} + I' _{GBT} )
     \cdot \tau _i \cdot \tau _{fb}
-$$
-
-となる。
-
-また、実際の観測では、sky backgroundを除去するためにsky画像が取得されるが、この場合の分光放射輝度 $I' _{sky} $ は
-
-$$
-I' _{sky}
-= (
-    I' _{ATM}
-    \cdot \tau _{GBT} + I' _{GBT} )
-    \cdot \tau _i
-= I' _{ATM} \cdot \tau _{GBT} \cdot \tau _i +
-    I' _{GBT} \cdot \tau _i
 $$
 
 となる。
@@ -713,6 +703,173 @@ $$
 
 $$
 S _{all.pix} \leqq 2 ^{16} = 65536
+$$
+
+である。
+
+# SNRの計算
+
+## 各Signalの導出
+
+| 文字            | 単位     | 意味                                                       |
+| --------------- | -------- | ---------------------------------------------------------- |
+| $S _{obj.pix} $ | DN / pix | 観測対象の分光放射輝度による1pixel当たりのカウント値       |
+| $S _{ATM.pix} $ | DN / pix | 大気の熱輻射の分光放射輝度による1pixel当たりのカウント値   |
+| $S _{GBT.pix} $ | DN / pix | 望遠鏡の熱輻射の分光放射輝度による1pixel当たりのカウント値 |
+|                 |          |                                                            |
+
+前節で述べた通り、 $S _{photon.pix} $ は光 $I' _{all} $ によるカウント値である。ここで、導入ファイバーを介さない場合の光 $I' _{all} $ が
+
+$$
+I' _{all}
+= I' _{obj} \cdot \tau _{ATM} \cdot \tau _{GBT} \cdot \tau _i +
+    I' _{ATM} \cdot \tau _{GBT} \cdot \tau _i +
+    I' _{GBT} \cdot \tau _i
+$$
+
+と書けることから、例えば上の式の第一項に対して
+
+$$
+S _{obj.pix} =
+\int \cfrac
+    { ( I' _{obj} \cdot \tau _{ATM} \cdot \tau _{GBT} \cdot \tau _i ) \cdot A _{GBT} \cdot \Omega _{pix}}
+    {h \cdot c / \lambda }
+\cdot \eta \cdot d \lambda \cdot \cfrac{t _{obs}}{G _{sys}}
+$$
+
+と定義できる。（透過率の部分はファイバーの有無などで変わることに注意）
+
+同様に、第二項と第三項についても $S_ {ATM.pix} $ と $S _{GBT.pix}$ を定義すれば、
+
+$$
+S _{photon.pix} = S _{obj.pix} + S _{ATM.pix} + S _{GBT.pix}
+$$
+
+と整理できるため、これを $S _{all.pix} $ の式に代入すれば、
+
+$$
+S _{all.pix} = S _{obj.pix} + S _{ATM.pix} + S _{GBT.pix} + S _{dark.pix} + S _{read.pix}
+$$
+
+と整理できる。
+
+## binning後のSignalの導出
+
+| 文字                 | 単位 | 意味                               | 代入値 | 参照元 |
+| -------------------- | ---- | ---------------------------------- | ------ | ------ |
+| $n _{bin. \lambda} $ | pix  | 波長方向にbinningするpixel数の合計 | 導出済 |        |
+| $n _{bin.spatial} $  | pix  | 空間方向にbinningする1辺のpixel数  | 任意   |        |
+|                      |      |                                    |        |        |
+| $n _{bin.total} $    | pix  | binningするpixel数合計             |        |        |
+|                      |      |                                    |        |        |
+
+空間方向のbinningは、 $\theta _{pix} $ と $n _{bin.spatial} $ の積が観測所のシーイングを上回る程度の値を任意に決めればよい。
+
+撮像の場合は、正方形のbinを作るため
+
+$$
+n _{bin.total} = n _[bin.spatial] ^2
+$$
+
+となる。分光の場合は、波長方向と空間方向で長方形のbinを作るため
+
+$$
+n _{bin.total} = n _[bin.spatial] \cdot n _{bin. \lambda }
+$$
+
+となる。これを用いて、binning後の各Signalは以下の表のように計算できる。
+
+| 文字         | 単位 | 導出                                  |
+| ------------ | ---- | ------------------------------------- |
+| $S _{obj} $  | DN   | $S _{obj.pix} \cdot n _{bin.total} $  |
+| $S _{ATM} $  | DN   | $S _{ATM.pix} \cdot n _{bin.total} $  |
+| $S _{GBT} $  | DN   | $S _{GBT.pix} \cdot n _{bin.total} $  |
+| $S _{dark} $ | DN   | $S _{dark.pix} \cdot n _{bin.total} $ |
+| $S _{read} $ | DN   | $S _{read.pix} \cdot n _{bin.total} $ |
+| $S _{all} $  | DN   | $S _{all.pix} \cdot n _{bin.total} $  |
+|              |      |                                       |
+
+上記より、
+
+$$
+S _{all} = S _{obj} + S _{ATM} + S _{GBT} + S _{dark} + S _{read}
+$$
+
+である。
+
+## 各Noiseの導出
+
+| 文字         | 単位         | 導出                |
+| ------------ | ------------ | ------------------- |
+| $N _{obj} $  | DN $_{rms} $ | $\sqrt{S _{obj}} $  |
+| $N _{ATM} $  | DN $_{rms} $ | $\sqrt{S _{ATM}} $  |
+| $N _{GBT} $  | DN $_{rms} $ | $\sqrt{S _{GBT}} $  |
+| $N _{dark} $ | DN $_{rms} $ | $\sqrt{S _{dark}} $ |
+| $N _{read} $ | DN $_{rms} $ | $\sqrt{S _{read}} $ |
+|              |              |                     |
+| $N _{all} $  | DN $_{rms} $ |                     |
+|              |              |                     |
+
+$S _{all} $ に含まれる各Signalはそれぞれ独立なため、それぞれに対して平方根を取ることでノイズを計算できる。互いに相関の無い複数のノイズが重畳する場合の全体のノイズは、エネルギー的に加算されるため、二乗加算平方根として求められることから、
+
+$$
+N _{all} =
+\sqrt{
+  N _{obj} ^2 + N _{ATM} ^2 + N _{GBT} ^2 + N _{dark} ^2 + N _{read} ^2
+}
+$$
+
+これをさらに整理すると
+
+$$
+N _{all} =
+\sqrt{
+  S _{obj} + S _{ATM} + S _{GBT} + S _{dark} + S _{read}
+} =
+\sqrt{S _{all}}
+$$
+
+となる。
+
+## SNRの導出
+| 文字           | 単位                 | 意味                                   |
+| -------------- | -------------------- | -------------------------------------- |
+| $I' _{ATM} $   | W / m $^2 $ / sr / m | 大気の熱輻射による分光放射輝度         |
+| $I' _{GBT} $   | W / m $^2 $ / sr / m | 望遠鏡光学系の熱輻射による分光放射輝度 |
+| $\tau _{ATM} $ | 無次元               | 地球大気の透過率                       |
+| $\tau _{GBT} $ | 無次元               | 望遠鏡光学系の透過率                   |
+| $\tau _{i} $   | 無次元               | 撮像・分光装置の透過率                 |
+|                |                      |                                        |
+| $I' _{sky} $   | W / m $^2 $ / sr / m | sky画像での分光放射輝度の合算          |
+| $S _{sky}$     | DN                   | sky画像の総カウント値                  |
+|                |                      |                                        |
+
+SNRの計算は、観測対象のSignalである $S _{obj} $ を全Noise $N _{all} $ で割ればよい。
+
+ここで、実際の観測では、 $S _{obj} $ のみを観測することはできないため、sky引きで $S _{obj} $ だけを取り出す必要がある。sky backgroundを撮像した場合の分光放射輝度 $I' _{sky} $ は
+
+$$
+I' _{sky}
+= (
+    I' _{ATM}
+    \cdot \tau _{GBT} + I' _{GBT} )
+    \cdot \tau _i
+= I' _{ATM} \cdot \tau _{GBT} \cdot \tau _i +
+    I' _{GBT} \cdot \tau _i
+$$
+
+となるため、 $I' _{all} $ から最終的に $S _{all} = S _{obj} + S _{ATM} + S _{GBT} + S _{dark} + S _{read} $ を得たときと同様に
+
+$$
+S _{sky} = S _{ATM} + S _{GBT} + S _{dark} + S _{read}
+$$
+
+を得られる。これを用いて
+
+$$
+SNR =
+\cfrac{S _{obj}}{N _{all}} =
+\cfrac{S _{all} - S _{sky}}{\sqrt{S _{all}}}
 $$
 
 である。
