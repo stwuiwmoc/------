@@ -768,13 +768,13 @@ $$
 撮像の場合は、正方形のbinを作るため
 
 $$
-n _{bin.total} = n _[bin.spatial] ^2
+n _{bin.total} = n _{bin.spatial} ^2
 $$
 
 となる。分光の場合は、波長方向と空間方向で長方形のbinを作るため
 
 $$
-n _{bin.total} = n _[bin.spatial] \cdot n _{bin. \lambda }
+n _{bin.total} = n _{bin.spatial} \cdot n _{bin. \lambda }
 $$
 
 となる。これを用いて、binning後の各Signalは以下の表のように計算できる。
