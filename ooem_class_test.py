@@ -38,6 +38,11 @@ if __name__ == "__main__":
         rambda_lower_limit=3.3e-6,
         rambda_upper_limit=3.5e-6)
 
+    light_sky = ooem.LightGenenrator(
+        rambda_division_width=0.1e-9,
+        rambda_lower_limit=3.3e-6,
+        rambda_upper_limit=3.5e-6)
+
     R_3_0 = ooem.H3plusAuroralEmission(
         rambda_obj=3.4128e-6,
         N_H3p=column_density_H3plus,
@@ -116,6 +121,7 @@ if __name__ == "__main__":
         N_e_read=1200)
 
     fits_all = ooem.VirtualOutputFileGenerator()
+    fits_sky = ooem.VirtualOutputFileGenerator()
 
     # plot作成の準備
     fig1 = plt.figure(figsize=(15, 15))
@@ -138,10 +144,12 @@ if __name__ == "__main__":
 
     # 地球大気を通る
     Haleakala_Oct_good.pass_through(light_instance=light_all)
+    Haleakala_Oct_good.pass_through(light_instance=light_sky)
     ax12 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[1, 0])
 
     # 望遠鏡を通る
     T60.pass_through(light_instance=light_all)
+    T60.pass_through(light_instance=light_sky)
     ax13 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[2, 0])
 
     # 望遠鏡への撮像装置の設置
@@ -151,6 +159,10 @@ if __name__ == "__main__":
     TOPICS.shoot_light_and_save_to_fits(
         light_instance=light_all,
         virtual_output_file_instance=fits_all,
+        t_obs=t_obs)
+    TOPICS.shoot_light_and_save_to_fits(
+        light_instance=light_sky,
+        virtual_output_file_instance=fits_sky,
         t_obs=t_obs)
 
     ax14 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[3, 0])
