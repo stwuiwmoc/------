@@ -1239,6 +1239,16 @@ class SNRCalculator:
             self,
             all_image_instance: VirtualOutputFileGenerator,
             sky_image_instance: VirtualOutputFileGenerator) -> None:
+        """観測対象のvirtual_output_fileとsky画像のvirtual_output_fileを保持し、
+        任意のbinning数に対するSNRを計算
+
+        Parameters
+        ----------
+        all_image_instance : VirtualOutputFileGenerator
+            観測対象とsky backgroundを両方含む virtual_output_file インスタンス
+        sky_image_instance : VirtualOutputFileGenerator
+            sky backgroundを両方含む virtual_output_file インスタンス
+        """
 
         self.__all_image_instance = all_image_instance
         self.__sky_image_instance = sky_image_instance
@@ -1249,9 +1259,46 @@ class SNRCalculator:
     def calc_SNR_for(
             self,
             n_bin_spatial: int) -> float:
+        """入力されたn_bin_spatialに対するSNRを計算
+
+        oop観測見積もり.md
+            └ SNRの計算 \n
+                ├ 各Signalの導出 \n
+                ├ binning後のSignalの導出 \n
+                ├ 各Noiseの導出 \n
+                └ SNRの導出 \n
+
+        Parameters
+        ----------
+        n_bin_spatial : int
+            [pix] 空間方向1辺のbinning数
+
+        Returns
+        -------
+        float
+            [無次元] SNR
+        """
 
         def calc_n_bin_total(
                 n_bin_spatial_: int, n_bin_rambda_: float) -> float:
+            """撮像と分光で場合分けしてn_bin_totalを計算
+
+            oop観測見積もり.md
+                └ SNRの計算 \n
+                    └ binning後のSignalの導出 \n
+
+            Parameters
+            ----------
+            n_bin_spatial_ : int
+                [pix] 空間方向1辺のbinning数
+            n_bin_rambda_ : float
+                [pix] 波長方向のbinning数
+
+            Returns
+            -------
+            float
+                _description_
+            """
 
             if n_bin_rambda_ == 1:
                 # 波長方向のbinning = 1, つまり、撮像
@@ -1282,6 +1329,18 @@ class SNRCalculator:
     def calc_spatial_resolution_for(
             self,
             n_bin_spatial: int) -> float:
+        """入力された n_bin_spatial に対する空間分解能を計算
+
+        Parameters
+        ----------
+        n_bin_spatial : int
+            [pix] 空間方向1辺のbinning数
+
+        Returns
+        -------
+        float
+            [arcsec] 空間分解能
+        """
 
         spatial_resolution = self.__all_image_instance.get_theta_pix() * n_bin_spatial
 
