@@ -186,7 +186,7 @@ if __name__ == "__main__":
         ["T_ATM", Haleakala_Oct_good.get_T_ATM(), "K"],
         ["", "", ""],
         ["GroundBasedTelescope", "", ""],
-        ["D_GBT", T60.get_D_GBT(), "m^2"],
+        ["D_GBT", T60.get_D_GBT(), "m"],
         ["FNO_GBT", T60.get_FNO_GBT(), ""],
         ["T_GBT", T60.get_T_GBT(), "K"],
         ["", "", ""],

@@ -186,7 +186,7 @@ if __name__ == "__main__":
         ["T_ATM", Nayoro_Oct.get_T_ATM(), "K"],
         ["", "", ""],
         ["GroundBasedTelescope", "", ""],
-        ["D_GBT", Pirika.get_D_GBT(), "m^2"],
+        ["D_GBT", Pirika.get_D_GBT(), "m"],
         ["FNO_GBT", Pirika.get_FNO_GBT(), ""],
         ["T_GBT", Pirika.get_T_GBT(), "K"],
         ["", "", ""],
