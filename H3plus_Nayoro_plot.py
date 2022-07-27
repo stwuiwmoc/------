@@ -188,6 +188,7 @@ if __name__ == "__main__":
         ["GroundBasedTelescope", "", ""],
         ["D_GBT", Pirika.get_D_GBT(), "m"],
         ["FNO_GBT", Pirika.get_FNO_GBT(), ""],
+        ["tau_GBT", Pirika.get_tau_GBT(), "K"],
         ["T_GBT", Pirika.get_T_GBT(), "K"],
         ["", "", ""],
         ["ImagingInstrument", "", ""],
