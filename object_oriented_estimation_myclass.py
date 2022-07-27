@@ -360,7 +360,7 @@ class VirtualOutputFileGenerator:
     def set_n_bin_rambda(self, n_bin_rambda: float) -> None:
         self.__n_bin_rambda = n_bin_rambda
 
-    def set_n_theta_pix(self, theta_pix: float) -> None:
+    def set_theta_pix(self, theta_pix: float) -> None:
         self.__theta_pix = theta_pix
 
     def set_S_dark_pix(self, S_dark_pix: float) -> None:
@@ -1239,7 +1239,50 @@ class SNRCalculator:
             self,
             all_image_instance: VirtualOutputFileGenerator,
             sky_image_instance: VirtualOutputFileGenerator) -> None:
-        pass
+
+        self.__all_image_instance = all_image_instance
+        self.__sky_image_instance = sky_image_instance
 
     def h(self):
         mkhelp(self)
+
+    def calc_SNR_for(
+            self,
+            n_bin_spatial: int) -> float:
+
+        def calc_n_bin_total(
+                n_bin_spatial_: int, n_bin_rambda_: float) -> float:
+
+            if n_bin_rambda_ == 1:
+                # 波長方向のbinning = 1, つまり、撮像
+                n_bin_total_ = n_bin_spatial_**2
+                return n_bin_total_
+
+            else:
+                # 波長方向にbinningあり, つまり、分光
+                n_bin_total_ = n_bin_spatial_ * n_bin_rambda_
+                return n_bin_total_
+
+        # binning数の計算
+        n_bin_total = calc_n_bin_total(
+            n_bin_spatial_=n_bin_spatial,
+            n_bin_rambda_=self.__all_image_instance.get_n_bin_rambda())
+
+        # S_all, S_skyの計算
+        S_all = self.__all_image_instance.get_S_all_pix() * n_bin_total
+        S_sky = self.__sky_image_instance.get_S_all_pix() * n_bin_total
+
+        # SNRの計算
+        S_obj = S_all - S_sky
+        N_all = np.sqrt(S_all)
+        SNR = S_obj / N_all
+
+        return SNR
+
+    def calc_spatial_resolution_for(
+            self,
+            n_bin_spatial: int) -> float:
+
+        spatial_resolution = self.__all_image_instance.get_theta_pix() * n_bin_spatial
+
+        return spatial_resolution
