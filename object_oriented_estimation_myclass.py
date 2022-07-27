@@ -1227,7 +1227,7 @@ class ImagingInstrument:
         virtual_output_file_instance.set_S_all_pix(S_all_pix=S_all_pix)
         virtual_output_file_instance.set_t_obs(t_obs=t_obs)
         virtual_output_file_instance.set_n_bin_rambda(n_bin_rambda=self.__n_bin_rambda)
-        virtual_output_file_instance.set_n_theta_pix(theta_pix=self.__theta_pix)
+        virtual_output_file_instance.set_theta_pix(theta_pix=self.__theta_pix)
         virtual_output_file_instance.set_S_read_pix(S_read_pix=S_read_pix)
         virtual_output_file_instance.set_S_dark_pix(S_dark_pix=S_dark_pix)
         virtual_output_file_instance.set_R_electron_FW(R_electron_FW=R_electron_FW)
