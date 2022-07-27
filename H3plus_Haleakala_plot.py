@@ -31,7 +31,7 @@ if __name__ == "__main__":
     column_density_H3plus = 1.5e+16  # [/m^2] H3+カラム密度
     T_thermospheric_H3plus = 1200  # [K] H3+熱圏温度
     t_obs = 45  # [s] 積分時間
-    n_bin_spatial = 6
+    n_bin_spatial_list = [6, 10, 16]
 
     # 各インスタンス生成
     light_all = ooem.LightGenenrator(
@@ -167,6 +167,16 @@ if __name__ == "__main__":
 
     ax14 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[3, 0])
 
+    # binning数を変えた時の空間分解能とSNRを表示
+    for i in range(len(n_bin_spatial_list)):
+        print(
+            "n_bin_spatial =",
+            n_bin_spatial_list[i],
+            ", spatial_resolution =",
+            SNRCalc.calc_spatial_resolution_for(n_bin_spatial=n_bin_spatial_list[i]),
+            ", SNR =",
+            SNRCalc.calc_SNR_for(n_bin_spatial=n_bin_spatial_list[i]))
+
     # plot
     ax11.set_title("H3+ emission lines")
     ax12.set_title("pass thruogh Earth Atmosphre")
@@ -200,16 +210,16 @@ if __name__ == "__main__":
         ["", "", ""],
         ["Other parameters", "", ""],
         ["t_obs", t_obs, "s"],
-        ["n_bin_spatial", n_bin_spatial, "pix"],
+        ["n_bin_spatial", n_bin_spatial_list[0], "pix"],
         ["Field of View", TOPICS.get_theta_pix() * 256, "arcsec"],
-        ["spatial_resolution", SNRCalc.calc_spatial_resolution_for(n_bin_spatial=n_bin_spatial), "arcsec"],
+        ["spatial_resolution", SNRCalc.calc_spatial_resolution_for(n_bin_spatial=n_bin_spatial_list[0]), "arcsec"],
         ["", "", ""],
         ["Results", "", ""],
         ["S_all_pix", fits_all.get_S_all_pix(), "DN / pix"],
         ["S_dark_pix", fits_all.get_S_dark_pix(), "DN / pix"],
         ["S_read_pix", fits_all.get_S_read_pix(), "DN / pix"],
         ["R_electron/FW", fits_all.get_R_electron_FW(), ""],
-        ["SNR", SNRCalc.calc_SNR_for(n_bin_spatial=n_bin_spatial), ""],
+        ["SNR", SNRCalc.calc_SNR_for(n_bin_spatial=n_bin_spatial_list[0]), ""],
     ]
 
     ax15 = ooem.plot_parameter_table(
