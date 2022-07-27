@@ -124,6 +124,10 @@ if __name__ == "__main__":
     fits_all = ooem.VirtualOutputFileGenerator()
     fits_sky = ooem.VirtualOutputFileGenerator()
 
+    SNRCalc = ooem.SNRCalculator(
+        all_image_instance=fits_all,
+        sky_image_instance=fits_sky)
+
     # plot作成の準備
     fig1 = plt.figure(figsize=(15, 15))
     gs1 = fig1.add_gridspec(4, 2)
@@ -167,11 +171,6 @@ if __name__ == "__main__":
         t_obs=t_obs)
 
     ax14 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[3, 0])
-
-    # SNR計算
-    SNRCalc = ooem.SNRCalculator(
-        all_image_instance=fits_all,
-        sky_image_instance=fits_sky)
 
     # plot
     ax11.set_title("H3+ emission lines")
