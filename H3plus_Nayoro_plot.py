@@ -111,7 +111,7 @@ if __name__ == "__main__":
         D_GBT=1.6,
         FNO_GBT=12,
         T_GBT=280,
-        tau_GBT=0.66)
+        tau_GBT=0.8**3)
 
     TOPICS = ooem.ImagingInstrument(
         rambda_fl_center=3.414e-6,
