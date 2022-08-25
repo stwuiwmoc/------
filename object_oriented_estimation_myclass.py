@@ -1,6 +1,6 @@
-import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
 from scipy import constants as phys_consts
 from scipy import interpolate
 

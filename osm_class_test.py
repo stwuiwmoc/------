@@ -1,6 +1,7 @@
 # %%
-import observation_simulation_myclass as osm
 import importlib
+
+import observation_simulation_myclass as osm
 
 if __name__ == "__main__":
     importlib.reload(osm)
