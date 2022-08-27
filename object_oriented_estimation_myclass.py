@@ -551,12 +551,7 @@ class EarthAtmosphere:
     def __init__(
             self,
             T_ATM: float,
-            observatory_name: str,
-            ATRAN_PWV_um: float,
-            ATRAN_zenith_angle_deg: float,
-            ATRAN_wavelength_range_min_um: float,
-            ATRAN_wavelength_range_max_um: float,
-            ATRAN_Resolution_R: float) -> None:
+            ATRAN_result_filepath: str) -> None:
         """地球大気の透過率と熱輻射の計算
 
         oop観測見積もり.md
@@ -569,34 +564,13 @@ class EarthAtmosphere:
         ----------
         T_ATM : float
             [K] 大気の温度
-        observatory_name : str
-            想定する観測所の名前の先頭2文字,
-            Ha : ハレアカラ,
-            Na : 名寄,
-            Hi : 東広島
-        ATRAN_PWV_um : float
-            [um] ATRANに入力した可降水量
-        ATRAN_zenith_angle_deg : float
-            [deg] ATRANに入力した天頂角
-        ATRAN_wavelength_range_min_um : float
-            [um] ATRANに入力した計算波長の最小値側
-        ATRAN_wavelength_range_max_um : float
-            [um] ATRANに入力した計算波長の最大値側
-        ATRAN_Resolution_R : float
-            [無次元] ATRANに入力したスムージングの半値幅
+        ATRAN_result_filepath : str
+            ATRAN計算結果をコピペした.txtファイルパス（ATRANの出力をCtrl+Sでtxtとして保存したもの）
         """
 
         # 入力されたパラメータの代入
         self.__T_ATM = T_ATM
-        self.__observatory_name = observatory_name
-        self.__ATRAN_PWV_um = ATRAN_PWV_um
-        self.__ATRAN_zenith_angle_deg = ATRAN_zenith_angle_deg
-        self.__ATRAN_wavelength_range_min_um = ATRAN_wavelength_range_min_um
-        self.__ATRAN_wavelength_range_max_um = ATRAN_wavelength_range_max_um
-        self.__ATRAN_Resolution_R = ATRAN_Resolution_R
-
-        # 透過率計算結果のファイルパス文字列を作成する
-        self.__ATRAN_result_filepath = self.__make_ATRAN_result_filepath()
+        self.__ATRAN_result_filepath = ATRAN_result_filepath
 
         # 透過率関数の作成
         self.__tau_ATM_function = self.__make_tau_ATM_function()
@@ -607,62 +581,11 @@ class EarthAtmosphere:
     def get_T_ATM(self) -> float:
         return self.__T_ATM
 
-    def get_observatory_name(self) -> str:
-        return self.__observatory_name
-
-    def get_ATRAN_PWV_um(self) -> float:
-        return self.__ATRAN_PWV_um
-
-    def get_ATRAN_zenith_angle_deg(self) -> float:
-        return self.__ATRAN_zenith_angle_deg
-
-    def get_ATRAN_wavelength_range_min_um(self) -> float:
-        return self.__ATRAN_wavelength_range_min_um
-
-    def get_ATRAN_wavelength_range_max_um(self) -> float:
-        return self.__ATRAN_wavelength_range_max_um
-
-    def get_ATRAN_Resolution_R(self) -> float:
-        return self.__ATRAN_Resolution_R
-
     def get_ATRAN_result_filepath(self) -> str:
         return self.__ATRAN_result_filepath
 
     def get_tau_ATM_function(self) -> interpolate.interpolate.interp1d:
         return self.__tau_ATM_function
-
-    def __make_ATRAN_result_filepath(self) -> str:
-        """initで入力されたATRANのパラメータに応じて、
-        ATRAN出力結果のtxtファイルパスを作成する
-
-        oop観測見積もり.md
-            └ 地球大気の発光 \n
-                ├ 地球大気のパラメータ \n
-                └ ATRANによる大気透過率の計算 \n
-
-        Returns
-        -------
-        str
-            ATRAN出力結果のtxtファイルのパス
-        """
-
-        observatory_name = self.__observatory_name
-        ATRAN_PWV_um_str = str(self.__ATRAN_PWV_um)
-        ATRAN_zenith_angle_deg_str = str(self.__ATRAN_zenith_angle_deg)
-        ATRAN_wavelength_range_min_um_str = str(self.__ATRAN_wavelength_range_min_um)
-        ATRAN_wavelength_range_max_um_str = str(self.__ATRAN_wavelength_range_max_um)
-        ATRAN_Resolution_R_str = str(self.__ATRAN_Resolution_R)
-
-        filepath_ = "raw_data/"\
-            + observatory_name\
-            + "_PWV" + ATRAN_PWV_um_str\
-            + "_ZA" + ATRAN_zenith_angle_deg_str\
-            + "_Range" + ATRAN_wavelength_range_min_um_str\
-            + "to" + ATRAN_wavelength_range_max_um_str\
-            + "_R" + ATRAN_Resolution_R_str\
-            + ".txt"
-
-        return filepath_
 
     def __make_tau_ATM_function(self) -> interpolate.interpolate.interp1d:
         """ATRAN出力結果のtxtファイルを読み込み、
