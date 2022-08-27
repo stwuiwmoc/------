@@ -102,8 +102,8 @@ if __name__ == "__main__":
     Nayoro_Oct = ooem.EarthAtmosphere(
         T_ATM=273,
         observatory_name="Na",
-        ATRAN_PWV_um=15000,
-        ATRAN_zenith_angle_deg=45,
+        ATRAN_PWV_um=8000,
+        ATRAN_zenith_angle_deg=46,
         ATRAN_wavelength_range_min_um=3,
         ATRAN_wavelength_range_max_um=4,
         ATRAN_Resolution_R=0)
@@ -111,7 +111,7 @@ if __name__ == "__main__":
     Pirika = ooem.GroundBasedTelescope(
         D_GBT=1.6,
         FNO_GBT=12,
-        T_GBT=280,
+        T_GBT=268,
         tau_GBT=0.8**3)
 
     TOPICS = ooem.ImagingInstrument(
