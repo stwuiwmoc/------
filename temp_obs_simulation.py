@@ -1,6 +1,6 @@
 # %%
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 from scipy import constants as phys_consts
 
 import observation_simulation_myclass as osm

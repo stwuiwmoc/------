@@ -1,6 +1,6 @@
 # %%
-import numpy as np
 import matplotlib
+import numpy as np
 from scipy import constants as phys_consts
 
 

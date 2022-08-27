@@ -1,8 +1,9 @@
 # %%
-import matplotlib
-import numpy as np
-import matplotlib.pyplot as plt
 import importlib
+
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
 
 import observation_simulation_myclass as osm
 

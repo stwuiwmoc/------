@@ -29,10 +29,10 @@ if __name__ == "__main__":
     importlib.reload(ooem)
 
     # グローバル変数の定義
-    column_density_H3plus = 2.0e+16  # [/m^2] H3+カラム密度
+    column_density_H3plus = 1.5e+16  # [/m^2] H3+カラム密度
     T_thermospheric_H3plus = 1200  # [K] H3+熱圏温度
-    t_obs = 15  # [s] 積分時間
-    n_bin_spatial = 3
+    t_obs = 45  # [s] 積分時間
+    n_bin_spatial_list = [6, 10, 16]
 
     # 各インスタンス生成
     light_all = ooem.LightGenenrator(
@@ -110,9 +110,9 @@ if __name__ == "__main__":
 
     T60 = ooem.GroundBasedTelescope(
         D_GBT=0.6,
-        FNO_GBT=12,
+        FNO_GBT=24,
         T_GBT=280,
-        tau_GBT=0.66)
+        tau_GBT=0.8**5)
 
     TOPICS = ooem.ImagingInstrument(
         rambda_fl_center=3.414e-6,
@@ -135,17 +135,12 @@ if __name__ == "__main__":
 
     # 輝線発光を加える
     R_3_0.add_auroral_emission_to(light_instance=light_all)
-    print("Only R_3_0 emission, I =", light_all.get_I())
-
     R_3_1.add_auroral_emission_to(light_instance=light_all)
-
     R_3_2.add_auroral_emission_to(light_instance=light_all)
-
     R_3_3.add_auroral_emission_to(light_instance=light_all)
-
     R_4_3.add_auroral_emission_to(light_instance=light_all)
-
     R_4_4.add_auroral_emission_to(light_instance=light_all)
+
     ax11 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[0, 0])
 
     # 地球大気を通る
@@ -173,6 +168,16 @@ if __name__ == "__main__":
 
     ax14 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[3, 0])
 
+    # binning数を変えた時の空間分解能とSNRを表示
+    for i in range(len(n_bin_spatial_list)):
+        print(
+            "n_bin_spatial =",
+            n_bin_spatial_list[i],
+            ", spatial_resolution =",
+            SNRCalc.calc_spatial_resolution_for(n_bin_spatial=n_bin_spatial_list[i]),
+            ", SNR =",
+            SNRCalc.calc_SNR_for(n_bin_spatial=n_bin_spatial_list[i]))
+
     # plot
     ax11.set_title("H3+ emission lines")
     ax12.set_title("pass thruogh Earth Atmosphre")
@@ -183,13 +188,18 @@ if __name__ == "__main__":
         ooem.get_latest_commit_datetime(),
         ["Have some change", "from above commit", ooem.have_some_change_in_git_status()],
         ["", "", ""],
+        ["H3plusEmission", "", ""],
+        ["N_H3+", R_3_0.get_N_H3p(), "/ m^2"],
+        ["T_hypo", R_3_0.get_T_hypo(), "K"],
+        ["", "", ""],
         ["EarthAtmosphre", "", ""],
-        ["ATRAN result filename", Haleakala_Oct_good.get_ATRAN_result_filepath()[9:24], Haleakala_Oct_good.get_ATRAN_result_filepath()[24:]],
+        ["ATRAN result filename", Haleakala_Oct_good.get_ATRAN_result_filepath()[9:25], Haleakala_Oct_good.get_ATRAN_result_filepath()[25:]],
         ["T_ATM", Haleakala_Oct_good.get_T_ATM(), "K"],
         ["", "", ""],
         ["GroundBasedTelescope", "", ""],
         ["D_GBT", T60.get_D_GBT(), "m"],
         ["FNO_GBT", T60.get_FNO_GBT(), ""],
+        ["tau_GBT", T60.get_tau_GBT(), "K"],
         ["T_GBT", T60.get_T_GBT(), "K"],
         ["", "", ""],
         ["ImagingInstrument", "", ""],
@@ -201,19 +211,21 @@ if __name__ == "__main__":
         ["", "", ""],
         ["Other parameters", "", ""],
         ["t_obs", t_obs, "s"],
-        ["n_bin_spatial", n_bin_spatial, "pix"],
+        ["n_bin_spatial", n_bin_spatial_list[0], "pix"],
+        ["Field of View", TOPICS.get_theta_pix() * 256, "arcsec"],
+        ["spatial_resolution", SNRCalc.calc_spatial_resolution_for(n_bin_spatial=n_bin_spatial_list[0]), "arcsec"],
         ["", "", ""],
         ["Results", "", ""],
         ["S_all_pix", fits_all.get_S_all_pix(), "DN / pix"],
         ["S_dark_pix", fits_all.get_S_dark_pix(), "DN / pix"],
         ["S_read_pix", fits_all.get_S_read_pix(), "DN / pix"],
         ["R_electron/FW", fits_all.get_R_electron_FW(), ""],
-        ["spatial_resolution", SNRCalc.calc_spatial_resolution_for(n_bin_spatial=n_bin_spatial), "arcsec"],
-        ["SNR", SNRCalc.calc_SNR_for(n_bin_spatial=n_bin_spatial), ""],
+        ["SNR", SNRCalc.calc_SNR_for(n_bin_spatial=n_bin_spatial_list[0]), ""],
     ]
 
     ax15 = ooem.plot_parameter_table(
         fig=fig1, position=gs1[:, 1], parameter_table=parametar_table_list, fontsize=12)
 
+    fig1.suptitle("H3+ 3.4um in Haleakala")
     fig1.tight_layout()
     fig1.savefig(mkfolder() + "fig1.png")
