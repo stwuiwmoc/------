@@ -101,12 +101,7 @@ if __name__ == "__main__":
 
     Haleakala_Oct_good = ooem.EarthAtmosphere(
         T_ATM=273,
-        observatory_name="Ha",
-        ATRAN_PWV_um=2000,
-        ATRAN_zenith_angle_deg=22,
-        ATRAN_wavelength_range_min_um=3,
-        ATRAN_wavelength_range_max_um=4,
-        ATRAN_Resolution_R=0)
+        ATRAN_result_filepath="raw_data/Ha_PWV2000_ZA22_Range3to4_R0.txt")
 
     T60 = ooem.GroundBasedTelescope(
         D_GBT=0.6,
