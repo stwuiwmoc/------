@@ -162,6 +162,10 @@ def calc_Plank_law_I_prime(
     return I_prime
 
 
+def convert_Jy_to_spectral_radiance():
+    return
+
+
 class LightGenenrator:
 
     def __init__(
