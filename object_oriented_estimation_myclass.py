@@ -437,6 +437,9 @@ class GenericEmissionFromCsv:
     def h(self):
         mkhelp(self)
 
+    def get_csv_fpath(self) -> str:
+        return self.__csv_fpath
+
     def get_spectral_radiance_function(self) -> interpolate.interpolate.interp1d:
         return self.__spectral_radiance_function
 
