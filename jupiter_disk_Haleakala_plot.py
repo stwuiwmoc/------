@@ -120,10 +120,13 @@ if __name__ == "__main__":
     # plot
     ax11.set_title("Jupiter surface emission (Norwood et al. 2015)")
     ax11.set_ylim(0, 1.2e5)
+
     ax12.set_title("Pass thruogh Earth Atmosphre")
     ax12.set_ylim(0, 1.2e5)
+
     ax13.set_title("Pass through Ground-based-telescope")
     ax13.set_ylim(0, 1.2e5)
+
     ax14.set_title("Pass through imaging instrument")
 
     parametar_table_list = [
@@ -169,6 +172,6 @@ if __name__ == "__main__":
     ax15 = ooem.plot_parameter_table(
         fig=fig1, position=gs1[:, 1], parameter_table=parametar_table_list, fontsize=12)
 
-    fig1.suptitle("H3+ 3.4um in Haleakala")
+    fig1.suptitle("Jupiter disk NIR observation in Haleakala")
     fig1.tight_layout()
     fig1.savefig(mkfolder() + "fig1.png")
