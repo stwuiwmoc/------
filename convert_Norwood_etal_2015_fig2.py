@@ -7,6 +7,25 @@ import numpy as np
 import object_oriented_estimation_myclass as ooem
 
 
+def mkfolder(suffix=""):
+    import os
+    """
+    Parameters
+    ----------
+    suffix : str, optional
+        The default is "".
+
+    Returns
+    -------
+    str ( script name + suffix )
+    """
+    filename = os.path.basename(__file__)
+    filename = filename.replace(".py", "") + suffix
+    folder = "mkfolder/" + filename + "/"
+    os.makedirs(folder, exist_ok=True)
+    return folder
+
+
 def read_csv(fpath: str) -> list[np.ndarray, np.ndarray]:
     """WebPlotDigitizer https://automeris.io/WebPlotDigitizer/ で
     グラフから抽出したデータのcsv出力を1次元arrayのlistとして読み出し
@@ -81,9 +100,19 @@ if __name__ == "__main__":
         rambda_=rambda,
         Jy_per_sr_=Jy_per_sr)
 
+    # csvに保存
+    save_array = np.stack([rambda, spectral_radiance]).T
+    save_fpath = mkfolder() + "rambda_vs_spectral_radiance.csv"
+    np.savetxt(
+        fname=save_fpath,
+        X=save_array,
+        delimiter=", ")
+
     # plot
     fig1 = plt.figure(figsize=(5, 10))
     gs1 = fig1.add_gridspec(2, 1)
+
+    fig1.suptitle("Norwood et al. 2015, fig2 (2.5 - 5 um)")
 
     # pngの再現
     ax11 = fig1.add_subplot(gs1[0, 0])
@@ -99,3 +128,6 @@ if __name__ == "__main__":
     ax12.grid()
     ax12.set_xlabel("[m]")
     ax12.set_ylabel("[W / m^2 / sr / m]")
+
+    fig1.tight_layout()
+    fig1.savefig(mkfolder() + "fig1.png")
