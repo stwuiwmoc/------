@@ -360,7 +360,7 @@ class VirtualOutputFileGenerator:
     def h(self):
         mkhelp(self)
 
-    def get_S_all_pix(self) -> float:
+    def get_S_all_pix(self) -> int:
         return self.__S_all_pix
 
     def get_t_obs(self) -> float:
@@ -372,16 +372,16 @@ class VirtualOutputFileGenerator:
     def get_theta_pix(self) -> float:
         return self.__theta_pix
 
-    def get_S_dark_pix(self) -> float:
+    def get_S_dark_pix(self) -> int:
         return self.__S_dark_pix
 
-    def get_S_read_pix(self) -> float:
+    def get_S_read_pix(self) -> int:
         return self.__S_read_pix
 
     def get_R_electron_FW(self) -> float:
         return self.__R_electron_FW
 
-    def set_S_all_pix(self, S_all_pix: float) -> None:
+    def set_S_all_pix(self, S_all_pix: int) -> None:
         self.__S_all_pix = S_all_pix
 
     def set_t_obs(self, t_obs: float) -> None:
@@ -393,10 +393,10 @@ class VirtualOutputFileGenerator:
     def set_theta_pix(self, theta_pix: float) -> None:
         self.__theta_pix = theta_pix
 
-    def set_S_dark_pix(self, S_dark_pix: float) -> None:
+    def set_S_dark_pix(self, S_dark_pix: int) -> None:
         self.__S_dark_pix = S_dark_pix
 
-    def set_S_read_pix(self, S_read_pix: float) -> None:
+    def set_S_read_pix(self, S_read_pix: int) -> None:
         self.__S_read_pix = S_read_pix
 
     def set_R_electron_FW(self, R_electron_FW: float) -> None:
@@ -1235,7 +1235,7 @@ class ImagingInstrument:
                 Omega_pix_: float,
                 A_GBT_: float,
                 t_obs_: float,
-                G_sys_: float) -> float:
+                G_sys_: float) -> int:
             """光によるカウント値 S_photon_pixを計算
 
             oop観測見積もり.md
@@ -1258,7 +1258,7 @@ class ImagingInstrument:
 
             Returns
             -------
-            float
+            int
                 [DN / pix] 光による1pixelあたりのカウント値
             """
 
@@ -1279,7 +1279,8 @@ class ImagingInstrument:
             # S_photon.pixの導出
             S_photon_pix_ = integration_result * t_obs_ / G_sys_
 
-            return S_photon_pix_
+            # カウント値は整数なので小数は切り捨て
+            return np.floor(S_photon_pix_).astype(int)
 
         # バンドパスフィルタの定義
         tau_i_BPF = calc_gaussian(
@@ -1305,11 +1306,11 @@ class ImagingInstrument:
             t_obs_=t_obs,
             G_sys_=self.__G_sys)
 
-        # 暗電流によるカウント値の計算
-        S_dark_pix = self.__I_dark * t_obs / self.__G_sys
+        # 暗電流によるカウント値の計算（カウント値は整数）
+        S_dark_pix = np.floor(self.__I_dark * t_obs / self.__G_sys).astype(int)
 
-        # 読み出しノイズによるカウント値の計算
-        S_read_pix = (self.__N_e_read / self.__G_sys)**2
+        # 読み出しノイズによるカウント値の計算（カウント値は整数）
+        S_read_pix = np.floor((self.__N_e_read / self.__G_sys)**2).astype(int)
 
         # カウント値の総和を計算
         S_all_pix = S_photon_pix + S_dark_pix + S_read_pix
