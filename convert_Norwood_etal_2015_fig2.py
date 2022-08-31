@@ -1,4 +1,7 @@
 # %%
+import importlib
+
+import matplotlib.pyplot as plt
 import numpy as np
 
 import object_oriented_estimation_myclass as ooem
@@ -52,12 +55,14 @@ def convert_per_sq_arcsec_to_per_sr(hoge_per_sq_arcsec: np.ndarray) -> np.ndarra
         [何か / sr] 1次元array
     """
 
-    hoge_per_sr = ((np.pi / 180) * (1 / 3600))**2 * hoge_per_sq_arcsec
+    hoge_per_sr = hoge_per_sq_arcsec / ((np.pi / 180) * (1 / 3600))**2
 
     return hoge_per_sr
 
 
 if __name__ == "__main__":
+    importlib.reload(ooem)
+
     # Norwood et al. 2015 のfig2 に
     # WebPlotDigitizer https://automeris.io/WebPlotDigitizer/ でグラフから座標を抽出
     # その出力結果のcsvを読み出し
@@ -70,3 +75,24 @@ if __name__ == "__main__":
 
     # 強度の単位を [Jy / arcsec^2] -> [Jy / sr] に変更
     Jy_per_sr = convert_per_sq_arcsec_to_per_sr(hoge_per_sq_arcsec=Jy_per_sq_arcsec)
+
+    # 強度の単位を [Jy / sr] -> [W / m^2 / sr / m] に変更
+    spectral_radiance = ooem.convert_Jy_per_sr_to_spectral_radiance(
+        rambda_=rambda,
+        Jy_per_sr_=Jy_per_sr)
+
+    fig1 = plt.figure(figsize=(5, 10))
+    gs1 = fig1.add_gridspec(2, 1)
+
+    ax11 = fig1.add_subplot(gs1[0, 0])
+    ax11.plot(rambda, Jy_per_sq_arcsec)
+    ax11.set_yscale("log")
+    ax11.grid()
+    ax11.set_ylabel("[Jy / arcsec^2] ( = 10^-26 [W / m^2 / Hz / arcsec^2])")
+
+    ax12 = fig1.add_subplot(gs1[1, 0])
+    ax12.plot(rambda, spectral_radiance)
+    ax12.set_yscale("log")
+    ax12.grid()
+    ax12.set_xlabel("[m]")
+    ax12.set_ylabel("[W / m^2 / sr / m]")
