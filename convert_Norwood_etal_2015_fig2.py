@@ -32,6 +32,31 @@ def read_csv(fpath: str) -> list[np.ndarray, np.ndarray]:
     return x_data, y_data
 
 
+def convert_per_sq_arcsec_to_per_sr(hoge_per_sq_arcsec: np.ndarray) -> np.ndarray:
+    """[何か / arcsec^2] を [何か / sr] に変換
+
+    計算式の根拠は以下、但しこの関数では arcsec^2 と sr は分母側に来ることに注意
+
+    oop観測見積もり.md
+    └ 近赤外装置による撮像・分光 \n
+        └ pixel数関連の導出 \n
+
+    Parameters
+    ----------
+    hoge_per_sq_arcsec : np.ndarray
+        [何か / arcsec^2] 1次元array
+
+    Returns
+    -------
+    np.ndarray
+        [何か / sr] 1次元array
+    """
+
+    hoge_per_sr = ((np.pi / 180) * (1 / 3600))**2 * hoge_per_sq_arcsec
+
+    return hoge_per_sr
+
+
 if __name__ == "__main__":
     # Norwood et al. 2015 のfig2 に
     # WebPlotDigitizer https://automeris.io/WebPlotDigitizer/ でグラフから座標を抽出
@@ -40,5 +65,8 @@ if __name__ == "__main__":
 
     rambda_um, Jy_per_sq_arcsec = read_csv(fpath="raw_data/Norwood_etal_2015_fig2.csv")
 
-    # 波長の単位を m に変更
+    # 波長の単位を [um] -> [m] に変更
     rambda = rambda_um * 1e-6
+
+    # 強度の単位を [Jy / arcsec^2] -> [Jy / sr] に変更
+    Jy_per_sr = convert_per_sq_arcsec_to_per_sr(hoge_per_sq_arcsec=Jy_per_sq_arcsec)

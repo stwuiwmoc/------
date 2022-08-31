@@ -162,7 +162,7 @@ def calc_Plank_law_I_prime(
     return I_prime
 
 
-def convert_Jy_to_spectral_radiance():
+def convert_Jy_per_sr_to_spectral_radiance(rambda, Jy_per_sr):
     return
 
 
@@ -959,9 +959,9 @@ class ImagingInstrument:
         def calc_theta_pix(f_GBT: float) -> float:
             """1pixelが見込む角度（プレートスケール）を計算
 
-        oop観測見積もり.md
-            └ 近赤外装置による撮像・分光 \n
-                └ pixel数関連の導出 \n
+            oop観測見積もり.md
+                └ 近赤外装置による撮像・分光 \n
+                    └ pixel数関連の導出 \n
 
             Parameters
             ----------
