@@ -113,6 +113,7 @@ if __name__ == "__main__":
         rambda_BPF_center=3.414e-6,
         FWHM_BPF=17e-9,
         tau_BPF_center=0.88,
+        tau_i_ND=1,
         G_Amp=9,
         I_dark=50,
         N_e_read=1200)
@@ -191,6 +192,7 @@ if __name__ == "__main__":
         ["rambda_BPF_center", TOPICS.get_rambda_BPF_center(), "m"],
         ["FWHM_BPF", TOPICS.get_FWHM_BPF(), "m"],
         ["tau_BPF_center", TOPICS.get_tau_BPF_center(), ""],
+        ["tau_i_ND", TOPICS.get_tau_i_ND(), ""],
         ["I_dark_pix", TOPICS.get_I_dark(), "e- / s"],
         ["N_e_read_pix", TOPICS.get_N_e_read(), "e-rms"],
         ["", "", ""],

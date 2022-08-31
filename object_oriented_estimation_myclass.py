@@ -991,6 +991,7 @@ class ImagingInstrument:
             rambda_BPF_center: float,
             FWHM_BPF: float,
             tau_BPF_center: float,
+            tau_i_ND: float,
             G_Amp: float,
             I_dark: float,
             N_e_read: float) -> None:
@@ -999,6 +1000,7 @@ class ImagingInstrument:
         oop観測見積もり.md
             └ 近赤外装置による撮像・分光 \n
                 ├ バンドパスフィルタ透過率の導出 \n
+                ├ NDフィルタ透過率の導出 \n
                 ├ 装置透過率の導出（TOPICS） \n
                 ├ pixel数関連の導出 \n
                 ├ システムゲインの導出 \n
@@ -1014,6 +1016,8 @@ class ImagingInstrument:
             [m] バンドパスフィルタの半値全幅
         tau_BPF_center : float
             [無次元] バンドパスフィルタの中心透過率
+        tau_i_ND : float
+            [無次元] NDフィルタの透過率
         G_Amp : float
             [無次元] プリアンプ基板の倍率
         I_dark : float
@@ -1027,6 +1031,9 @@ class ImagingInstrument:
         self.__rambda_BPF_center = rambda_BPF_center
         self.__FWHM_BPF = FWHM_BPF
         self.__tau_BPF_center = tau_BPF_center
+
+        # NDフィルタのパラメータ
+        self.__tau_i_ND = tau_i_ND
 
         # ピクセル数関連のパラメータ
         self.__n_bin_rambda = 1  # [pix]
@@ -1079,6 +1086,9 @@ class ImagingInstrument:
 
     def get_tau_BPF_center(self) -> float:
         return self.__tau_BPF_center
+
+    def get_tau_i_ND(self) -> float:
+        return self.__tau_i_ND
 
     def get_G_Amp(self) -> float:
         return self.__G_Amp
@@ -1281,7 +1291,8 @@ class ImagingInstrument:
         # 装置透過率の導出
         tau_i_lens = 0.9 ** 3
         tau_i_mirror = 1
-        tau_i = tau_i_lens * tau_i_mirror * tau_i_BPF
+        tau_i_ND = self.__tau_i_ND
+        tau_i = tau_i_lens * tau_i_mirror * tau_i_BPF * tau_i_ND
 
         # 装置透過率を光にかける
         light_instance.multiply_I_prime_to(magnification=tau_i)
