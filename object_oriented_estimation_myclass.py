@@ -519,6 +519,16 @@ class GenericEmissionFromCsv:
 
         return spectral_radiance_function
 
+    def add_spectral_radiance_to(
+            self,
+            light_instance: LightGenenrator) -> None:
+
+        # 光の波長範囲・波長幅に対応した分光放射輝度の1次元arrayを計算する
+        spectral_radiance = self.__spectral_radiance_function(light_instance.get_rambda())
+
+        # 光に対して分光放射輝度を加える
+        light_instance.add_I_prime_to(I_prime_xx=spectral_radiance)
+
 
 class H3plusAuroralEmission:
 
