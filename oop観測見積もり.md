@@ -18,6 +18,7 @@
 [なよろ市立天文台]: https://www.nayoro-star.jp/kitasubaru/use/use-access.html
 [日本におけるGPS可降水量の季節変化の特徴]: https://www.metsoc.jp/tenki/pdf/2012/2012_10_0917.pdf
 [KANATA Telescope]: http://hasc.hiroshima-u.ac.jp/telescope/kanatatel-e.html
+[THORLABS BPF(IR)]: https://www.thorlabs.co.jp/newgrouppage9.cfm?objectgroup_id=5871
 
 - [注釈](#注釈)
 - [見積もりの概略](#見積もりの概略)
@@ -401,17 +402,22 @@ $$
 
 と書ける。
 
-| $\lambda _{fl.center}$ | $FWHM _{fl}$ | $tau _{fl.center}$ | 設置先 | 参照元     |
-| ---------------------- | ------------ | ------------------ | ------ | ---------- |
-| 2.295e-6               | 10e-9        | 0.7                | TOPICS | 神原M論p26 |
-| 2.330e-6               | 10e-9        | 0.7                | TOPICS | 神原M論p26 |
-| 3.414e-6               | 17e-9        | 0.88               | TOPICS | 神原M論p26 |
-|                        |              |                    |        |            |
-| 3.953e-6               | 266e-9       | 0.9                | ESPRIT | 神原M論p90 |
-| 2.137e-6               | 76e-9        | 0.9                | ESPRIT | 神原M論p90 |
-| 3.414e-6               | 17e-9        | 0.9                | ESPRIT | 神原M論p90 |
-| 2.302e-6               | 80e-9        | 0.9                | ESPRIT | 神原M論p90 |
-|                        |              |                    |        |            |
+| $\lambda _{fl.center}$ | $FWHM _{fl}$ | $tau _{fl.center}$ | 設置先 | 参照元             |
+| ---------------------- | ------------ | ------------------ | ------ | ------------------ |
+| 2.250e-6               | 500e-9       | 0.7                | TOPICS | [THORLABS BPF(IR)] |
+| 3.250e-6               | 500e-9       | 0.7                | TOPICS | [THORLABS BPF(IR)] |
+| 3.750e-6               | 500e-9       | 0.7                | TOPICS | [THORLABS BPF(IR)] |
+|                        |              |                    |        |                    |
+| 2.295e-6               | 10e-9        | 0.7                | TOPICS | 神原M論p26         |
+| 2.330e-6               | 10e-9        | 0.7                | TOPICS | 神原M論p26         |
+| 3.414e-6               | 17e-9        | 0.88               | TOPICS | 神原M論p26         |
+|                        |              |                    |        |                    |
+| 3.953e-6               | 266e-9       | 0.9                | ESPRIT | 神原M論p90         |
+|                        |              |                    |        |                    |
+| 2.137e-6               | 76e-9        | 0.9                | ESPRIT | 神原M論p90         |
+| 3.414e-6               | 17e-9        | 0.9                | ESPRIT | 神原M論p90         |
+| 2.302e-6               | 80e-9        | 0.9                | ESPRIT | 神原M論p90         |
+|                        |              |                    |        |                    |
 
 ## 装置透過率の導出（TOPICS）
 
