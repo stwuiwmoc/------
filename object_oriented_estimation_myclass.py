@@ -405,11 +405,119 @@ class VirtualOutputFileGenerator:
 
 class GenericEmissionFromCsv:
 
-    def __init__(self) -> None:
-        pass
+    def __init__(
+            self,
+            csv_fpath: str) -> None:
+        """任意の発光についての "波長[m] vs 分光放射輝度[W / m^2 / sr / m]" のcsvを読み込んで
+        3次スプライン補間処理して再現
+
+        波長 vs 分光放射輝度 のcsvは自分で数字を用意するか、
+        論文などのグラフ画像を用意して https://automeris.io/WebPlotDigitizer/ で
+        データ抽出することを想定
+
+        想定するcsvのデータ構造は以下
+
+        波長0, 分光放射輝度0\n
+        波長1, 分光放射輝度1\n
+        波長2, 分光放射輝度2\n
+        ...
+
+        Parameters
+        ----------
+        csv_fpath : str
+            csvのファイルパス
+        """
+
+        # 入力されたパラメータの代入
+        self.__csv_fpath = csv_fpath
+
+        # 分光放射輝度関数の作成
+        self.__spectral_radiance_function = self.__make_spectral_radiance_function()
 
     def h(self):
         mkhelp(self)
+
+    def get_spectral_radiance_function(self) -> interpolate.interpolate.interp1d:
+        return self.__spectral_radiance_function
+
+    def __make_spectral_radiance_function(self) -> interpolate.interpolate.interp1d:
+        """波長 - 分光放射輝度 のcsvファイルを読み込んで分光放射輝度を3次スプライン補間し、
+        波長を代入すると分光放射輝度を返す関数を作成する
+
+        Returns
+        -------
+        interpolate.interpolate.interp1d
+            関数（波長を入力するとその波長に対する分光放射輝度を出力する）
+        """
+
+        def get_rambda_and_spectral_radiance_from_csv(
+                csv_filepath_: str) -> list[np.ndarray, np.ndarray]:
+            """波長 - 分光放射輝度 のcsvファイルを読み込んで、
+            波長と分光放射輝度それぞれ1次元のarrayを返す
+
+            想定するcsvの構造は以下
+
+            波長0, 分光放射輝度0\n
+            波長1, 分光放射輝度1\n
+            波長2, 分光放射輝度2\n
+            ...
+
+            ここで、波長の単位は [m]、分光放射輝度の単位は [W / m^2 / sr / m] を前提に計算する
+
+            Parameters
+            ----------
+            csv_filepath_ : str
+                csvのファイルパス
+
+            Returns
+            -------
+            list[np.ndarray, np.ndarray]
+                list[0] [m] 波長の1次元array,
+                list[1] [W / m^2 / sr / m] 分光放射輝度の1次元array
+            """
+
+            raw = np.loadtxt(fname=csv_filepath_, delimiter=",")
+            rambda_array_ = raw[:, 0]
+            spectral_radiance_array_ = raw[:, 1]
+
+            return rambda_array_, spectral_radiance_array_
+
+        def calc_spectral_radiance_function(
+                rambda_array_: np.ndarray,
+                spectral_radiance_array_: np.ndarray) -> interpolate.interpolate.interp1d:
+            """離散的な波長と分光放射輝度を3次スプライン補間し、
+            波長を入れると分光放射輝度を返す関数を作る
+
+            Parameters
+            ----------
+            rambda_array_ : np.ndarray
+                [m] 波長の1次元array
+            spectral_radiance_array_ : np.ndarray
+                [W / m^2 / sr / m] 分光放射輝度の1次元array
+
+            Returns
+            -------
+            interpolate.interpolate.interp1d
+                関数（波長を入力するとその波長に対する分光放射輝度を出力する）
+            """
+
+            spectral_radiance_function_ = interpolate.interp1d(
+                x=rambda_array_,
+                y=spectral_radiance_array_,
+                kind="cubic")
+
+            return spectral_radiance_function_
+
+        # 波長 vs 分光放射輝度のcsvファイルを読み込む
+        rambda_array, spectral_radiance_array = get_rambda_and_spectral_radiance_from_csv(
+            csv_filepath_=self.__csv_fpath)
+
+        # 関数にする
+        spectral_radiance_function = calc_spectral_radiance_function(
+            rambda_array_=rambda_array,
+            spectral_radiance_array_=spectral_radiance_array)
+
+        return spectral_radiance_function
 
 
 class H3plusAuroralEmission:
