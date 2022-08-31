@@ -409,7 +409,7 @@ class GenericEmissionFromCsv:
             self,
             csv_fpath: str) -> None:
         """任意の発光についての "波長[m] vs 分光放射輝度[W / m^2 / sr / m]" のcsvを読み込んで
-        3次スプライン補間処理して再現
+        線形補間処理して再現
 
         波長 vs 分光放射輝度 のcsvは自分で数字を用意するか、
         論文などのグラフ画像を用意して https://automeris.io/WebPlotDigitizer/ で
@@ -441,7 +441,7 @@ class GenericEmissionFromCsv:
         return self.__spectral_radiance_function
 
     def __make_spectral_radiance_function(self) -> interpolate.interpolate.interp1d:
-        """波長 - 分光放射輝度 のcsvファイルを読み込んで分光放射輝度を3次スプライン補間し、
+        """波長 - 分光放射輝度 のcsvファイルを読み込んで分光放射輝度を線形補間し、
         波長を代入すると分光放射輝度を返す関数を作成する
 
         Returns
@@ -485,7 +485,7 @@ class GenericEmissionFromCsv:
         def calc_spectral_radiance_function(
                 rambda_array_: np.ndarray,
                 spectral_radiance_array_: np.ndarray) -> interpolate.interpolate.interp1d:
-            """離散的な波長と分光放射輝度を3次スプライン補間し、
+            """離散的な波長と分光放射輝度を線形補間し、
             波長を入れると分光放射輝度を返す関数を作る
 
             Parameters
@@ -504,7 +504,7 @@ class GenericEmissionFromCsv:
             spectral_radiance_function_ = interpolate.interp1d(
                 x=rambda_array_,
                 y=spectral_radiance_array_,
-                kind="cubic")
+                kind="linear")
 
             return spectral_radiance_function_
 
