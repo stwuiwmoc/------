@@ -29,26 +29,26 @@ if __name__ == "__main__":
     importlib.reload(ooem)
 
     # グローバル変数の定義
-    t_obs = 45  # [s] 積分時間
+    t_obs = 2  # [s] 積分時間
     n_bin_spatial_list = [6, 10, 16]
 
     # 各インスタンス生成
     light_all = ooem.LightGenenrator(
         rambda_division_width=0.1e-9,
-        rambda_lower_limit=3.3e-6,
-        rambda_upper_limit=3.5e-6)
+        rambda_lower_limit=2.5e-6,
+        rambda_upper_limit=4.5e-6)
 
     light_sky = ooem.LightGenenrator(
         rambda_division_width=0.1e-9,
-        rambda_lower_limit=3.3e-6,
-        rambda_upper_limit=3.5e-6)
+        rambda_lower_limit=2.5e-6,
+        rambda_upper_limit=4.5e-6)
 
     jupiter_surface = ooem.GenericEmissionFromCsv(
         csv_fpath="mkfolder/convert_Norwood_etal_2015_fig2/rambda_vs_spectral_radiance.csv")
 
     Haleakala_Oct_good = ooem.EarthAtmosphere(
         T_ATM=273,
-        ATRAN_result_filepath="raw_data/Ha_PWV2000_ZA22_Range3to4_R0.txt")
+        ATRAN_result_filepath="raw_data/Ha_PWV2000_ZA22_Range2.5to4.5_R0.txt")
 
     T60 = ooem.GroundBasedTelescope(
         D_GBT=0.6,
@@ -57,9 +57,9 @@ if __name__ == "__main__":
         tau_GBT=0.8**5)
 
     TOPICS = ooem.ImagingInstrument(
-        rambda_BPF_center=3.414e-6,
-        FWHM_BPF=17e-9,
-        tau_BPF_center=0.88,
+        rambda_BPF_center=3.250e-6,
+        FWHM_BPF=500e-9,
+        tau_BPF_center=0.7,
         tau_i_ND=1,
         G_Amp=9,
         I_dark=50,
@@ -119,7 +119,7 @@ if __name__ == "__main__":
 
     # plot
     ax11.set_title("Jupiter surface emission (Norwood et al. 2015)")
-    ax12.set_title("pass thruogh Earth Atmosphre")
+    ax12.set_title("Pass thruogh Earth Atmosphre")
     ax13.set_title("Pass through Ground-based-telescope")
     ax14.set_title("Pass through imaging instrument")
 
