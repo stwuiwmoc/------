@@ -81,15 +81,18 @@ if __name__ == "__main__":
         rambda_=rambda,
         Jy_per_sr_=Jy_per_sr)
 
+    # plot
     fig1 = plt.figure(figsize=(5, 10))
     gs1 = fig1.add_gridspec(2, 1)
 
+    # pngの再現
     ax11 = fig1.add_subplot(gs1[0, 0])
     ax11.plot(rambda, Jy_per_sq_arcsec)
     ax11.set_yscale("log")
     ax11.grid()
     ax11.set_ylabel("[Jy / arcsec^2] ( = 10^-26 [W / m^2 / Hz / arcsec^2])")
 
+    # 分光放射輝度に変換したもの
     ax12 = fig1.add_subplot(gs1[1, 0])
     ax12.plot(rambda, spectral_radiance)
     ax12.set_yscale("log")

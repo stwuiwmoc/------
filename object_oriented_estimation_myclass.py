@@ -170,14 +170,14 @@ def convert_Jy_per_sr_to_spectral_radiance(
     Parameters
     ----------
     rambda_ : np.ndarray
-        _description_
+        [m] 波長の1次元array
     Jy_per_sr_ : np.ndarray
-        _description_
+        [Jy / sr] 強度の1次元array
 
     Returns
     -------
     np.ndarray
-        _description_
+        [W / m^2 / sr / m] 分光放射輝度の1次元array
     """
 
     c = phys_consts.c
