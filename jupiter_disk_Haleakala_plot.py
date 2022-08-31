@@ -29,7 +29,7 @@ if __name__ == "__main__":
     importlib.reload(ooem)
 
     # グローバル変数の定義
-    t_obs = 2  # [s] 積分時間
+    t_obs = 2.5  # [s] 積分時間
     n_bin_spatial_list = [6, 10, 16]
 
     # 各インスタンス生成
@@ -119,8 +119,11 @@ if __name__ == "__main__":
 
     # plot
     ax11.set_title("Jupiter surface emission (Norwood et al. 2015)")
+    ax11.set_ylim(0, 1.2e5)
     ax12.set_title("Pass thruogh Earth Atmosphre")
+    ax12.set_ylim(0, 1.2e5)
     ax13.set_title("Pass through Ground-based-telescope")
+    ax13.set_ylim(0, 1.2e5)
     ax14.set_title("Pass through imaging instrument")
 
     parametar_table_list = [
@@ -155,7 +158,8 @@ if __name__ == "__main__":
         ["spatial_resolution", SNRCalc.calc_spatial_resolution_for(n_bin_spatial=n_bin_spatial_list[0]), "arcsec"],
         ["", "", ""],
         ["Results", "", ""],
-        ["S_all_pix", fits_all.get_S_all_pix(), "DN / pix"],
+        ["S_all_pix (obj image)", fits_all.get_S_all_pix(), "DN / pix"],
+        ["S_all_pix (sky image)", fits_sky.get_S_all_pix(), "DN / pix"],
         ["S_dark_pix", fits_all.get_S_dark_pix(), "DN / pix"],
         ["S_read_pix", fits_all.get_S_read_pix(), "DN / pix"],
         ["R_electron/FW", fits_all.get_R_electron_FW(), ""],
