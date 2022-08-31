@@ -403,6 +403,15 @@ class VirtualOutputFileGenerator:
         self.__R_electron_FW = R_electron_FW
 
 
+class GenericEmissionFromCsv:
+
+    def __init__(self) -> None:
+        pass
+
+    def h(self):
+        mkhelp(self)
+
+
 class H3plusAuroralEmission:
 
     def __init__(
