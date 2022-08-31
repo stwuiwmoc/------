@@ -162,6 +162,36 @@ def calc_Plank_law_I_prime(
     return I_prime
 
 
+def convert_Jy_per_sr_to_spectral_radiance(
+        rambda_: np.ndarray,
+        Jy_per_sr_: np.ndarray) -> np.ndarray:
+    """単位立体角あたりのジャンスキー [Jy / sr] を 分光放射輝度 [W / m^2 / sr / m] に変換
+
+    Parameters
+    ----------
+    rambda_ : np.ndarray
+        [m] 波長の1次元array
+    Jy_per_sr_ : np.ndarray
+        [Jy / sr] 強度の1次元array
+
+    Returns
+    -------
+    np.ndarray
+        [W / m^2 / sr / m] 分光放射輝度の1次元array
+    """
+
+    c = phys_consts.c
+
+    # 1 [Jy] = 10^-26 [W / m^2 / Hz]
+    F_nu_per_sr = Jy_per_sr_ * 1e-26
+
+    # 単位周波数あたり から 単位波長あたり に変換
+    # Fλ = |- c/λ^2| * Fν
+    F_rambda_per_sr = (c / rambda_**2) * F_nu_per_sr
+
+    return F_rambda_per_sr
+
+
 class LightGenenrator:
 
     def __init__(
@@ -955,9 +985,9 @@ class ImagingInstrument:
         def calc_theta_pix(f_GBT: float) -> float:
             """1pixelが見込む角度（プレートスケール）を計算
 
-        oop観測見積もり.md
-            └ 近赤外装置による撮像・分光 \n
-                └ pixel数関連の導出 \n
+            oop観測見積もり.md
+                └ 近赤外装置による撮像・分光 \n
+                    └ pixel数関連の導出 \n
 
             Parameters
             ----------
