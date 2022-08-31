@@ -998,7 +998,7 @@ class ImagingInstrument:
 
         oop観測見積もり.md
             └ 近赤外装置による撮像・分光 \n
-                ├ 干渉フィルター透過率の導出 \n
+                ├ バンドパスフィルタ透過率の導出 \n
                 ├ 装置透過率の導出（TOPICS） \n
                 ├ pixel数関連の導出 \n
                 ├ システムゲインの導出 \n
@@ -1009,11 +1009,11 @@ class ImagingInstrument:
         Parameters
         ----------
         rambda_fl_center : float
-            [m] 干渉フィルターの中心波長
+            [m] バンドパスフィルタの中心波長
         FWHM_fl : float
-            [m] 干渉フィルターの半値全幅
+            [m] バンドパスフィルタの半値全幅
         tau_fl_center : float
-            [無次元] 干渉フィルターの中心透過率
+            [無次元] バンドパスフィルタの中心透過率
         G_Amp : float
             [無次元] プリアンプ基板の倍率
         I_dark : float
@@ -1023,7 +1023,7 @@ class ImagingInstrument:
         """
 
         # --- 入力パラメータ・固定パラメータの代入 ---
-        # 干渉フィルター透過率に関するパラメータ
+        # バンドパスフィルタ透過率に関するパラメータ
         self.__rambda_fl_center = rambda_fl_center
         self.__FWHM_fl = FWHM_fl
         self.__tau_fl_center = tau_fl_center
@@ -1195,7 +1195,7 @@ class ImagingInstrument:
 
             oop観測見積もり.md
                 └ 近赤外装置による撮像・分光 \n
-                    └ 干渉フィルター透過率の導出 \n
+                    └ バンドパスフィルタ透過率の導出 \n
 
             Parameters
             ----------
@@ -1271,7 +1271,7 @@ class ImagingInstrument:
 
             return S_photon_pix_
 
-        # 干渉フィルターの定義
+        # バンドパスフィルタの定義
         tau_i_filter = calc_gaussian(
             y_max=self.__tau_fl_center,
             x_array=light_instance.get_rambda(),
