@@ -988,9 +988,9 @@ class ImagingInstrument:
 
     def __init__(
             self,
-            rambda_fl_center: float,
-            FWHM_fl: float,
-            tau_fl_center: float,
+            rambda_BPF_center: float,
+            FWHM_BPF: float,
+            tau_BPF_center: float,
             G_Amp: float,
             I_dark: float,
             N_e_read: float) -> None:
@@ -1008,11 +1008,11 @@ class ImagingInstrument:
 
         Parameters
         ----------
-        rambda_fl_center : float
+        rambda_BPF_center : float
             [m] バンドパスフィルタの中心波長
-        FWHM_fl : float
+        FWHM_BPF : float
             [m] バンドパスフィルタの半値全幅
-        tau_fl_center : float
+        tau_BPF_center : float
             [無次元] バンドパスフィルタの中心透過率
         G_Amp : float
             [無次元] プリアンプ基板の倍率
@@ -1024,9 +1024,9 @@ class ImagingInstrument:
 
         # --- 入力パラメータ・固定パラメータの代入 ---
         # バンドパスフィルタ透過率に関するパラメータ
-        self.__rambda_fl_center = rambda_fl_center
-        self.__FWHM_fl = FWHM_fl
-        self.__tau_fl_center = tau_fl_center
+        self.__rambda_BPF_center = rambda_BPF_center
+        self.__FWHM_BPF = FWHM_BPF
+        self.__tau_BPF_center = tau_BPF_center
 
         # ピクセル数関連のパラメータ
         self.__n_bin_rambda = 1  # [pix]
@@ -1071,14 +1071,14 @@ class ImagingInstrument:
         G_sys = (C_PD / (e * G_SF)) * (ADU_ADC / G_Amp)
         return G_sys
 
-    def get_rambda_fl_center(self) -> float:
-        return self.__rambda_fl_center
+    def get_rambda_BPF_center(self) -> float:
+        return self.__rambda_BPF_center
 
-    def get_FWHM_fl(self) -> float:
-        return self.__FWHM_fl
+    def get_FWHM_BPF(self) -> float:
+        return self.__FWHM_BPF
 
-    def get_tau_fl_center(self) -> float:
-        return self.__tau_fl_center
+    def get_tau_BPF_center(self) -> float:
+        return self.__tau_BPF_center
 
     def get_G_Amp(self) -> float:
         return self.__G_Amp
@@ -1272,16 +1272,16 @@ class ImagingInstrument:
             return S_photon_pix_
 
         # バンドパスフィルタの定義
-        tau_i_filter = calc_gaussian(
-            y_max=self.__tau_fl_center,
+        tau_i_BPF = calc_gaussian(
+            y_max=self.__tau_BPF_center,
             x_array=light_instance.get_rambda(),
-            FWHM_=self.__FWHM_fl,
-            x_center=self.__rambda_fl_center)
+            FWHM_=self.__FWHM_BPF,
+            x_center=self.__rambda_BPF_center)
 
         # 装置透過率の導出
         tau_i_lens = 0.9 ** 3
         tau_i_mirror = 1
-        tau_i = tau_i_lens * tau_i_mirror * tau_i_filter
+        tau_i = tau_i_lens * tau_i_mirror * tau_i_BPF
 
         # 装置透過率を光にかける
         light_instance.multiply_I_prime_to(magnification=tau_i)

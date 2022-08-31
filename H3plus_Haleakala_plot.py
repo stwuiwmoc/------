@@ -110,9 +110,9 @@ if __name__ == "__main__":
         tau_GBT=0.8**5)
 
     TOPICS = ooem.ImagingInstrument(
-        rambda_fl_center=3.414e-6,
-        FWHM_fl=17e-9,
-        tau_fl_center=0.88,
+        rambda_BPF_center=3.414e-6,
+        FWHM_BPF=17e-9,
+        tau_BPF_center=0.88,
         G_Amp=9,
         I_dark=50,
         N_e_read=1200)
@@ -198,9 +198,9 @@ if __name__ == "__main__":
         ["T_GBT", T60.get_T_GBT(), "K"],
         ["", "", ""],
         ["ImagingInstrument", "", ""],
-        ["rambda_fl_center", TOPICS.get_rambda_fl_center(), "m"],
-        ["FWHM_fl", TOPICS.get_FWHM_fl(), "m"],
-        ["tau_fl_center", TOPICS.get_tau_fl_center(), ""],
+        ["rambda_BPF_center", TOPICS.get_rambda_BPF_center(), "m"],
+        ["FWHM_BPF", TOPICS.get_FWHM_BPF(), "m"],
+        ["tau_BPF_center", TOPICS.get_tau_BPF_center(), ""],
         ["I_dark_pix", TOPICS.get_I_dark(), "e- / s"],
         ["N_e_read_pix", TOPICS.get_N_e_read(), "e-rms"],
         ["", "", ""],
