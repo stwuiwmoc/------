@@ -31,8 +31,8 @@ if __name__ == "__main__":
     # グローバル変数の定義
     column_density_H3plus = 1.5e+16  # [/m^2] H3+カラム密度
     T_thermospheric_H3plus = 1200  # [K] H3+熱圏温度
-    t_obs = 45  # [s] 積分時間
-    n_bin_spatial_list = [6, 10, 16]
+    t_obs = 12.5  # [s] 積分時間
+    n_bin_spatial_list = [2, 4, 8]
 
     # 各インスタンス生成
     light_all = ooem.LightGenenrator(
@@ -105,9 +105,9 @@ if __name__ == "__main__":
 
     T60 = ooem.GroundBasedTelescope(
         D_GBT=0.6,
-        FNO_GBT=24,
+        FNO_GBT=12,
         T_GBT=280,
-        tau_GBT=0.8**5)
+        tau_GBT=0.8**3)
 
     TOPICS = ooem.ImagingInstrument(
         rambda_BPF_center=3.414e-6,
