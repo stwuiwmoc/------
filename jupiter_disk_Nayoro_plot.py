@@ -51,7 +51,7 @@ if __name__ == "__main__":
         ATRAN_result_filepath="raw_data/Na_PWV8000_ZA46_Range2.5to4.5_R0.txt")
 
     Pirika = ooem.GroundBasedTelescope(
-        D_GBT=1.8,
+        D_GBT=1.6,
         FNO_GBT=12,
         T_GBT=268,
         tau_GBT=0.8**3)
