@@ -32,7 +32,7 @@ if __name__ == "__main__":
     column_density_H3plus = 1.5e+16  # [/m^2] H3+カラム密度
     T_thermospheric_H3plus = 1200  # [K] H3+熱圏温度
     t_obs = 12.5  # [s] 積分時間
-    n_bin_spatial_list = [10, 14, 20]
+    n_bin_spatial_list = [19, 25, 10]
 
     # 各インスタンス生成
     light_all = ooem.LightGenenrator(

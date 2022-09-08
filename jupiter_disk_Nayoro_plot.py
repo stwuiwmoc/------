@@ -30,7 +30,7 @@ if __name__ == "__main__":
 
     # グローバル変数の定義
     t_obs = 1  # [s] 積分時間
-    n_bin_spatial_list = [10, 14, 20]
+    n_bin_spatial_list = [19, 25, 10]
 
     # 各インスタンス生成
     light_all = ooem.LightGenenrator(
