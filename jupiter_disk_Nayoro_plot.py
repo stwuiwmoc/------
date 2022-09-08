@@ -50,7 +50,7 @@ if __name__ == "__main__":
         T_ATM=273,
         ATRAN_result_filepath="raw_data/Na_PWV8000_ZA46_Range2.5to4.5_R0.txt")
 
-    Pirika = ooem.GroundBasedTelescope(
+    Pirka = ooem.GroundBasedTelescope(
         D_GBT=1.6,
         FNO_GBT=12,
         T_GBT=268,
@@ -73,7 +73,7 @@ if __name__ == "__main__":
         sky_image_instance=fits_sky)
 
     # 望遠鏡への撮像装置の設置
-    TOPICS.set_ImagingInstrument_to(GBT_instance=Pirika)
+    TOPICS.set_ImagingInstrument_to(GBT_instance=Pirka)
 
     # plot作成の準備
     fig1 = plt.figure(figsize=(15, 15))
@@ -89,7 +89,7 @@ if __name__ == "__main__":
     ax12 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[1, 0])
 
     # 望遠鏡を通る
-    Pirika.pass_through(light_instance=light_all)
+    Pirka.pass_through(light_instance=light_all)
     ax13 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[2, 0])
 
     # 撮像してfitsに保存
@@ -101,7 +101,7 @@ if __name__ == "__main__":
 
     # sky画像の撮像も同じ手順
     Nayoro_Nov.pass_through(light_instance=light_sky)
-    Pirika.pass_through(light_instance=light_sky)
+    Pirka.pass_through(light_instance=light_sky)
     TOPICS.shoot_light_and_save_to_fits(
         light_instance=light_sky,
         virtual_output_file_instance=fits_sky,
@@ -141,10 +141,10 @@ if __name__ == "__main__":
         ["T_ATM", Nayoro_Nov.get_T_ATM(), "K"],
         ["", "", ""],
         ["GroundBasedTelescope", "", ""],
-        ["D_GBT", Pirika.get_D_GBT(), "m"],
-        ["FNO_GBT", Pirika.get_FNO_GBT(), ""],
-        ["tau_GBT", Pirika.get_tau_GBT(), "K"],
-        ["T_GBT", Pirika.get_T_GBT(), "K"],
+        ["D_GBT", Pirka.get_D_GBT(), "m"],
+        ["FNO_GBT", Pirka.get_FNO_GBT(), ""],
+        ["tau_GBT", Pirka.get_tau_GBT(), "K"],
+        ["T_GBT", Pirka.get_T_GBT(), "K"],
         ["", "", ""],
         ["ImagingInstrument", "", ""],
         ["rambda_BPF_center", TOPICS.get_rambda_BPF_center(), "m"],
