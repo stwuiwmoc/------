@@ -32,7 +32,7 @@ if __name__ == "__main__":
     column_density_H3plus = 1.5e+16  # [/m^2] H3+カラム密度
     T_thermospheric_H3plus = 1200  # [K] H3+熱圏温度
     t_obs = 12.5  # [s] 積分時間
-    n_bin_spatial_list = [10, 14, 20]
+    n_bin_spatial_list = [19, 25, 10]
 
     # 各インスタンス生成
     light_all = ooem.LightGenenrator(
@@ -103,7 +103,7 @@ if __name__ == "__main__":
         T_ATM=273,
         ATRAN_result_filepath="raw_data/Na_PWV8000_ZA46_Range3to4_R0.txt")
 
-    Pirika = ooem.GroundBasedTelescope(
+    Pirka = ooem.GroundBasedTelescope(
         D_GBT=1.6,
         FNO_GBT=12,
         T_GBT=268,
@@ -145,12 +145,12 @@ if __name__ == "__main__":
     ax12 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[1, 0])
 
     # 望遠鏡を通る
-    Pirika.pass_through(light_instance=light_all)
-    Pirika.pass_through(light_instance=light_sky)
+    Pirka.pass_through(light_instance=light_all)
+    Pirka.pass_through(light_instance=light_sky)
     ax13 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[2, 0])
 
     # 望遠鏡への撮像装置の設置
-    TOPICS.set_ImagingInstrument_to(GBT_instance=Pirika)
+    TOPICS.set_ImagingInstrument_to(GBT_instance=Pirka)
 
     # 撮像してfitsに保存
     TOPICS.shoot_light_and_save_to_fits(
@@ -193,10 +193,10 @@ if __name__ == "__main__":
         ["T_ATM", Nayoro_Oct.get_T_ATM(), "K"],
         ["", "", ""],
         ["GroundBasedTelescope", "", ""],
-        ["D_GBT", Pirika.get_D_GBT(), "m"],
-        ["FNO_GBT", Pirika.get_FNO_GBT(), ""],
-        ["tau_GBT", Pirika.get_tau_GBT(), "K"],
-        ["T_GBT", Pirika.get_T_GBT(), "K"],
+        ["D_GBT", Pirka.get_D_GBT(), "m"],
+        ["FNO_GBT", Pirka.get_FNO_GBT(), ""],
+        ["tau_GBT", Pirka.get_tau_GBT(), "K"],
+        ["T_GBT", Pirka.get_T_GBT(), "K"],
         ["", "", ""],
         ["ImagingInstrument", "", ""],
         ["rambda_BPF_center", TOPICS.get_rambda_BPF_center(), "m"],
@@ -213,7 +213,8 @@ if __name__ == "__main__":
         ["spatial_resolution", SNRCalc.calc_spatial_resolution_for(n_bin_spatial=n_bin_spatial_list[0]), "arcsec"],
         ["", "", ""],
         ["Results", "", ""],
-        ["S_all_pix", fits_all.get_S_all_pix(), "DN / pix"],
+        ["S_all_pix (obj image)", fits_all.get_S_all_pix(), "DN / pix"],
+        ["S_all_pix (sky image)", fits_sky.get_S_all_pix(), "DN / pix"],
         ["S_dark_pix", fits_all.get_S_dark_pix(), "DN / pix"],
         ["S_read_pix", fits_all.get_S_read_pix(), "DN / pix"],
         ["R_electron/FW", fits_all.get_R_electron_FW(), ""],
