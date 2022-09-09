@@ -1428,6 +1428,7 @@ class SNRCalculator:
             self,
             n_bin_spatial: int) -> float:
         """入力された n_bin_spatial に対する空間分解能を計算
+        空間分解能は、binning後のpixel幅の倍
 
         Parameters
         ----------
@@ -1437,9 +1438,9 @@ class SNRCalculator:
         Returns
         -------
         float
-            [arcsec] 空間分解能
+            [arcsec] 空間分解能（binning後のpixel幅の倍）
         """
 
-        spatial_resolution = self.__all_image_instance.get_theta_pix() * n_bin_spatial
+        spatial_resolution = 2 * self.__all_image_instance.get_theta_pix() * n_bin_spatial
 
         return spatial_resolution
