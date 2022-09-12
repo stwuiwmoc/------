@@ -418,8 +418,13 @@ class GenericEmissionFromCsv:
         論文などのグラフ画像を用意して https://automeris.io/WebPlotDigitizer/ で
         データ抽出することを想定
 
-        想定するcsvのデータ構造は以下
+        想定するcsvのデータ構造は以下（読み込みでは冒頭5行はスキップされる）
 
+        Main Author, hogehoge\n
+        Title, hogehoge\n
+        Year, hogehoge\n
+        URL, hogehoge\n
+        Position, hogehoge\n
         波長0, 分光放射輝度0\n
         波長1, 分光放射輝度1\n
         波長2, 分光放射輝度2\n
@@ -461,8 +466,13 @@ class GenericEmissionFromCsv:
             """波長 - 分光放射輝度 のcsvファイルを読み込んで、
             波長と分光放射輝度それぞれ1次元のarrayを返す
 
-            想定するcsvの構造は以下
+            想定するcsvの構造は以下（読み込みでは冒頭5行はスキップされる）
 
+            Main Author, hogehoge\n
+            Title, hogehoge\n
+            Year, hogehoge\n
+            URL, hogehoge\n
+            Position, hogehoge\n
             波長0, 分光放射輝度0\n
             波長1, 分光放射輝度1\n
             波長2, 分光放射輝度2\n
@@ -482,7 +492,7 @@ class GenericEmissionFromCsv:
                 list[1] [W / m^2 / sr / m] 分光放射輝度の1次元array
             """
 
-            raw = np.loadtxt(fname=csv_filepath_, delimiter=",")
+            raw = np.loadtxt(fname=csv_filepath_, delimiter=",", skiprows=5)
             rambda_array_ = raw[:, 0]
             spectral_radiance_array_ = raw[:, 1]
 
