@@ -134,6 +134,7 @@ if __name__ == "__main__":
         ["Have some change", "from above commit", ooem.have_some_change_in_git_status()],
         ["", "", ""],
         ["GenericEmissionFromCsv", "", ""],
+        ["serial_name", serial_name, ""],
         ["", "", ""],
         ["EarthAtmosphre", "", ""],
         ["ATRAN result filename", Nayoro_Oct.get_ATRAN_result_filepath()[9:25], Nayoro_Oct.get_ATRAN_result_filepath()[25:]],
