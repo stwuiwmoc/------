@@ -30,8 +30,13 @@ def read_csv(fpath: str) -> list[np.ndarray, np.ndarray]:
     """WebPlotDigitizer https://automeris.io/WebPlotDigitizer/ で
     グラフから抽出したデータのcsv出力を1次元arrayのlistとして読み出し
 
-    csv内のデータ構造は以下の通り、カラム名などは付いていないものを想定
+    csv内のデータ構造は
+    5行目までは論文情報
+    6行目はカラム名
+    7行目以降はデータ
+    6行目以降の構造は以下の通り
 
+    Wavelength, Surface Brightness
     x1, y1\n
     x2, y2\n
     ...
@@ -47,7 +52,7 @@ def read_csv(fpath: str) -> list[np.ndarray, np.ndarray]:
         [x座標の1次元array, y座標の1次元array]
     """
 
-    raw = np.loadtxt(fname=fpath, delimiter=",")
+    raw = np.loadtxt(fname=fpath, delimiter=",", skiprows=6)
     x_data = raw.T[0]
     y_data = raw.T[1]
 
