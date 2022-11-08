@@ -98,23 +98,30 @@ def valid_convolve(
 if __name__ == "__main__":
     importlib.reload(ooem)
 
+    serial_name = "500Konly"
+    Io_radius = 3643.2e3  # [m]
+
     # de Kleer et al. 2014 のfig1 に
     # WebPlotDigitizer https://automeris.io/WebPlotDigitizer/ でグラフから座標を抽出
     # その出力結果のcsvを読み出し
     # fig1は横軸：wavelength(um), 縦軸：Intensity (GW/um/sr)
 
-    serial_name = "500Konly"
     input_filepath = "raw_data/de_Kleer_etal_2014_fig2_" + serial_name + ".csv"
-    rambda_um, intensity_per_GW_um = read_csv(fpath=input_filepath)
+    rambda_um, intensity_GW_um = read_csv(fpath=input_filepath)
+
+    # 波長を [um] から [m] に変換
+    rambda = rambda_um * 1e-6
 
     # Fig1は黒体輻射の重ね合わせなので、本質的に滑らか
     # 抽出した座標はピクセルむらなどの理由で凸凹している
     # 移動平均をとって滑らかにする
 
-    intensity_per_GW_um_smoothed = valid_convolve(
-        xx=intensity_per_GW_um,
+    intensity_GW_um_smoothed = valid_convolve(
+        xx=intensity_GW_um,
         size=10
     )
+
+
 
     # plot
     fig1 = plt.figure(figsize=(10, 10))
@@ -122,15 +129,16 @@ if __name__ == "__main__":
 
     ax11 = fig1.add_subplot(gs1[0, 0])
     ax11.plot(
-        rambda_um,
-        intensity_per_GW_um,
+        rambda,
+        intensity_GW_um,
         label="raw")
     ax11.plot(
-        rambda_um,
-        intensity_per_GW_um_smoothed,
+        rambda,
+        intensity_GW_um_smoothed,
         label="smoothed")
     ax11.grid()
     ax11.legend()
+    ax11.set_ylabel("Spectral Radiant Intensity [GW / um / sr]")
 
     ax12 = fig1.add_subplot(gs1[1, 0])
 
