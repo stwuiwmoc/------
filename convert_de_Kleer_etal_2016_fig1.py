@@ -127,10 +127,17 @@ if __name__ == "__main__":
     # [W/um/sr] -> [W/sr/m] の換算
     intensity_W_m = intensity_W_um * 1e6
 
+    # 分光放射強度 [W/sr/m] -> 分光放射輝度 [W/m^2/sr/m] の換算
+    # 論文のfig1はイオDisk積分の値なので、放射源の面積はイオの断面積と考える
+    # 分光放射輝度は単位面積あたりの放射源が単位立体角に対して放射するフラックスなので
+    # 放射源の面積で割ればよい
+    spectral_radiance = intensity_W_m / (np.pi * Io_radius**2)
+
     # plot
     fig1 = plt.figure(figsize=(10, 10))
     gs1 = fig1.add_gridspec(2, 1)
 
+    # 分光放射強度
     ax11 = fig1.add_subplot(gs1[0, 0])
     ax11.plot(
         rambda,
@@ -142,8 +149,15 @@ if __name__ == "__main__":
         label="smoothed")
     ax11.grid()
     ax11.legend()
-    ax11.set_ylabel("Spectral Radiant Intensity [GW / um / sr]")
+    ax11.set_ylabel("Io Disk intenrated\nSpectral Radiant Intensity [GW / um / sr]")
 
+    # 分光放射輝度
     ax12 = fig1.add_subplot(gs1[1, 0])
+    ax12.plot(
+        rambda,
+        spectral_radiance)
+    ax12.grid()
+    ax12.set_ylabel("Spectral Radiance [W / m^2 / sr / m]")
+    ax12.set_xlabel("wavelength [m]")
 
     fig1.tight_layout()
