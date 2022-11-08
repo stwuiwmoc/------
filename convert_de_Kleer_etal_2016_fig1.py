@@ -121,7 +121,11 @@ if __name__ == "__main__":
         size=10
     )
 
+    # [GW/um/sr] -> [W/um/sr] の換算
+    intensity_W_um = intensity_GW_um_smoothed * 1e9
 
+    # [W/um/sr] -> [W/sr/m] の換算
+    intensity_W_m = intensity_W_um * 1e6
 
     # plot
     fig1 = plt.figure(figsize=(10, 10))
