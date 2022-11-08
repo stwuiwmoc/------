@@ -29,30 +29,29 @@ if __name__ == "__main__":
     importlib.reload(ooem)
 
     # グローバル変数の定義
-    column_density_H3plus = 1.5e+16  # [/m^2] H3+カラム密度
-    T_thermospheric_H3plus = 1200  # [K] H3+熱圏温度
+    serial_name = "1000KOnly"
+    Io_input_filepath = "mkfolder/convert_de_Kleer_etal_2016_fig1/" + serial_name + "_rambda_vs_spectral_radiance.csv"
+
     t_obs = 15  # [s] 積分時間
     n_bin_spatial_list = [8, 16, 1]
 
     # 各インスタンス生成
     light_all = ooem.LightGenenrator(
         rambda_division_width=0.1e-9,
-        rambda_lower_limit=3.3e-6,
-        rambda_upper_limit=3.5e-6)
+        rambda_lower_limit=2.2e-6,
+        rambda_upper_limit=2.4e-6)
 
     light_sky = ooem.LightGenenrator(
         rambda_division_width=0.1e-9,
-        rambda_lower_limit=3.3e-6,
-        rambda_upper_limit=3.5e-6)
+        rambda_lower_limit=2.2e-6,
+        rambda_upper_limit=2.4e-6)
 
-    H3plus_lines = ooem.H3ppyAuroralEmission(
-        N_H3p=column_density_H3plus,
-        T_hypo=T_thermospheric_H3plus,
-        R_instrument=20000)  # 装置の分解能は仮の値としてESPRITのものを使用
+    Io_continuum = ooem.GenericEmissionFromCsv(
+        csv_fpath=Io_input_filepath)
 
     Nayoro_Oct = ooem.EarthAtmosphere(
         T_ATM=273,
-        ATRAN_result_filepath="raw_data/Na_PWV8000_ZA46_Range3to4_R0.txt")
+        ATRAN_result_filepath="raw_data/Na_PWV8000_ZA46_Range2to2.5_R0.txt")
 
     Pirka = ooem.GroundBasedTelescope(
         D_GBT=1.6,
@@ -61,9 +60,9 @@ if __name__ == "__main__":
         tau_GBT=0.8**3)
 
     TOPICS = ooem.ImagingInstrument(
-        rambda_BPF_center=3.414e-6,
-        FWHM_BPF=17e-9,
-        tau_BPF_center=0.88,
+        rambda_BPF_center=2.295e-6,
+        FWHM_BPF=10e-9,
+        tau_BPF_center=0.7,
         tau_i_ND=1,
         G_Amp=9,
         I_dark=50,
@@ -84,7 +83,7 @@ if __name__ == "__main__":
     gs1 = fig1.add_gridspec(4, 2)
 
     # 輝線発光を加える
-    H3plus_lines.add_auroral_emission_to(light_instance=light_all)
+    Io_continuum.add_spectral_radiance_to(light_instance=light_all)
     ax11 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[0, 0])
 
     # 地球大気を通る
@@ -134,10 +133,7 @@ if __name__ == "__main__":
         ooem.get_latest_commit_datetime(),
         ["Have some change", "from above commit", ooem.have_some_change_in_git_status()],
         ["", "", ""],
-        ["H3pppyAuroralEmission", "", ""],
-        ["N_H3+", H3plus_lines.get_N_H3p(), "/ m^2"],
-        ["T_hypo", H3plus_lines.get_T_hypo(), "K"],
-        ["R_instrument", H3plus_lines.get_R_instrument(), ""],
+        ["GenericEmissionFromCsv", "", ""],
         ["", "", ""],
         ["EarthAtmosphre", "", ""],
         ["ATRAN result filename", Nayoro_Oct.get_ATRAN_result_filepath()[9:25], Nayoro_Oct.get_ATRAN_result_filepath()[25:]],
