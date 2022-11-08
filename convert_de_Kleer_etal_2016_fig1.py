@@ -98,7 +98,7 @@ def valid_convolve(
 if __name__ == "__main__":
     importlib.reload(ooem)
 
-    serial_name = "500Konly"
+    serial_name = "1000KOnly"
     Io_radius = 3643.2e3  # [m]
 
     # de Kleer et al. 2014 のfig1 に
@@ -133,6 +133,14 @@ if __name__ == "__main__":
     # 放射源の面積で割ればよい
     spectral_radiance = intensity_W_m / (np.pi * Io_radius**2)
 
+    # csvに保存
+    save_array = np.stack([rambda, spectral_radiance]).T
+    save_fpath = mkfolder() + serial_name + "_rambda_vs_spectral_radiance.csv"
+    np.savetxt(
+        fname=save_fpath,
+        X=save_array,
+        delimiter=", ")
+
     # plot
     fig1 = plt.figure(figsize=(10, 10))
     gs1 = fig1.add_gridspec(2, 1)
@@ -161,3 +169,4 @@ if __name__ == "__main__":
     ax12.set_xlabel("wavelength [m]")
 
     fig1.tight_layout()
+    fig1.savefig(mkfolder() + serial_name + "_fig1.png")
