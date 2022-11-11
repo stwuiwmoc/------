@@ -30,7 +30,7 @@ if __name__ == "__main__":
 
     # グローバル変数の定義
     serial_name = "1000KOnly"
-    Io_input_filepath = "mkfolder/convert_de_Kleer_etal_2016_fig1/" + serial_name + "_rambda_vs_spectral_radiance.csv"
+    Io_input_filepath = "mkfolder/convert_de_Kleer_etal_2014_fig1/" + serial_name + "_rambda_vs_spectral_radiance.csv"
 
     t_obs = 15  # [s] 積分時間
     n_bin_spatial_list = [8, 16, 1]
