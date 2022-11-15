@@ -12,7 +12,7 @@ if __name__ == "__main__":
 
     light = ooem.LightGenenrator(
         rambda_lower_limit=1e-6,
-        rambda_upper_limit=3e-6,
+        rambda_upper_limit=8e-6,
         rambda_division_width=1e-9
     )
 
@@ -26,7 +26,7 @@ if __name__ == "__main__":
     ESPRIT = ooem.ImagingInstrument(
         is_TOPICS=False,
         rambda_BPF_center=2e-6,
-        FWHM_BPF=1e-6,
+        FWHM_BPF=1e-1,
         tau_BPF_center=1,
         tau_i_ND=1,
         G_Amp=9,

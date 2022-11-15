@@ -1256,6 +1256,47 @@ class ImagingInstrument:
 
             return y_gaussian
 
+        def calc_tau_i_thermal(rambda_array_: np.ndarray) -> np.ndarray:
+            """サーマルカットフィルターの透過率をcsvファイルから読み出して補完し、
+            入力された波長に対して計算して透過率の1次元arrayとして出力
+
+            Parameters
+            ----------
+            rambda_array_ : np.ndarray
+                [m] 波長の1次元array
+
+            Returns
+            -------
+            np.ndarray
+                [無次元] サーマルカットフィルターの透過率の1次元array
+            """
+            # 神原M論 p94より、WG31050の透過率特性を
+            # https://www.thorlabs.co.jp/NewGroupPage9.cfm?ObjectGroup_ID=3982
+            # からダウンロードし、波長[um] と透過率[%] のみをtxtに保存
+            i_thermal_filepath = "raw_data/tau_i_thermal.txt"
+
+            # txtの読み出し
+            raw = np.loadtxt(
+                fname=i_thermal_filepath,
+                delimiter=" ")
+
+            # 読み出した波長[um]と透過率[%]を、波長[m]と透過率[無次元]に換算
+            rambda_data_array_um, tau_i_thermal_data_array_percent = raw.T
+            rambda_data_array = rambda_data_array_um * 1e-6
+            tau_i_thermal_data_array = tau_i_thermal_data_array_percent * 1e-2
+
+            # 透過率関数の作成
+            tau_i_thermal_func = interpolate.interp1d(
+                x=rambda_data_array,
+                y=tau_i_thermal_data_array,
+                kind="linear"
+            )
+
+            # light_instanceの波長に対応した透過率の1次元arrayの作成
+            tau_i_thermal_array_ = tau_i_thermal_func(rambda_array_)
+
+            return tau_i_thermal_array_
+
         def calc_S_photon_pix(
                 light_instance_: LightGenenrator,
                 Omega_pix_: float,
@@ -1326,7 +1367,7 @@ class ImagingInstrument:
         else:
             # ESPRITの場合
             tau_i_mirror = 0.96 ** 9
-            tau_i_thermal = 0.8  # 仮
+            tau_i_thermal = calc_tau_i_thermal(rambda_array_=light_instance.get_rambda())
             tau_i_ND = self.__tau_i_ND
             tau_i = tau_i_mirror * tau_i_BPF * self.__tau_i_ND * tau_i_thermal
 
