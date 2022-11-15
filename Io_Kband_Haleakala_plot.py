@@ -39,12 +39,12 @@ if __name__ == "__main__":
     light_all = ooem.LightGenenrator(
         rambda_division_width=0.1e-9,
         rambda_lower_limit=2.05e-6,
-        rambda_upper_limit=2.25e-6)
+        rambda_upper_limit=2.45e-6)
 
     light_sky = ooem.LightGenenrator(
         rambda_division_width=0.1e-9,
-        rambda_lower_limit=2.2e-6,
-        rambda_upper_limit=2.4e-6)
+        rambda_lower_limit=2.05e-6,
+        rambda_upper_limit=2.45e-6)
 
     Io_continuum = ooem.GenericEmissionFromCsv(
         csv_fpath=Io_input_filepath)
@@ -121,11 +121,12 @@ if __name__ == "__main__":
             SNRCalc.calc_SNR_for(n_bin_spatial=n_bin_spatial_list[i]))
 
     # plot
-    ax11.set_title("H3+ emission lines")
+    ax11.set_title("Io thermal continuum")
     ax12.set_title("pass thruogh Earth Atmosphere")
     ax13.set_title("Pass through Ground-based-telescope")
     ax14.set_title("Pass through imaging instrument")
 
+    ax11.set_ylim(0, ax11.get_ylim()[1])
     ax12.set_ylim(0, ax11.get_ylim()[1])
     ax13.set_ylim(0, ax13.get_ylim()[1])
     ax14.set_ylim(0, ax13.get_ylim()[1])
@@ -158,6 +159,7 @@ if __name__ == "__main__":
         ["Other parameters", "", ""],
         ["t_obs", t_obs, "s"],
         ["n_bin_spatial", n_bin_spatial_list[0], "pix"],
+        ["theta_pix", ESPRIT.get_theta_pix(), "arcsec"],
         ["Field of View", ESPRIT.get_theta_pix() * 256, "arcsec"],
         ["spatial_resolution", SNRCalc.calc_spatial_resolution_for(n_bin_spatial=n_bin_spatial_list[0]), "arcsec"],
         ["", "", ""],
