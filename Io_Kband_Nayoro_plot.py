@@ -49,7 +49,7 @@ if __name__ == "__main__":
     Io_continuum = ooem.GenericEmissionFromCsv(
         csv_fpath=Io_input_filepath)
 
-    Nayoro_Oct = ooem.EarthAtmosphere(
+    Nayoro_Nov = ooem.EarthAtmosphere(
         T_ATM=273,
         ATRAN_result_filepath="raw_data/Na_PWV8000_ZA46_Range2to2.5_R0.txt")
 
@@ -88,7 +88,7 @@ if __name__ == "__main__":
     ax11 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[0, 0])
 
     # 地球大気を通る
-    Nayoro_Oct.pass_through(light_instance=light_all)
+    Nayoro_Nov.pass_through(light_instance=light_all)
     ax12 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[1, 0])
 
     # 望遠鏡を通る
@@ -103,7 +103,7 @@ if __name__ == "__main__":
     ax14 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[3, 0])
 
     # sky画像の撮像（観測対象の撮像と同じ手順）
-    Nayoro_Oct.pass_through(light_instance=light_sky)
+    Nayoro_Nov.pass_through(light_instance=light_sky)
     Pirka.pass_through(light_instance=light_sky)
     TOPICS.shoot_light_and_save_to_fits(
         light_instance=light_sky,
@@ -139,8 +139,8 @@ if __name__ == "__main__":
         ["serial_name", serial_name, ""],
         ["", "", ""],
         ["EarthAtmosphre", "", ""],
-        ["ATRAN result filename", Nayoro_Oct.get_ATRAN_result_filepath()[9:25], Nayoro_Oct.get_ATRAN_result_filepath()[25:]],
-        ["T_ATM", Nayoro_Oct.get_T_ATM(), "K"],
+        ["ATRAN result filename", Nayoro_Nov.get_ATRAN_result_filepath()[9:25], Nayoro_Nov.get_ATRAN_result_filepath()[25:]],
+        ["T_ATM", Nayoro_Nov.get_T_ATM(), "K"],
         ["", "", ""],
         ["GroundBasedTelescope", "", ""],
         ["D_GBT", Pirka.get_D_GBT(), "m"],
