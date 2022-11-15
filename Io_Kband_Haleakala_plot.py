@@ -33,7 +33,7 @@ if __name__ == "__main__":
     Io_input_filepath = "mkfolder/convert_de_Kleer_etal_2014_fig1/" + serial_name + "_rambda_vs_spectral_radiance.csv"
 
     t_obs = 10  # [s] 積分時間
-    n_bin_spatial_list = [1]
+    n_bin_spatial_list = [1, 2]
 
     # 各インスタンス生成
     light_all = ooem.LightGenenrator(
@@ -72,10 +72,6 @@ if __name__ == "__main__":
     fits_all = ooem.VirtualOutputFileGenerator()
     fits_sky = ooem.VirtualOutputFileGenerator()
 
-    SNRCalc = ooem.SNRCalculator(
-        all_image_instance=fits_all,
-        sky_image_instance=fits_sky)
-
     # 望遠鏡への撮像装置の設置
     ESPRIT.set_ImagingInstrument_to(GBT_instance=PLANETS)
 
@@ -110,15 +106,10 @@ if __name__ == "__main__":
         virtual_output_file_instance=fits_sky,
         t_obs=t_obs)
 
-    # binning数を変えた時の空間分解能とSNRを表示
-    for i in range(len(n_bin_spatial_list)):
-        print(
-            "n_bin_spatial =",
-            n_bin_spatial_list[i],
-            ", spatial_resolution =",
-            SNRCalc.calc_spatial_resolution_for(n_bin_spatial=n_bin_spatial_list[i]),
-            ", SNR =",
-            SNRCalc.calc_SNR_for(n_bin_spatial=n_bin_spatial_list[i]))
+    SNRCalc = ooem.SNRCalculator(
+        all_image_instance=fits_all,
+        sky_image_instance=fits_sky,
+        n_bin_spatial=n_bin_spatial_list[0])
 
     # plot
     ax11.set_title("Io thermal continuum")
@@ -161,7 +152,7 @@ if __name__ == "__main__":
         ["n_bin_spatial", n_bin_spatial_list[0], "pix"],
         ["theta_pix", ESPRIT.get_theta_pix(), "arcsec"],
         ["Field of View", ESPRIT.get_theta_pix() * 256, "arcsec"],
-        ["spatial_resolution", SNRCalc.calc_spatial_resolution_for(n_bin_spatial=n_bin_spatial_list[0]), "arcsec"],
+        ["spatial_resolution", SNRCalc.get_spatial_resolution(), "arcsec"],
         ["", "", ""],
         ["Results", "", ""],
         ["S_all_pix (obj image)", fits_all.get_S_all_pix(), "DN / pix"],
@@ -169,7 +160,7 @@ if __name__ == "__main__":
         ["S_dark_pix", fits_all.get_S_dark_pix(), "DN / pix"],
         ["S_read_pix", fits_all.get_S_read_pix(), "DN / pix"],
         ["R_electron/FW", fits_all.get_R_electron_FW(), ""],
-        ["SNR", SNRCalc.calc_SNR_for(n_bin_spatial=n_bin_spatial_list[0]), ""],
+        ["SNR", SNRCalc.get_SNR(), ""],
     ]
 
     ax15 = ooem.plot_parameter_table(
@@ -178,3 +169,23 @@ if __name__ == "__main__":
     fig1.suptitle("H3+ 3.4um in Nayoro")
     fig1.tight_layout()
     fig1.savefig(mkfolder() + "fig1.png")
+
+    # binning数を変えた時の空間分解能とSNRを表示
+    for i in range(len(n_bin_spatial_list)):
+
+        SNRCalc_for_nbin = ooem.SNRCalculator(
+            all_image_instance=fits_all,
+            sky_image_instance=fits_sky,
+            n_bin_spatial=n_bin_spatial_list[i]
+        )
+
+        print(
+            "n_bin_spatial =",
+            n_bin_spatial_list[i],
+            ", spatial_resolution =",
+            SNRCalc_for_nbin.get_spatial_resolution(),
+            ", SNR =",
+            SNRCalc_for_nbin.get_SNR()
+        )
+
+        del SNRCalc_for_nbin
