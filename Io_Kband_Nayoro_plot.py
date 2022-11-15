@@ -83,14 +83,6 @@ if __name__ == "__main__":
     fits_all_2 = ooem.VirtualOutputFileGenerator()
     fits_sky_2 = ooem.VirtualOutputFileGenerator()
 
-    SNRCalc_1 = ooem.SNRCalculator(
-        all_image_instance=fits_all_1,
-        sky_image_instance=fits_sky_1)
-
-    SNRCalc_2 = ooem.SNRCalculator(
-        all_image_instance=fits_all_2,
-        sky_image_instance=fits_sky_2)
-
     # 望遠鏡への撮像装置の設置
     TOPICS.set_ImagingInstrument_to(GBT_instance=Pirka)
 
@@ -128,15 +120,11 @@ if __name__ == "__main__":
         virtual_output_file_instance=fits_sky_1,
         t_obs=t_obs)
 
-    # binning数を変えた時の空間分解能とSNRを表示
-    for i in range(len(n_bin_spatial_list)):
-        print(
-            "n_bin_spatial =",
-            n_bin_spatial_list[i],
-            ", spatial_resolution =",
-            SNRCalc_1.calc_spatial_resolution_for(n_bin_spatial=n_bin_spatial_list[i]),
-            ", SNR =",
-            SNRCalc_1.calc_SNR_for(n_bin_spatial=n_bin_spatial_list[i]))
+    # SNRの計算
+    SNRCalc_1 = ooem.SNRCalculator(
+        all_image_instance=fits_all_1,
+        sky_image_instance=fits_sky_1,
+        n_bin_spatial=n_bin_spatial_list[0])
 
     # ===========================================================================
     # 火山平穏（500K）、太陽反射光あり の観測
@@ -175,6 +163,12 @@ if __name__ == "__main__":
         virtual_output_file_instance=fits_sky_2,
         t_obs=t_obs
     )
+
+    # SNRの計算
+    SNRCalc_2 = ooem.SNRCalculator(
+        all_image_instance=fits_all_2,
+        sky_image_instance=fits_sky_2,
+        n_bin_spatial=n_bin_spatial_list[0])
 
     # ===========================================================================
     # アウトバーストあり/なしでの差分のSN計算
@@ -221,7 +215,7 @@ if __name__ == "__main__":
         ["n_bin_spatial", n_bin_spatial_list[0], "pix"],
         ["theta_pix", TOPICS.get_theta_pix(), "arcsec"],
         ["Field of View", TOPICS.get_theta_pix() * 256, "arcsec"],
-        ["spatial_resolution", SNRCalc_1.calc_spatial_resolution_for(n_bin_spatial=n_bin_spatial_list[0]), "arcsec"],
+        ["spatial_resolution", SNRCalc_1.get_spatial_resolution(), "arcsec"],
         ["", "", ""],
         ["Results", "", ""],
         ["S_all_pix (obj image)", fits_all_1.get_S_all_pix(), "DN / pix"],
@@ -229,7 +223,7 @@ if __name__ == "__main__":
         ["S_dark_pix", fits_all_1.get_S_dark_pix(), "DN / pix"],
         ["S_read_pix", fits_all_1.get_S_read_pix(), "DN / pix"],
         ["R_electron/FW", fits_all_1.get_R_electron_FW(), ""],
-        ["SNR", SNRCalc_1.calc_SNR_for(n_bin_spatial=n_bin_spatial_list[0]), ""],
+        ["SNR", SNRCalc_1.get_SNR(), ""],
     ]
 
     ax15 = ooem.plot_parameter_table(
@@ -263,7 +257,7 @@ if __name__ == "__main__":
         ["S_dark_pix", fits_all_2.get_S_dark_pix(), "DN / pix"],
         ["S_read_pix", fits_all_2.get_S_read_pix(), "DN / pix"],
         ["R_electron/FW", fits_all_2.get_R_electron_FW(), ""],
-        ["SNR", SNRCalc_2.calc_SNR_for(n_bin_spatial=n_bin_spatial_list[0]), ""],
+        ["SNR", SNRCalc_2.get_SNR(), ""],
     ]
 
     ax25 = ooem.plot_parameter_table(
@@ -272,3 +266,24 @@ if __name__ == "__main__":
     fig2.suptitle("Io continuum in " + serial_name_2)
     fig2.tight_layout()
     fig2.savefig(mkfolder() + "fig2.png")
+
+    # ===========================================================================
+    # binning数を変えた時の空間分解能とSNRを表示
+    for i in range(len(n_bin_spatial_list)):
+
+        SNRCalc_1_for_nbin = ooem.SNRCalculator(
+            all_image_instance=fits_all_1,
+            sky_image_instance=fits_sky_1,
+            n_bin_spatial=n_bin_spatial_list[i]
+        )
+
+        print(
+            "n_bin_spatial =",
+            n_bin_spatial_list[i],
+            ", spatial_resolution =",
+            SNRCalc_1_for_nbin.get_spatial_resolution(),
+            ", SNR =",
+            SNRCalc_1_for_nbin.get_SNR()
+        )
+
+        del SNRCalc_1_for_nbin
