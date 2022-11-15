@@ -180,11 +180,11 @@ if __name__ == "__main__":
 
     # 誤差伝搬（参考 http://www.tagen.tohoku.ac.jp/labo/ishijima/gosa-03.html）
     N_diff = np.sqrt(SNRCalc_1.get_N_all()**2 + SNRCalc_2.get_N_all())
-    print("N_diff", N_diff)
+    print("N_diff =", N_diff)
 
     # SNR の計算
     SNR_diff = S_obj_diff / N_diff
-    print("SNR_diff", SNR_diff)
+    print("SNR_diff =", SNR_diff)
 
     # ===========================================================================
     # アウトバーストありのplotの調整
