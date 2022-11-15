@@ -996,6 +996,7 @@ class ImagingInstrument:
 
     def __init__(
             self,
+            is_TOPICS: bool,
             rambda_BPF_center: float,
             FWHM_BPF: float,
             tau_BPF_center: float,
@@ -1010,6 +1011,7 @@ class ImagingInstrument:
                 ├ バンドパスフィルタ透過率の導出 \n
                 ├ NDフィルタ透過率の導出 \n
                 ├ 装置透過率の導出（TOPICS） \n
+                ├ 装置透過率の導出（ESPRIT 分光モード） \n
                 ├ pixel数関連の導出 \n
                 ├ システムゲインの導出 \n
                 ├ 検出器に到達した段階での分光放射輝度 \n
@@ -1018,6 +1020,8 @@ class ImagingInstrument:
 
         Parameters
         ----------
+        is_TOPICS : bool
+            TOPICSの場合はTrue, ESPRITの場合はFalse
         rambda_BPF_center : float
             [m] バンドパスフィルタの中心波長
         FWHM_BPF : float
@@ -1035,6 +1039,9 @@ class ImagingInstrument:
         """
 
         # --- 入力パラメータ・固定パラメータの代入 ---
+        # TPOICSかESPRITの選択パラメータ
+        self.__is_TOPICS = is_TOPICS
+
         # バンドパスフィルタ透過率に関するパラメータ
         self.__rambda_BPF_center = rambda_BPF_center
         self.__FWHM_BPF = FWHM_BPF
@@ -1085,6 +1092,9 @@ class ImagingInstrument:
 
         G_sys = (C_PD / (e * G_SF)) * (ADU_ADC / G_Amp)
         return G_sys
+
+    def get_is_TOPICS(self) -> bool:
+        return self.__is_TOPICS
 
     def get_rambda_BPF_center(self) -> float:
         return self.__rambda_BPF_center
@@ -1147,7 +1157,15 @@ class ImagingInstrument:
             float
                 [arcsec / pix] プレートスケール
             """
-            m_i_all = 2  # [無次元]
+
+            # 装置内部光学系の倍率
+            if self.__is_TOPICS:
+                # TOPICSの場合
+                m_i_all = 2  # [無次元]
+            else:
+                # ESPRITの場合
+                m_i_all = 1  # [無次元]
+
             s_pix = 30e-6  # [m / pix]
 
             theta_pix = np.arctan(s_pix / (m_i_all * f_GBT)) * (180 / np.pi) * 3600
@@ -1298,10 +1316,19 @@ class ImagingInstrument:
             x_center=self.__rambda_BPF_center)
 
         # 装置透過率の導出
-        tau_i_lens = 0.9 ** 3
-        tau_i_mirror = 1
-        tau_i_ND = self.__tau_i_ND
-        tau_i = tau_i_lens * tau_i_mirror * tau_i_BPF * tau_i_ND
+        if self.__is_TOPICS:
+            # TOPICSの場合
+            tau_i_lens = 0.9 ** 3
+            tau_i_mirror = 1
+            tau_i_ND = self.__tau_i_ND
+            tau_i = tau_i_lens * tau_i_mirror * tau_i_BPF * tau_i_ND
+
+        else:
+            # ESPRITの場合
+            tau_i_mirror = 0.96 ** 9
+            tau_i_thermal = 0.8  # 仮
+            tau_i_ND = self.__tau_i_ND
+            tau_i = tau_i_mirror * tau_i_BPF * self.__tau_i_ND * tau_i_thermal
 
         # 装置透過率を光にかける
         light_instance.multiply_I_prime_to(magnification=tau_i)
