@@ -996,6 +996,7 @@ class ImagingInstrument:
 
     def __init__(
             self,
+            is_TOPICS: bool,
             rambda_BPF_center: float,
             FWHM_BPF: float,
             tau_BPF_center: float,
@@ -1010,6 +1011,7 @@ class ImagingInstrument:
                 ├ バンドパスフィルタ透過率の導出 \n
                 ├ NDフィルタ透過率の導出 \n
                 ├ 装置透過率の導出（TOPICS） \n
+                ├ 装置透過率の導出（ESPRIT 分光モード） \n
                 ├ pixel数関連の導出 \n
                 ├ システムゲインの導出 \n
                 ├ 検出器に到達した段階での分光放射輝度 \n
@@ -1018,6 +1020,8 @@ class ImagingInstrument:
 
         Parameters
         ----------
+        is_TOPICS : bool
+            TOPICSの場合はTrue, ESPRITの場合はFalse
         rambda_BPF_center : float
             [m] バンドパスフィルタの中心波長
         FWHM_BPF : float
@@ -1035,6 +1039,9 @@ class ImagingInstrument:
         """
 
         # --- 入力パラメータ・固定パラメータの代入 ---
+        # TPOICSかESPRITの選択パラメータ
+        self.__is_TOPICS = is_TOPICS
+
         # バンドパスフィルタ透過率に関するパラメータ
         self.__rambda_BPF_center = rambda_BPF_center
         self.__FWHM_BPF = FWHM_BPF
@@ -1085,6 +1092,9 @@ class ImagingInstrument:
 
         G_sys = (C_PD / (e * G_SF)) * (ADU_ADC / G_Amp)
         return G_sys
+
+    def get_is_TOPICS(self) -> bool:
+        return self.__is_TOPICS
 
     def get_rambda_BPF_center(self) -> float:
         return self.__rambda_BPF_center
@@ -1147,7 +1157,15 @@ class ImagingInstrument:
             float
                 [arcsec / pix] プレートスケール
             """
-            m_i_all = 2  # [無次元]
+
+            # 装置内部光学系の倍率
+            if self.__is_TOPICS:
+                # TOPICSの場合
+                m_i_all = 2  # [無次元]
+            else:
+                # ESPRITの場合
+                m_i_all = 1  # [無次元]
+
             s_pix = 30e-6  # [m / pix]
 
             theta_pix = np.arctan(s_pix / (m_i_all * f_GBT)) * (180 / np.pi) * 3600
@@ -1238,6 +1256,47 @@ class ImagingInstrument:
 
             return y_gaussian
 
+        def calc_tau_i_thermal(rambda_array_: np.ndarray) -> np.ndarray:
+            """サーマルカットフィルターの透過率をcsvファイルから読み出して補完し、
+            入力された波長に対して計算して透過率の1次元arrayとして出力
+
+            Parameters
+            ----------
+            rambda_array_ : np.ndarray
+                [m] 波長の1次元array
+
+            Returns
+            -------
+            np.ndarray
+                [無次元] サーマルカットフィルターの透過率の1次元array
+            """
+            # 神原M論 p94より、WG31050の透過率特性を
+            # https://www.thorlabs.co.jp/NewGroupPage9.cfm?ObjectGroup_ID=3982
+            # からダウンロードし、波長[um] と透過率[%] のみをtxtに保存
+            i_thermal_filepath = "raw_data/tau_i_thermal.txt"
+
+            # txtの読み出し
+            raw = np.loadtxt(
+                fname=i_thermal_filepath,
+                delimiter=" ")
+
+            # 読み出した波長[um]と透過率[%]を、波長[m]と透過率[無次元]に換算
+            rambda_data_array_um, tau_i_thermal_data_array_percent = raw.T
+            rambda_data_array = rambda_data_array_um * 1e-6
+            tau_i_thermal_data_array = tau_i_thermal_data_array_percent * 1e-2
+
+            # 透過率関数の作成
+            tau_i_thermal_func = interpolate.interp1d(
+                x=rambda_data_array,
+                y=tau_i_thermal_data_array,
+                kind="linear"
+            )
+
+            # light_instanceの波長に対応した透過率の1次元arrayの作成
+            tau_i_thermal_array_ = tau_i_thermal_func(rambda_array_)
+
+            return tau_i_thermal_array_
+
         def calc_S_photon_pix(
                 light_instance_: LightGenenrator,
                 Omega_pix_: float,
@@ -1298,10 +1357,19 @@ class ImagingInstrument:
             x_center=self.__rambda_BPF_center)
 
         # 装置透過率の導出
-        tau_i_lens = 0.9 ** 3
-        tau_i_mirror = 1
-        tau_i_ND = self.__tau_i_ND
-        tau_i = tau_i_lens * tau_i_mirror * tau_i_BPF * tau_i_ND
+        if self.__is_TOPICS:
+            # TOPICSの場合
+            tau_i_lens = 0.9 ** 3
+            tau_i_mirror = 1
+            tau_i_ND = self.__tau_i_ND
+            tau_i = tau_i_lens * tau_i_mirror * tau_i_BPF * tau_i_ND
+
+        else:
+            # ESPRITの場合
+            tau_i_mirror = 0.96 ** 9
+            tau_i_thermal = calc_tau_i_thermal(rambda_array_=light_instance.get_rambda())
+            tau_i_ND = self.__tau_i_ND
+            tau_i = tau_i_mirror * tau_i_BPF * self.__tau_i_ND * tau_i_thermal
 
         # 装置透過率を光にかける
         light_instance.multiply_I_prime_to(magnification=tau_i)
