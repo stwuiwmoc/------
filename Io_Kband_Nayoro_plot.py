@@ -28,13 +28,18 @@ def mkfolder(suffix=""):
 if __name__ == "__main__":
     importlib.reload(ooem)
 
+    # ===========================================================================
     # グローバル変数の定義
-    serial_name = "1000KSun"
-    Io_input_filepath = "mkfolder/convert_de_Kleer_etal_2014_fig1/" + serial_name + "_rambda_vs_spectral_radiance.csv"
+    serial_name_1 = "1000KSun"  # アウトバースト（1000K）発生、太陽反射光あり
+    serial_name_2 = "500KSun"  # 火山平穏状態（500K）、太陽反射光あり
+
+    Io_input_filepath_1 = "mkfolder/convert_de_Kleer_etal_2014_fig1/" + serial_name_1 + "_rambda_vs_spectral_radiance.csv"
+    Io_input_filepath_2 = "mkfolder/convert_de_Kleer_etal_2014_fig1/" + serial_name_2 + "_rambda_vs_spectral_radiance.csv"
 
     t_obs = 15  # [s] 積分時間
     n_bin_spatial_list = [4, 8, 1]
 
+    # ===========================================================================
     # 各インスタンス生成
     light_all = ooem.LightGenenrator(
         rambda_division_width=0.1e-9,
@@ -46,8 +51,11 @@ if __name__ == "__main__":
         rambda_lower_limit=2.05e-6,
         rambda_upper_limit=2.45e-6)
 
-    Io_continuum = ooem.GenericEmissionFromCsv(
-        csv_fpath=Io_input_filepath)
+    Io_continuum_1 = ooem.GenericEmissionFromCsv(
+        csv_fpath=Io_input_filepath_1)
+
+    Io_continuum_2 = ooem.GenericEmissionFromCsv(
+        csv_fpath=Io_input_filepath_2)
 
     Nayoro_Nov = ooem.EarthAtmosphere(
         T_ATM=273,
@@ -69,22 +77,32 @@ if __name__ == "__main__":
         I_dark=50,
         N_e_read=1200)
 
-    fits_all = ooem.VirtualOutputFileGenerator()
-    fits_sky = ooem.VirtualOutputFileGenerator()
+    fits_all_1 = ooem.VirtualOutputFileGenerator()
+    fits_sky_1 = ooem.VirtualOutputFileGenerator()
 
-    SNRCalc = ooem.SNRCalculator(
-        all_image_instance=fits_all,
-        sky_image_instance=fits_sky)
+    fits_all_2 = ooem.VirtualOutputFileGenerator()
+    fits_sky_2 = ooem.VirtualOutputFileGenerator()
+
+    SNRCalc_1 = ooem.SNRCalculator(
+        all_image_instance=fits_all_1,
+        sky_image_instance=fits_sky_1)
+
+    SNRCalc_2 = ooem.SNRCalculator(
+        all_image_instance=fits_all_2,
+        sky_image_instance=fits_sky_2)
 
     # 望遠鏡への撮像装置の設置
     TOPICS.set_ImagingInstrument_to(GBT_instance=Pirka)
+
+    # ===========================================================================
+    # アウトバースト（1000K）発生、太陽反射光あり の観測
 
     # plot作成の準備
     fig1 = plt.figure(figsize=(15, 15))
     gs1 = fig1.add_gridspec(4, 2)
 
-    # 輝線発光を加える
-    Io_continuum.add_spectral_radiance_to(light_instance=light_all)
+    # イオの発光を加える
+    Io_continuum_1.add_spectral_radiance_to(light_instance=light_all)
     ax11 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[0, 0])
 
     # 地球大気を通る
@@ -98,7 +116,7 @@ if __name__ == "__main__":
     # 撮像してfitsに保存
     TOPICS.shoot_light_and_save_to_fits(
         light_instance=light_all,
-        virtual_output_file_instance=fits_all,
+        virtual_output_file_instance=fits_all_1,
         t_obs=t_obs)
     ax14 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[3, 0])
 
@@ -107,7 +125,7 @@ if __name__ == "__main__":
     Pirka.pass_through(light_instance=light_sky)
     TOPICS.shoot_light_and_save_to_fits(
         light_instance=light_sky,
-        virtual_output_file_instance=fits_sky,
+        virtual_output_file_instance=fits_sky_1,
         t_obs=t_obs)
 
     # binning数を変えた時の空間分解能とSNRを表示
@@ -116,11 +134,53 @@ if __name__ == "__main__":
             "n_bin_spatial =",
             n_bin_spatial_list[i],
             ", spatial_resolution =",
-            SNRCalc.calc_spatial_resolution_for(n_bin_spatial=n_bin_spatial_list[i]),
+            SNRCalc_1.calc_spatial_resolution_for(n_bin_spatial=n_bin_spatial_list[i]),
             ", SNR =",
-            SNRCalc.calc_SNR_for(n_bin_spatial=n_bin_spatial_list[i]))
+            SNRCalc_1.calc_SNR_for(n_bin_spatial=n_bin_spatial_list[i]))
 
-    # plot
+    # ===========================================================================
+    # 火山平穏（500K）、太陽反射光あり の観測
+
+    # インスタンスのリセット
+    light_all.multiply_I_prime_to(magnification=0)
+    light_sky.multiply_I_prime_to(magnification=0)
+
+    # plotの準備
+    fig2 = plt.figure(figsize=(15, 15))
+    gs2 = fig2.add_gridspec(4, 2)
+
+    # アウトバーストありと同じ手順
+    # 観測対象の撮像
+    Io_continuum_2.add_spectral_radiance_to(light_instance=light_all)
+    ax21 = light_all.show_rambda_vs_I_prime_plot(fig=fig2, position=gs2[0, 0])
+
+    Nayoro_Nov.pass_through(light_instance=light_all)
+    ax22 = light_all.show_rambda_vs_I_prime_plot(fig=fig2, position=gs2[1, 0])
+
+    Pirka.pass_through(light_instance=light_all)
+    ax23 = light_all.show_rambda_vs_I_prime_plot(fig=fig2, position=gs2[2, 0])
+
+    TOPICS.shoot_light_and_save_to_fits(
+        light_instance=light_all,
+        virtual_output_file_instance=fits_all_2,
+        t_obs=t_obs
+    )
+    ax24 = light_all.show_rambda_vs_I_prime_plot(fig=fig2, position=gs2[3, 0])
+
+    # sky画像の撮像
+    Nayoro_Nov.pass_through(light_instance=light_sky)
+    Pirka.pass_through(light_instance=light_sky)
+    TOPICS.shoot_light_and_save_to_fits(
+        light_instance=light_sky,
+        virtual_output_file_instance=fits_sky_2,
+        t_obs=t_obs
+    )
+
+    # ===========================================================================
+    # アウトバーストあり/なしでの差分のSN計算
+
+    # ===========================================================================
+    # アウトバーストありのplotの調整
     ax11.set_title("Io thermal continuum")
     ax12.set_title("pass thruogh Earth Atmosphere")
     ax13.set_title("Pass through Ground-based-telescope")
@@ -131,12 +191,12 @@ if __name__ == "__main__":
     ax13.set_ylim(0, ax13.get_ylim()[1])
     ax14.set_ylim(0, ax13.get_ylim()[1])
 
-    parametar_table_list = [
+    parametar_table_list_1 = [
         ooem.get_latest_commit_datetime(),
         ["Have some change", "from above commit", ooem.have_some_change_in_git_status()],
         ["", "", ""],
         ["GenericEmissionFromCsv", "", ""],
-        ["serial_name", serial_name, ""],
+        ["serial_name", serial_name_1, ""],
         ["", "", ""],
         ["EarthAtmosphre", "", ""],
         ["ATRAN result filename", Nayoro_Nov.get_ATRAN_result_filepath()[9:25], Nayoro_Nov.get_ATRAN_result_filepath()[25:]],
@@ -161,20 +221,54 @@ if __name__ == "__main__":
         ["n_bin_spatial", n_bin_spatial_list[0], "pix"],
         ["theta_pix", TOPICS.get_theta_pix(), "arcsec"],
         ["Field of View", TOPICS.get_theta_pix() * 256, "arcsec"],
-        ["spatial_resolution", SNRCalc.calc_spatial_resolution_for(n_bin_spatial=n_bin_spatial_list[0]), "arcsec"],
+        ["spatial_resolution", SNRCalc_1.calc_spatial_resolution_for(n_bin_spatial=n_bin_spatial_list[0]), "arcsec"],
         ["", "", ""],
         ["Results", "", ""],
-        ["S_all_pix (obj image)", fits_all.get_S_all_pix(), "DN / pix"],
-        ["S_all_pix (sky image)", fits_sky.get_S_all_pix(), "DN / pix"],
-        ["S_dark_pix", fits_all.get_S_dark_pix(), "DN / pix"],
-        ["S_read_pix", fits_all.get_S_read_pix(), "DN / pix"],
-        ["R_electron/FW", fits_all.get_R_electron_FW(), ""],
-        ["SNR", SNRCalc.calc_SNR_for(n_bin_spatial=n_bin_spatial_list[0]), ""],
+        ["S_all_pix (obj image)", fits_all_1.get_S_all_pix(), "DN / pix"],
+        ["S_all_pix (sky image)", fits_sky_1.get_S_all_pix(), "DN / pix"],
+        ["S_dark_pix", fits_all_1.get_S_dark_pix(), "DN / pix"],
+        ["S_read_pix", fits_all_1.get_S_read_pix(), "DN / pix"],
+        ["R_electron/FW", fits_all_1.get_R_electron_FW(), ""],
+        ["SNR", SNRCalc_1.calc_SNR_for(n_bin_spatial=n_bin_spatial_list[0]), ""],
     ]
 
     ax15 = ooem.plot_parameter_table(
-        fig=fig1, position=gs1[:, 1], parameter_table=parametar_table_list, fontsize=12)
+        fig=fig1, position=gs1[:, 1], parameter_table=parametar_table_list_1, fontsize=12)
 
-    fig1.suptitle("H3+ 3.4um in Nayoro")
+    fig1.suptitle("Io continuum in" + serial_name_1)
     fig1.tight_layout()
     fig1.savefig(mkfolder() + "fig1.png")
+
+    # 火山平穏時のplotの調整
+    ax21.set_title(ax11.get_title())
+    ax22.set_title(ax12.get_title())
+    ax23.set_title(ax13.get_title())
+    ax24.set_title(ax14.get_title())
+
+    ax21.set_ylim(0, ax11.get_ylim()[1])
+    ax22.set_ylim(0, ax11.get_ylim()[1])
+    ax23.set_ylim(0, ax13.get_ylim()[1])
+    ax24.set_ylim(0, ax13.get_ylim()[1])
+
+    parametar_table_list_2 = [
+        ooem.get_latest_commit_datetime(),
+        ["Have some change", "from above commit", ooem.have_some_change_in_git_status()],
+        ["", "", ""],
+        ["GenericEmissionFromCsv", "", ""],
+        ["serial_name", serial_name_2, ""],
+        ["", "", ""],
+        ["Results", "", ""],
+        ["S_all_pix (obj image)", fits_all_2.get_S_all_pix(), "DN / pix"],
+        ["S_all_pix (sky image)", fits_sky_2.get_S_all_pix(), "DN / pix"],
+        ["S_dark_pix", fits_all_2.get_S_dark_pix(), "DN / pix"],
+        ["S_read_pix", fits_all_2.get_S_read_pix(), "DN / pix"],
+        ["R_electron/FW", fits_all_2.get_R_electron_FW(), ""],
+        ["SNR", SNRCalc_2.calc_SNR_for(n_bin_spatial=n_bin_spatial_list[0]), ""],
+    ]
+
+    ax25 = ooem.plot_parameter_table(
+        fig=fig2, position=gs2[:, 1], parameter_table=parametar_table_list_2, fontsize=12)
+
+    fig2.suptitle("Io continuum in " + serial_name_2)
+    fig2.tight_layout()
+    fig2.savefig(mkfolder() + "fig2.png")
