@@ -37,7 +37,7 @@ if __name__ == "__main__":
     Io_input_filepath_1 = "mkfolder/convert_de_Kleer_etal_2014_fig1/" + serial_name_1 + "_rambda_vs_spectral_radiance.csv"
     Io_input_filepath_2 = "mkfolder/convert_de_Kleer_etal_2014_fig1/" + serial_name_2 + "_rambda_vs_spectral_radiance.csv"
 
-    t_obs = 10  # [s] 積分時間
+    t_obs = 1.5  # [s] 積分時間
     n_bin_spatial_list = [2, 1]
 
     # 各インスタンス生成
@@ -65,7 +65,7 @@ if __name__ == "__main__":
         D_GBT=1.8,
         FNO_GBT=12,
         T_GBT=283,
-        tau_GBT=0.8**9)
+        tau_GBT=0.8**8)
 
     ESPRIT = ooem.ImagingInstrument(
         is_TOPICS=False,
