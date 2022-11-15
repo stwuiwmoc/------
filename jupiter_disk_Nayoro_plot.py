@@ -57,6 +57,7 @@ if __name__ == "__main__":
         tau_GBT=0.8**3)
 
     TOPICS = ooem.ImagingInstrument(
+        is_TOPICS=True,
         rambda_BPF_center=3.250e-6,
         FWHM_BPF=500e-9,
         tau_BPF_center=0.7,
@@ -67,10 +68,6 @@ if __name__ == "__main__":
 
     fits_all = ooem.VirtualOutputFileGenerator()
     fits_sky = ooem.VirtualOutputFileGenerator()
-
-    SNRCalc = ooem.SNRCalculator(
-        all_image_instance=fits_all,
-        sky_image_instance=fits_sky)
 
     # 望遠鏡への撮像装置の設置
     TOPICS.set_ImagingInstrument_to(GBT_instance=Pirka)
@@ -107,15 +104,11 @@ if __name__ == "__main__":
         virtual_output_file_instance=fits_sky,
         t_obs=t_obs)
 
-    # binning数を変えた時の空間分解能とSNRを表示
-    for i in range(len(n_bin_spatial_list)):
-        print(
-            "n_bin_spatial =",
-            n_bin_spatial_list[i],
-            ", spatial_resolution =",
-            SNRCalc.calc_spatial_resolution_for(n_bin_spatial=n_bin_spatial_list[i]),
-            ", SNR =",
-            SNRCalc.calc_SNR_for(n_bin_spatial=n_bin_spatial_list[i]))
+    # SNRの計算
+    SNRCalc = ooem.SNRCalculator(
+        all_image_instance=fits_all,
+        sky_image_instance=fits_sky,
+        n_bin_spatial=n_bin_spatial_list[0])
 
     # plot
     ax11.set_title("Jupiter surface emission (Norwood et al. 2015)")
@@ -157,8 +150,9 @@ if __name__ == "__main__":
         ["Other parameters", "", ""],
         ["t_obs", t_obs, "s"],
         ["n_bin_spatial", n_bin_spatial_list[0], "pix"],
+        ["theta_pix", TOPICS.get_theta_pix(), "arcsec"],
         ["Field of View", TOPICS.get_theta_pix() * 256, "arcsec"],
-        ["spatial_resolution", SNRCalc.calc_spatial_resolution_for(n_bin_spatial=n_bin_spatial_list[0]), "arcsec"],
+        ["spatial_resolution", SNRCalc.get_spatial_resolution(), "arcsec"],
         ["", "", ""],
         ["Results", "", ""],
         ["S_all_pix (obj image)", fits_all.get_S_all_pix(), "DN / pix"],
@@ -166,7 +160,7 @@ if __name__ == "__main__":
         ["S_dark_pix", fits_all.get_S_dark_pix(), "DN / pix"],
         ["S_read_pix", fits_all.get_S_read_pix(), "DN / pix"],
         ["R_electron/FW", fits_all.get_R_electron_FW(), ""],
-        ["SNR", SNRCalc.calc_SNR_for(n_bin_spatial=n_bin_spatial_list[0]), ""],
+        ["SNR", SNRCalc.get_SNR(), ""],
     ]
 
     ax15 = ooem.plot_parameter_table(
@@ -175,3 +169,23 @@ if __name__ == "__main__":
     fig1.suptitle("Jupiter disk NIR observation in Nayoro")
     fig1.tight_layout()
     fig1.savefig(mkfolder() + "fig1.png")
+
+    # binning数を変えた時の空間分解能とSNRを表示
+    for i in range(len(n_bin_spatial_list)):
+
+        SNRCalc_for_nbin = ooem.SNRCalculator(
+            all_image_instance=fits_all,
+            sky_image_instance=fits_sky,
+            n_bin_spatial=n_bin_spatial_list[i]
+        )
+
+        print(
+            "n_bin_spatial =",
+            n_bin_spatial_list[i],
+            ", spatial_resolution =",
+            SNRCalc_for_nbin.get_spatial_resolution(),
+            ", SNR =",
+            SNRCalc_for_nbin.get_SNR()
+        )
+
+        del SNRCalc_for_nbin
