@@ -2,6 +2,7 @@
 import importlib
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 import object_oriented_estimation_myclass as ooem
 
@@ -172,6 +173,18 @@ if __name__ == "__main__":
 
     # ===========================================================================
     # アウトバーストあり/なしでの差分のSN計算
+
+    # Signal の差分
+    S_obj_diff = SNRCalc_1.get_S_obj() - SNRCalc_2.get_S_obj()
+    print("S_obj_diff =", S_obj_diff)
+
+    # 誤差伝搬（参考 http://www.tagen.tohoku.ac.jp/labo/ishijima/gosa-03.html）
+    N_diff = np.sqrt(SNRCalc_1.get_N_all()**2 + SNRCalc_2.get_N_all())
+    print("N_diff", N_diff)
+
+    # SNR の計算
+    SNR_diff = S_obj_diff / N_diff
+    print("SNR_diff", SNR_diff)
 
     # ===========================================================================
     # アウトバーストありのplotの調整
