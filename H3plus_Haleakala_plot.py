@@ -58,18 +58,18 @@ if __name__ == "__main__":
     PLANETS = ooem.GroundBasedTelescope(
         D_GBT=1.8,
         FNO_GBT=12,
-        T_GBT=280,
+        T_GBT=278,
         tau_GBT=0.8**7)
 
     ESPRIT = ooem.ImagingInstrument(
         is_TOPICS=False,
-        rambda_BPF_center=3.414e-6,
+        rambda_BPF_center=3.413e-6,
         FWHM_BPF=17e-9,
         tau_BPF_center=0.88,
         tau_i_ND=1,
         G_Amp=9,
-        I_dark=50,
-        N_e_read=1200)
+        I_dark=2.0,
+        N_e_read=1500)
 
     fits_all = ooem.VirtualOutputFileGenerator()
     fits_sky = ooem.VirtualOutputFileGenerator()
@@ -77,21 +77,27 @@ if __name__ == "__main__":
     # plot作成の準備
     fig1 = plt.figure(figsize=(15, 15))
     gs1 = fig1.add_gridspec(4, 2)
+    # M論用プロット
+    fig2 = plt.figure(figsize=(12, 8))
+    gs2 = fig2.add_gridspec(2, 2)
 
     # 輝線発光を加える
     H3plus.add_auroral_emission_to(light_instance=light_all)
 
     ax11 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[0, 0])
+    ax21 = light_all.show_rambda_vs_I_prime_plot(fig=fig2, position=gs2[0, 0])
 
     # 地球大気を通る
     Haleakala_Oct_good.pass_through(light_instance=light_all)
     Haleakala_Oct_good.pass_through(light_instance=light_sky)
     ax12 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[1, 0])
+    ax22 = light_all.show_rambda_vs_I_prime_plot(fig=fig2, position=gs2[0, 1])
 
     # 望遠鏡を通る
     PLANETS.pass_through(light_instance=light_all)
     PLANETS.pass_through(light_instance=light_sky)
     ax13 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[2, 0])
+    ax23 = light_all.show_rambda_vs_I_prime_plot(fig=fig2, position=gs2[1, 0])
 
     # 望遠鏡への撮像装置の設置
     ESPRIT.set_ImagingInstrument_to(GBT_instance=PLANETS)
@@ -107,6 +113,7 @@ if __name__ == "__main__":
         t_obs=t_obs)
 
     ax14 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[3, 0])
+    ax24 = light_all.show_rambda_vs_I_prime_plot(fig=fig2, position=gs2[1, 1])
 
     # SNRの計算
     SNRCalc = ooem.SNRCalculator(
@@ -169,6 +176,19 @@ if __name__ == "__main__":
     fig1.suptitle("H3+ 3.4um in Haleakala")
     fig1.tight_layout()
     fig1.savefig(mkfolder() + "fig1.png")
+
+    # M論用プロット
+    ax21.set_title("H3+ emission lines")
+    ax22.set_title("pass thruogh Earth Atmosphre")
+    ax23.set_title("Pass through Ground-based-telescope")
+    ax24.set_title("Pass through imaging instrument")
+    ax21.set_ylim(0, ax21.get_ylim()[1])
+    ax22.set_ylim(0, ax21.get_ylim()[1])
+    ax23.set_ylim(0, ax21.get_ylim()[1])
+    ax24.set_ylim(0, ax21.get_ylim()[1])
+
+    fig2.suptitle("H3+ 3.4um in Haleakala")
+    fig2.tight_layout()
 
     # binning数を変えた時の空間分解能とSNRを表示
     for i in range(len(n_bin_spatial_list)):
