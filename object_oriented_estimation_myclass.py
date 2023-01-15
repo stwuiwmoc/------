@@ -1,3 +1,4 @@
+import h3ppy
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -712,6 +713,70 @@ class H3plusAuroralEmission:
 
         # LightGeneratorのインスタンスに、I_prime_objを加える
         light_instance.add_I_prime_to(I_prime_xx=I_prime_obj)
+
+
+class H3ppyAuroralEmission:
+
+    def __init__(
+            self,
+            N_H3p: float,
+            T_hypo: float,
+            R_instrument: float) -> None:
+
+        """ライブラリ h3ppy のH3+輝線発光モデルのラッパー
+
+        Parameters
+        ----------
+        N_H3p : float
+            [/m^2] H3+イオンのカラム密度
+        T_hypo : float
+            [K] 想定するH3+イオンの温度
+        R_instrument : float
+            [無次元] 想定する観測装置の波長分解能
+        """
+
+        self.__N_H3p = N_H3p
+        self.__T_hypo = T_hypo
+        self.__R_instrument = R_instrument
+
+    def h(self):
+        mkhelp(self)
+
+    def get_N_H3p(self) -> float:
+        return self.__N_H3p
+
+    def get_T_hypo(self) -> float:
+        return self.__T_hypo
+
+    def get_R_instrument(self) -> float:
+        return self.__R_instrument
+
+    def add_auroral_emission_to(
+            self,
+            light_instance: LightGenenrator) -> None:
+
+        # h3ppyを使ってH3+発光輝線のモデル計算
+        h3p = h3ppy.h3p()
+
+        # h3ppyのinputは um 単位
+        rambda_start_um = 1e6 * light_instance.get_rambda()[0]
+        rambda_end_um = 1e6 * light_instance.get_rambda()[-1]
+
+        wave = h3p.wavegen(
+            wstart=rambda_start_um,
+            wend=rambda_end_um,
+            wnbr=light_instance.get_len())
+
+        model = h3p.model(
+            density=self.__N_H3p,
+            temperature=self.__T_hypo,
+            R=self.__R_instrument,
+            wavelength=wave)
+
+        # light_instanceにH3+発光輝線を加える
+        # H3ppyのmodelのoutputは W/sr/m^2/um 単位の1次元arrayなので
+        # W/sr/m^2/m 単位に換算してから加算
+        light_instance.add_I_prime_to(I_prime_xx=model * 1e6)
 
 
 class EarthAtmosphere:

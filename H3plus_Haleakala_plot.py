@@ -45,59 +45,11 @@ if __name__ == "__main__":
         rambda_lower_limit=3.3e-6,
         rambda_upper_limit=3.5e-6)
 
-    R_3_0 = ooem.H3plusAuroralEmission(
-        rambda_obj=3.4128e-6,
+    H3plus = ooem.H3ppyAuroralEmission(
         N_H3p=column_density_H3plus,
-        g_ns=4,
-        J_prime=4,
-        A_if=177.6,
-        E_prime=3382.9299,
-        T_hypo=T_thermospheric_H3plus)
-
-    R_3_1 = ooem.H3plusAuroralEmission(
-        rambda_obj=3.4149e-6,
-        N_H3p=column_density_H3plus,
-        g_ns=2,
-        J_prime=4,
-        A_if=110.4,
-        E_prime=3359.002,
-        T_hypo=T_thermospheric_H3plus)
-
-    R_3_2 = ooem.H3plusAuroralEmission(
-        rambda_obj=3.4207e-6,
-        N_H3p=column_density_H3plus,
-        g_ns=2,
-        J_prime=4,
-        A_if=86.91,
-        E_prime=3287.2629,
-        T_hypo=T_thermospheric_H3plus)
-
-    R_3_3 = ooem.H3plusAuroralEmission(
-        rambda_obj=3.4270e-6,
-        N_H3p=column_density_H3plus,
-        g_ns=4,
-        J_prime=4,
-        A_if=42.94,
-        E_prime=3169.252,
-        T_hypo=T_thermospheric_H3plus)
-
-    R_4_3 = ooem.H3plusAuroralEmission(
-        rambda_obj=3.4547e-6,
-        N_H3p=column_density_H3plus,
-        g_ns=4,
-        J_prime=5,
-        A_if=62.91,
-        E_prime=3489.2151,
-        T_hypo=T_thermospheric_H3plus)
-
-    R_4_4 = ooem.H3plusAuroralEmission(
-        rambda_obj=3.4548e-6,
-        N_H3p=column_density_H3plus,
-        g_ns=2,
-        J_prime=5,
-        A_if=122.9,
-        E_prime=3332.4121,
-        T_hypo=T_thermospheric_H3plus)
+        T_hypo=T_thermospheric_H3plus,
+        R_instrument=20000
+    )
 
     Haleakala_Oct_good = ooem.EarthAtmosphere(
         T_ATM=273,
@@ -127,12 +79,7 @@ if __name__ == "__main__":
     gs1 = fig1.add_gridspec(4, 2)
 
     # 輝線発光を加える
-    R_3_0.add_auroral_emission_to(light_instance=light_all)
-    R_3_1.add_auroral_emission_to(light_instance=light_all)
-    R_3_2.add_auroral_emission_to(light_instance=light_all)
-    R_3_3.add_auroral_emission_to(light_instance=light_all)
-    R_4_3.add_auroral_emission_to(light_instance=light_all)
-    R_4_4.add_auroral_emission_to(light_instance=light_all)
+    H3plus.add_auroral_emission_to(light_instance=light_all)
 
     ax11 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[0, 0])
 
@@ -178,8 +125,9 @@ if __name__ == "__main__":
         ["Have some change", "from above commit", ooem.have_some_change_in_git_status()],
         ["", "", ""],
         ["H3plusEmission", "", ""],
-        ["N_H3+", R_3_0.get_N_H3p(), "/ m^2"],
-        ["T_hypo", R_3_0.get_T_hypo(), "K"],
+        ["N_H3+", H3plus.get_N_H3p(), "/ m^2"],
+        ["T_hypo", H3plus.get_T_hypo(), "K"],
+        ["R_instrument", H3plus.get_R_instrument(), ""],
         ["", "", ""],
         ["EarthAtmosphre", "", ""],
         ["ATRAN result filename", Haleakala_Oct_good.get_ATRAN_result_filepath()[9:25], Haleakala_Oct_good.get_ATRAN_result_filepath()[25:]],
