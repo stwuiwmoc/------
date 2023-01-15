@@ -31,7 +31,7 @@ if __name__ == "__main__":
     # グローバル変数の定義
     column_density_H3plus = 1.5e+16  # [/m^2] H3+カラム密度
     T_thermospheric_H3plus = 1200  # [K] H3+熱圏温度
-    t_obs = 12.5  # [s] 積分時間
+    t_obs = 3  # [s] 積分時間
     n_bin_spatial_list = [2, 4, 8]
 
     # 各インスタンス生成
@@ -103,14 +103,14 @@ if __name__ == "__main__":
         T_ATM=273,
         ATRAN_result_filepath="raw_data/Ha_PWV2000_ZA22_Range3to4_R0.txt")
 
-    T60 = ooem.GroundBasedTelescope(
-        D_GBT=0.6,
+    PLANETS = ooem.GroundBasedTelescope(
+        D_GBT=1.8,
         FNO_GBT=12,
         T_GBT=280,
-        tau_GBT=0.8**3)
+        tau_GBT=0.8**7)
 
-    TOPICS = ooem.ImagingInstrument(
-        is_TOPICS=True,
+    ESPRIT = ooem.ImagingInstrument(
+        is_TOPICS=False,
         rambda_BPF_center=3.414e-6,
         FWHM_BPF=17e-9,
         tau_BPF_center=0.88,
@@ -142,19 +142,19 @@ if __name__ == "__main__":
     ax12 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[1, 0])
 
     # 望遠鏡を通る
-    T60.pass_through(light_instance=light_all)
-    T60.pass_through(light_instance=light_sky)
+    PLANETS.pass_through(light_instance=light_all)
+    PLANETS.pass_through(light_instance=light_sky)
     ax13 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[2, 0])
 
     # 望遠鏡への撮像装置の設置
-    TOPICS.set_ImagingInstrument_to(GBT_instance=T60)
+    ESPRIT.set_ImagingInstrument_to(GBT_instance=PLANETS)
 
     # 撮像してfitsに保存
-    TOPICS.shoot_light_and_save_to_fits(
+    ESPRIT.shoot_light_and_save_to_fits(
         light_instance=light_all,
         virtual_output_file_instance=fits_all,
         t_obs=t_obs)
-    TOPICS.shoot_light_and_save_to_fits(
+    ESPRIT.shoot_light_and_save_to_fits(
         light_instance=light_sky,
         virtual_output_file_instance=fits_sky,
         t_obs=t_obs)
@@ -186,24 +186,24 @@ if __name__ == "__main__":
         ["T_ATM", Haleakala_Oct_good.get_T_ATM(), "K"],
         ["", "", ""],
         ["GroundBasedTelescope", "", ""],
-        ["D_GBT", T60.get_D_GBT(), "m"],
-        ["FNO_GBT", T60.get_FNO_GBT(), ""],
-        ["tau_GBT", T60.get_tau_GBT(), "K"],
-        ["T_GBT", T60.get_T_GBT(), "K"],
+        ["D_GBT", PLANETS.get_D_GBT(), "m"],
+        ["FNO_GBT", PLANETS.get_FNO_GBT(), ""],
+        ["tau_GBT", PLANETS.get_tau_GBT(), "K"],
+        ["T_GBT", PLANETS.get_T_GBT(), "K"],
         ["", "", ""],
         ["ImagingInstrument", "", ""],
-        ["rambda_BPF_center", TOPICS.get_rambda_BPF_center(), "m"],
-        ["FWHM_BPF", TOPICS.get_FWHM_BPF(), "m"],
-        ["tau_BPF_center", TOPICS.get_tau_BPF_center(), ""],
-        ["tau_i_ND", TOPICS.get_tau_i_ND(), ""],
-        ["I_dark_pix", TOPICS.get_I_dark(), "e- / s"],
-        ["N_e_read_pix", TOPICS.get_N_e_read(), "e-rms"],
+        ["rambda_BPF_center", ESPRIT.get_rambda_BPF_center(), "m"],
+        ["FWHM_BPF", ESPRIT.get_FWHM_BPF(), "m"],
+        ["tau_BPF_center", ESPRIT.get_tau_BPF_center(), ""],
+        ["tau_i_ND", ESPRIT.get_tau_i_ND(), ""],
+        ["I_dark_pix", ESPRIT.get_I_dark(), "e- / s"],
+        ["N_e_read_pix", ESPRIT.get_N_e_read(), "e-rms"],
         ["", "", ""],
         ["Other parameters", "", ""],
         ["t_obs", t_obs, "s"],
         ["n_bin_spatial", n_bin_spatial_list[0], "pix"],
-        ["theta_pix", TOPICS.get_theta_pix(), "arcsec"],
-        ["Field of View", TOPICS.get_theta_pix() * 256, "arcsec"],
+        ["theta_pix", ESPRIT.get_theta_pix(), "arcsec"],
+        ["Field of View", ESPRIT.get_theta_pix() * 256, "arcsec"],
         ["spatial_resolution", SNRCalc.get_spatial_resolution(), "arcsec"],
         ["", "", ""],
         ["Results", "", ""],
