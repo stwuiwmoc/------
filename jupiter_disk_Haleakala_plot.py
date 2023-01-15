@@ -29,8 +29,8 @@ if __name__ == "__main__":
     importlib.reload(ooem)
 
     # グローバル変数の定義
-    t_obs = 2.5  # [s] 積分時間
-    n_bin_spatial_list = [6, 10, 16]
+    t_obs = 1  # [s] 積分時間
+    n_bin_spatial_list = [6, 10, 2]
 
     # 各インスタンス生成
     light_all = ooem.LightGenenrator(
@@ -61,7 +61,7 @@ if __name__ == "__main__":
         rambda_BPF_center=3.250e-6,
         FWHM_BPF=500e-9,
         tau_BPF_center=0.7,
-        tau_i_ND=1,
+        tau_i_ND=10**-1.5,
         G_Amp=9,
         I_dark=50,
         N_e_read=1200)
@@ -75,19 +75,25 @@ if __name__ == "__main__":
     # plot作成の準備
     fig1 = plt.figure(figsize=(15, 15))
     gs1 = fig1.add_gridspec(4, 2)
+    # M論用プロット
+    fig2 = plt.figure(figsize=(12, 8))
+    gs2 = fig2.add_gridspec(2, 2)
 
     # 観測対象の画像の撮像
     # 輝線発光を加える
     jupiter_surface.add_spectral_radiance_to(light_instance=light_all)
     ax11 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[0, 0])
+    ax21 = light_all.show_rambda_vs_I_prime_plot(fig=fig2, position=gs2[0, 0])
 
     # 地球大気を通る
     Haleakala_Oct_good.pass_through(light_instance=light_all)
     ax12 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[1, 0])
+    ax22 = light_all.show_rambda_vs_I_prime_plot(fig=fig2, position=gs2[0, 1])
 
     # 望遠鏡を通る
     PLANETS.pass_through(light_instance=light_all)
     ax13 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[2, 0])
+    ax23 = light_all.show_rambda_vs_I_prime_plot(fig=fig2, position=gs2[1, 0])
 
     # 撮像してfitsに保存
     ESPRIT.shoot_light_and_save_to_fits(
@@ -95,6 +101,7 @@ if __name__ == "__main__":
         virtual_output_file_instance=fits_all,
         t_obs=t_obs)
     ax14 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[3, 0])
+    ax24 = light_all.show_rambda_vs_I_prime_plot(fig=fig2, position=gs2[1, 1])
 
     # sky画像の撮像も同じ手順
     Haleakala_Oct_good.pass_through(light_instance=light_sky)
@@ -169,6 +176,18 @@ if __name__ == "__main__":
     fig1.suptitle("Jupiter disk NIR observation in Haleakala")
     fig1.tight_layout()
     fig1.savefig(mkfolder() + "fig1.png")
+
+    # M論用プロット
+    ax21.set_title("H3+ emission lines")
+    ax22.set_title("pass thruogh Earth Atmosphre")
+    ax23.set_title("Pass through Ground-based-telescope")
+    ax24.set_title("Pass through imaging instrument")
+    ax21.set_ylim(0, ax21.get_ylim()[1])
+    ax22.set_ylim(0, ax21.get_ylim()[1])
+    ax23.set_ylim(0, ax21.get_ylim()[1])
+
+    fig2.suptitle("Jupiter disk NIR observation in Nayoro")
+    fig2.tight_layout()
 
     # binning数を変えた時の空間分解能とSNRを表示
     for i in range(len(n_bin_spatial_list)):
