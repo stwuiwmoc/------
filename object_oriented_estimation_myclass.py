@@ -1121,7 +1121,7 @@ class ImagingInstrument:
         # システムゲインに関連するパラメータ
         self.__G_Amp = G_Amp
         self.__G_sys = self.__calc_G_sys()
-        self.__FW = 152000  # [e- / pix]
+        self.__FW = 150800  # [e- / pix]
         self.__S_FW_pix = self.__FW / self.__G_sys
 
         # Signalへの換算で必要なパラメータ
