@@ -31,8 +31,8 @@ if __name__ == "__main__":
     # グローバル変数の定義
     column_density_H3plus = 1.5e+16  # [/m^2] H3+カラム密度
     T_thermospheric_H3plus = 1200  # [K] H3+熱圏温度
-    t_obs = 3  # [s] 積分時間
-    n_bin_spatial_list = [2, 4, 8]
+    t_obs = 5  # [s] 積分時間
+    n_bin_spatial_list = [2, 4, 3]
 
     # 各インスタンス生成
     light_all = ooem.LightGenenrator(
@@ -69,7 +69,7 @@ if __name__ == "__main__":
         tau_i_ND=1,
         G_Amp=9,
         I_dark=2.0,
-        N_e_read=1500)
+        N_e_read=400)
 
     fits_all = ooem.VirtualOutputFileGenerator()
     fits_sky = ooem.VirtualOutputFileGenerator()
