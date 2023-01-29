@@ -37,8 +37,8 @@ if __name__ == "__main__":
     Io_input_filepath_1 = "mkfolder/convert_de_Kleer_etal_2014_fig1/" + serial_name_1 + "_rambda_vs_spectral_radiance.csv"
     Io_input_filepath_2 = "mkfolder/convert_de_Kleer_etal_2014_fig1/" + serial_name_2 + "_rambda_vs_spectral_radiance.csv"
 
-    t_obs = 15  # [s] 積分時間
-    n_bin_spatial_list = [4, 8, 1]
+    t_obs = 10  # [s] 積分時間
+    n_bin_spatial_list = [10, 8, 1]
 
     # ===========================================================================
     # 各インスタンス生成
@@ -96,6 +96,8 @@ if __name__ == "__main__":
 
     # イオの発光を加える
     Io_continuum_1.add_spectral_radiance_to(light_instance=light_all)
+    # シーイングによってぼやけて光量減
+    light_all.multiply_I_prime_to(magnification=0.1)
     ax11 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[0, 0])
 
     # 地球大気を通る
@@ -141,6 +143,8 @@ if __name__ == "__main__":
     # アウトバーストありと同じ手順
     # 観測対象の撮像
     Io_continuum_2.add_spectral_radiance_to(light_instance=light_all)
+    # シーイングによってぼやけて光量減
+    light_all.multiply_I_prime_to(magnification=0.1)
     ax21 = light_all.show_rambda_vs_I_prime_plot(fig=fig2, position=gs2[0, 0])
 
     Nayoro_Nov.pass_through(light_instance=light_all)
