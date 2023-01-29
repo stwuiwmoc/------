@@ -74,8 +74,8 @@ if __name__ == "__main__":
         tau_BPF_center=0.9,
         tau_i_ND=1,
         G_Amp=9,
-        I_dark=2,
-        N_e_read=1500)
+        I_dark=1.86,
+        N_e_read=900)
 
     fits_all_1 = ooem.VirtualOutputFileGenerator()
     fits_sky_1 = ooem.VirtualOutputFileGenerator()
