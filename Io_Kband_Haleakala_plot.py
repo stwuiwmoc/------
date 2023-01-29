@@ -37,7 +37,7 @@ if __name__ == "__main__":
     Io_input_filepath_1 = "mkfolder/convert_de_Kleer_etal_2014_fig1/" + serial_name_1 + "_rambda_vs_spectral_radiance.csv"
     Io_input_filepath_2 = "mkfolder/convert_de_Kleer_etal_2014_fig1/" + serial_name_2 + "_rambda_vs_spectral_radiance.csv"
 
-    t_obs = 1.5  # [s] 積分時間
+    t_obs = 5.0  # [s] 積分時間
     n_bin_spatial_list = [1, 2]
 
     # 各インスタンス生成
@@ -63,7 +63,7 @@ if __name__ == "__main__":
 
     PLANETS = ooem.GroundBasedTelescope(
         D_GBT=1.8,
-        FNO_GBT=12,
+        FNO_GBT=24,
         T_GBT=280,
         tau_GBT=0.8**8)
 
