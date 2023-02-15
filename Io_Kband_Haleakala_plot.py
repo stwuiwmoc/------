@@ -37,8 +37,8 @@ if __name__ == "__main__":
     Io_input_filepath_1 = "mkfolder/convert_de_Kleer_etal_2014_fig1/" + serial_name_1 + "_rambda_vs_spectral_radiance.csv"
     Io_input_filepath_2 = "mkfolder/convert_de_Kleer_etal_2014_fig1/" + serial_name_2 + "_rambda_vs_spectral_radiance.csv"
 
-    t_obs = 1.5  # [s] 積分時間
-    n_bin_spatial_list = [2, 1]
+    t_obs = 5.0  # [s] 積分時間
+    n_bin_spatial_list = [1, 2]
 
     # 各インスタンス生成
     light_all = ooem.LightGenenrator(
@@ -63,8 +63,8 @@ if __name__ == "__main__":
 
     PLANETS = ooem.GroundBasedTelescope(
         D_GBT=1.8,
-        FNO_GBT=12,
-        T_GBT=283,
+        FNO_GBT=24,
+        T_GBT=280,
         tau_GBT=0.8**8)
 
     ESPRIT = ooem.ImagingInstrument(
@@ -74,8 +74,8 @@ if __name__ == "__main__":
         tau_BPF_center=0.9,
         tau_i_ND=1,
         G_Amp=9,
-        I_dark=50,
-        N_e_read=1200)
+        I_dark=1.86,
+        N_e_read=900)
 
     fits_all_1 = ooem.VirtualOutputFileGenerator()
     fits_sky_1 = ooem.VirtualOutputFileGenerator()
@@ -89,18 +89,24 @@ if __name__ == "__main__":
     # plot作成の準備
     fig1 = plt.figure(figsize=(15, 15))
     gs1 = fig1.add_gridspec(4, 2)
+    # M論用プロット
+    fig3 = plt.figure(figsize=(12, 8))
+    gs3 = fig3.add_gridspec(2, 2)
 
     # 輝線発光を加える
     Io_continuum_1.add_spectral_radiance_to(light_instance=light_all)
     ax11 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[0, 0])
+    ax31 = light_all.show_rambda_vs_I_prime_plot(fig=fig3, position=gs3[0, 0])
 
     # 地球大気を通る
     Haleakala.pass_through(light_instance=light_all)
     ax12 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[1, 0])
+    ax32 = light_all.show_rambda_vs_I_prime_plot(fig=fig3, position=gs3[0, 1])
 
     # 望遠鏡を通る
     PLANETS.pass_through(light_instance=light_all)
     ax13 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[2, 0])
+    ax33 = light_all.show_rambda_vs_I_prime_plot(fig=fig3, position=gs3[1, 0])
 
     # 撮像してfitsに保存
     ESPRIT.shoot_light_and_save_to_fits(
@@ -108,6 +114,7 @@ if __name__ == "__main__":
         virtual_output_file_instance=fits_all_1,
         t_obs=t_obs)
     ax14 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[3, 0])
+    ax34 = light_all.show_rambda_vs_I_prime_plot(fig=fig3, position=gs3[1, 1])
 
     # sky画像の撮像（観測対象の撮像と同じ手順）
     Haleakala.pass_through(light_instance=light_sky)
@@ -133,17 +140,23 @@ if __name__ == "__main__":
     # plotの準備
     fig2 = plt.figure(figsize=(15, 15))
     gs2 = fig2.add_gridspec(4, 2)
+    # M論用プロット
+    fig4 = plt.figure(figsize=(12, 8))
+    gs4 = fig4.add_gridspec(2, 2)
 
     # アウトバーストありと同じ手順
     # 観測対象の撮像
     Io_continuum_2.add_spectral_radiance_to(light_instance=light_all)
     ax21 = light_all.show_rambda_vs_I_prime_plot(fig=fig2, position=gs2[0, 0])
+    ax41 = light_all.show_rambda_vs_I_prime_plot(fig=fig4, position=gs4[0, 0])
 
     Haleakala.pass_through(light_instance=light_all)
     ax22 = light_all.show_rambda_vs_I_prime_plot(fig=fig2, position=gs2[1, 0])
+    ax42 = light_all.show_rambda_vs_I_prime_plot(fig=fig4, position=gs4[0, 1])
 
     PLANETS.pass_through(light_instance=light_all)
     ax23 = light_all.show_rambda_vs_I_prime_plot(fig=fig2, position=gs2[2, 0])
+    ax43 = light_all.show_rambda_vs_I_prime_plot(fig=fig4, position=gs4[1, 0])
 
     ESPRIT.shoot_light_and_save_to_fits(
         light_instance=light_all,
@@ -151,6 +164,7 @@ if __name__ == "__main__":
         t_obs=t_obs
     )
     ax24 = light_all.show_rambda_vs_I_prime_plot(fig=fig2, position=gs2[3, 0])
+    ax44 = light_all.show_rambda_vs_I_prime_plot(fig=fig4, position=gs4[1, 1])
 
     # sky画像の撮像
     Haleakala.pass_through(light_instance=light_sky)
@@ -170,12 +184,17 @@ if __name__ == "__main__":
     # ===========================================================================
     # アウトバーストあり/なしでの差分のSN計算
 
+    print("S_obj_1 =", SNRCalc_1.get_S_obj())
+    print("S_obj_2 =", SNRCalc_2.get_S_obj())
+    print("N_all_1 =", SNRCalc_1.get_N_all())
+    print("N_all_2 =", SNRCalc_2.get_N_all())
+
     # Signal の差分
     S_obj_diff = SNRCalc_1.get_S_obj() - SNRCalc_2.get_S_obj()
     print("S_obj_diff =", S_obj_diff)
 
     # 誤差伝搬（参考 http://www.tagen.tohoku.ac.jp/labo/ishijima/gosa-03.html）
-    N_diff = np.sqrt(SNRCalc_1.get_N_all()**2 + SNRCalc_2.get_N_all())
+    N_diff = np.sqrt(SNRCalc_1.get_N_all()**2 + SNRCalc_2.get_N_all()**2)
     print("N_diff =", N_diff)
 
     # SNR の計算
@@ -238,7 +257,7 @@ if __name__ == "__main__":
     ax15 = ooem.plot_parameter_table(
         fig=fig1, position=gs1[:, 1], parameter_table=parametar_table_list, fontsize=12)
 
-    fig1.suptitle("H3+ 3.4um in Nayoro")
+    fig1.suptitle("Io continuum in " + serial_name_1)
     fig1.tight_layout()
     fig1.savefig(mkfolder() + "fig1.png")
 
@@ -276,23 +295,27 @@ if __name__ == "__main__":
     fig2.tight_layout()
     fig2.savefig(mkfolder() + "fig2.png")
 
-    # ===========================================================================
-    # binning数を変えた時の空間分解能とSNRを表示
-    for i in range(len(n_bin_spatial_list)):
+    # M論用プロット
+    ax31.set_title(ax11.get_title())
+    ax32.set_title(ax12.get_title())
+    ax33.set_title(ax13.get_title())
+    ax34.set_title(ax14.get_title())
+    ax31.set_ylim(0, ax31.get_ylim()[1])
+    ax32.set_ylim(0, ax31.get_ylim()[1])
+    ax33.set_ylim(0, ax31.get_ylim()[1])
+    ax34.set_ylim(0, ax31.get_ylim()[1])
 
-        SNRCalc_1_for_nbin = ooem.SNRCalculator(
-            all_image_instance=fits_all_1,
-            sky_image_instance=fits_sky_1,
-            n_bin_spatial=n_bin_spatial_list[i]
-        )
+    fig3.suptitle("Io continuum in " + serial_name_1)
+    fig3.tight_layout()
 
-        print(
-            "n_bin_spatial =",
-            n_bin_spatial_list[i],
-            ", spatial_resolution =",
-            SNRCalc_1_for_nbin.get_spatial_resolution(),
-            ", SNR =",
-            SNRCalc_1_for_nbin.get_SNR()
-        )
+    ax41.set_title(ax11.get_title())
+    ax42.set_title(ax12.get_title())
+    ax43.set_title(ax13.get_title())
+    ax44.set_title(ax14.get_title())
+    ax41.set_ylim(0, ax31.get_ylim()[1])
+    ax42.set_ylim(0, ax31.get_ylim()[1])
+    ax43.set_ylim(0, ax31.get_ylim()[1])
+    ax44.set_ylim(0, ax31.get_ylim()[1])
 
-        del SNRCalc_1_for_nbin
+    fig4.suptitle("Io continuum in " + serial_name_2)
+    fig4.tight_layout()

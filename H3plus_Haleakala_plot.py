@@ -31,8 +31,8 @@ if __name__ == "__main__":
     # グローバル変数の定義
     column_density_H3plus = 1.5e+16  # [/m^2] H3+カラム密度
     T_thermospheric_H3plus = 1200  # [K] H3+熱圏温度
-    t_obs = 12.5  # [s] 積分時間
-    n_bin_spatial_list = [2, 4, 8]
+    t_obs = 5  # [s] 積分時間
+    n_bin_spatial_list = [2, 4, 3]
 
     # 各インスタンス生成
     light_all = ooem.LightGenenrator(
@@ -55,21 +55,21 @@ if __name__ == "__main__":
         T_ATM=273,
         ATRAN_result_filepath="raw_data/Ha_PWV2000_ZA22_Range3to4_R0.txt")
 
-    T60 = ooem.GroundBasedTelescope(
-        D_GBT=0.6,
+    PLANETS = ooem.GroundBasedTelescope(
+        D_GBT=1.8,
         FNO_GBT=12,
-        T_GBT=280,
-        tau_GBT=0.8**3)
+        T_GBT=278,
+        tau_GBT=0.8**7)
 
-    TOPICS = ooem.ImagingInstrument(
-        is_TOPICS=True,
-        rambda_BPF_center=3.414e-6,
+    ESPRIT = ooem.ImagingInstrument(
+        is_TOPICS=False,
+        rambda_BPF_center=3.413e-6,
         FWHM_BPF=17e-9,
         tau_BPF_center=0.88,
         tau_i_ND=1,
         G_Amp=9,
-        I_dark=50,
-        N_e_read=1200)
+        I_dark=1.86,
+        N_e_read=900)
 
     fits_all = ooem.VirtualOutputFileGenerator()
     fits_sky = ooem.VirtualOutputFileGenerator()
@@ -77,36 +77,43 @@ if __name__ == "__main__":
     # plot作成の準備
     fig1 = plt.figure(figsize=(15, 15))
     gs1 = fig1.add_gridspec(4, 2)
+    # M論用プロット
+    fig2 = plt.figure(figsize=(12, 8))
+    gs2 = fig2.add_gridspec(2, 2)
 
     # 輝線発光を加える
     H3plus.add_auroral_emission_to(light_instance=light_all)
 
     ax11 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[0, 0])
+    ax21 = light_all.show_rambda_vs_I_prime_plot(fig=fig2, position=gs2[0, 0])
 
     # 地球大気を通る
     Haleakala_Oct_good.pass_through(light_instance=light_all)
     Haleakala_Oct_good.pass_through(light_instance=light_sky)
     ax12 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[1, 0])
+    ax22 = light_all.show_rambda_vs_I_prime_plot(fig=fig2, position=gs2[0, 1])
 
     # 望遠鏡を通る
-    T60.pass_through(light_instance=light_all)
-    T60.pass_through(light_instance=light_sky)
+    PLANETS.pass_through(light_instance=light_all)
+    PLANETS.pass_through(light_instance=light_sky)
     ax13 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[2, 0])
+    ax23 = light_all.show_rambda_vs_I_prime_plot(fig=fig2, position=gs2[1, 0])
 
     # 望遠鏡への撮像装置の設置
-    TOPICS.set_ImagingInstrument_to(GBT_instance=T60)
+    ESPRIT.set_ImagingInstrument_to(GBT_instance=PLANETS)
 
     # 撮像してfitsに保存
-    TOPICS.shoot_light_and_save_to_fits(
+    ESPRIT.shoot_light_and_save_to_fits(
         light_instance=light_all,
         virtual_output_file_instance=fits_all,
         t_obs=t_obs)
-    TOPICS.shoot_light_and_save_to_fits(
+    ESPRIT.shoot_light_and_save_to_fits(
         light_instance=light_sky,
         virtual_output_file_instance=fits_sky,
         t_obs=t_obs)
 
     ax14 = light_all.show_rambda_vs_I_prime_plot(fig=fig1, position=gs1[3, 0])
+    ax24 = light_all.show_rambda_vs_I_prime_plot(fig=fig2, position=gs2[1, 1])
 
     # SNRの計算
     SNRCalc = ooem.SNRCalculator(
@@ -134,24 +141,24 @@ if __name__ == "__main__":
         ["T_ATM", Haleakala_Oct_good.get_T_ATM(), "K"],
         ["", "", ""],
         ["GroundBasedTelescope", "", ""],
-        ["D_GBT", T60.get_D_GBT(), "m"],
-        ["FNO_GBT", T60.get_FNO_GBT(), ""],
-        ["tau_GBT", T60.get_tau_GBT(), "K"],
-        ["T_GBT", T60.get_T_GBT(), "K"],
+        ["D_GBT", PLANETS.get_D_GBT(), "m"],
+        ["FNO_GBT", PLANETS.get_FNO_GBT(), ""],
+        ["tau_GBT", PLANETS.get_tau_GBT(), "K"],
+        ["T_GBT", PLANETS.get_T_GBT(), "K"],
         ["", "", ""],
         ["ImagingInstrument", "", ""],
-        ["rambda_BPF_center", TOPICS.get_rambda_BPF_center(), "m"],
-        ["FWHM_BPF", TOPICS.get_FWHM_BPF(), "m"],
-        ["tau_BPF_center", TOPICS.get_tau_BPF_center(), ""],
-        ["tau_i_ND", TOPICS.get_tau_i_ND(), ""],
-        ["I_dark_pix", TOPICS.get_I_dark(), "e- / s"],
-        ["N_e_read_pix", TOPICS.get_N_e_read(), "e-rms"],
+        ["rambda_BPF_center", ESPRIT.get_rambda_BPF_center(), "m"],
+        ["FWHM_BPF", ESPRIT.get_FWHM_BPF(), "m"],
+        ["tau_BPF_center", ESPRIT.get_tau_BPF_center(), ""],
+        ["tau_i_ND", ESPRIT.get_tau_i_ND(), ""],
+        ["I_dark_pix", ESPRIT.get_I_dark(), "e- / s"],
+        ["N_e_read_pix", ESPRIT.get_N_e_read(), "e-rms"],
         ["", "", ""],
         ["Other parameters", "", ""],
         ["t_obs", t_obs, "s"],
         ["n_bin_spatial", n_bin_spatial_list[0], "pix"],
-        ["theta_pix", TOPICS.get_theta_pix(), "arcsec"],
-        ["Field of View", TOPICS.get_theta_pix() * 256, "arcsec"],
+        ["theta_pix", ESPRIT.get_theta_pix(), "arcsec"],
+        ["Field of View", ESPRIT.get_theta_pix() * 256, "arcsec"],
         ["spatial_resolution", SNRCalc.get_spatial_resolution(), "arcsec"],
         ["", "", ""],
         ["Results", "", ""],
@@ -169,6 +176,19 @@ if __name__ == "__main__":
     fig1.suptitle("H3+ 3.4um in Haleakala")
     fig1.tight_layout()
     fig1.savefig(mkfolder() + "fig1.png")
+
+    # M論用プロット
+    ax21.set_title("H3+ emission lines")
+    ax22.set_title("pass thruogh Earth Atmosphre")
+    ax23.set_title("Pass through Ground-based-telescope")
+    ax24.set_title("Pass through imaging instrument")
+    ax21.set_ylim(0, ax21.get_ylim()[1])
+    ax22.set_ylim(0, ax21.get_ylim()[1])
+    ax23.set_ylim(0, ax21.get_ylim()[1])
+    ax24.set_ylim(0, ax21.get_ylim()[1])
+
+    fig2.suptitle("H3+ 3.4um in Haleakala")
+    fig2.tight_layout()
 
     # binning数を変えた時の空間分解能とSNRを表示
     for i in range(len(n_bin_spatial_list)):
