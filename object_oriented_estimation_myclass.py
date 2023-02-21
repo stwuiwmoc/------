@@ -1067,6 +1067,7 @@ class ImagingInstrument:
             tau_BPF_center: float,
             tau_i_ND: float,
             G_Amp: float,
+            FW: float,
             I_dark: float,
             N_e_read: float) -> None:
         """撮像装置のパラメータを保持
@@ -1097,6 +1098,8 @@ class ImagingInstrument:
             [無次元] NDフィルタの透過率
         G_Amp : float
             [無次元] プリアンプ基板の倍率
+        FW : float
+            [e- / pix] フルウェル
         I_dark : float
             [e- / s / pix] 検出器暗電流
         N_e_read : float
@@ -1121,7 +1124,7 @@ class ImagingInstrument:
         # システムゲインに関連するパラメータ
         self.__G_Amp = G_Amp
         self.__G_sys = self.__calc_G_sys()
-        self.__FW = 161800  # [e- / pix]
+        self.__FW = FW
         self.__S_FW_pix = self.__FW / self.__G_sys
 
         # Signalへの換算で必要なパラメータ
