@@ -1434,10 +1434,11 @@ class ImagingInstrument:
         # 装置透過率の導出
         if self.__is_TOPICS:
             # TOPICSの場合
-            tau_i_lens = 0.9 ** 6
+            tau_i_lens = 0.9**2
+            tau_i_window = 0.9
             tau_i_mirror = 1
             tau_i_ND = self.__tau_i_ND
-            tau_i = tau_i_lens * tau_i_mirror * tau_i_BPF * tau_i_ND
+            tau_i = tau_i_lens * tau_i_window * tau_i_mirror * tau_i_BPF * tau_i_ND
 
         else:
             # ESPRITの場合
