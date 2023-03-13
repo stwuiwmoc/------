@@ -75,6 +75,8 @@ if __name__ == "__main__":
         tau_BPF_center=0.7,
         tau_i_ND=1,
         G_Amp=9,
+        FW=168800,
+        eta=0.889,
         I_dark=1.86,
         N_e_read=900)
 

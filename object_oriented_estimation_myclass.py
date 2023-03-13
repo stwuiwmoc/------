@@ -1067,6 +1067,8 @@ class ImagingInstrument:
             tau_BPF_center: float,
             tau_i_ND: float,
             G_Amp: float,
+            FW: float,
+            eta: float,
             I_dark: float,
             N_e_read: float) -> None:
         """撮像装置のパラメータを保持
@@ -1097,6 +1099,10 @@ class ImagingInstrument:
             [無次元] NDフィルタの透過率
         G_Amp : float
             [無次元] プリアンプ基板の倍率
+        FW : float
+            [e- / pix] フルウェル
+        eta : float
+            [e- / photon] 検出器の量子効率（波長依存性あり）
         I_dark : float
             [e- / s / pix] 検出器暗電流
         N_e_read : float
@@ -1121,10 +1127,11 @@ class ImagingInstrument:
         # システムゲインに関連するパラメータ
         self.__G_Amp = G_Amp
         self.__G_sys = self.__calc_G_sys()
-        self.__FW = 161800  # [e- / pix]
+        self.__FW = FW
         self.__S_FW_pix = self.__FW / self.__G_sys
 
         # Signalへの換算で必要なパラメータ
+        self.__eta = eta
         self.__I_dark = I_dark
         self.__N_e_read = N_e_read
 
@@ -1181,6 +1188,9 @@ class ImagingInstrument:
 
     def get_FW(self) -> float:
         return self.__FW
+
+    def get_eta(self) -> float:
+        return self.__eta
 
     def get_S_FW_pix(self) -> float:
         return self.__S_FW_pix
@@ -1424,10 +1434,11 @@ class ImagingInstrument:
         # 装置透過率の導出
         if self.__is_TOPICS:
             # TOPICSの場合
-            tau_i_lens = 0.9 ** 6
+            tau_i_lens = 0.9**2
+            tau_i_window = 0.9
             tau_i_mirror = 1
             tau_i_ND = self.__tau_i_ND
-            tau_i = tau_i_lens * tau_i_mirror * tau_i_BPF * tau_i_ND
+            tau_i = tau_i_lens * tau_i_window * tau_i_mirror * tau_i_BPF * tau_i_ND
 
         else:
             # ESPRITの場合
