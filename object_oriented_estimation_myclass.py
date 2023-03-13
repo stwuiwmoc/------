@@ -1068,6 +1068,7 @@ class ImagingInstrument:
             tau_i_ND: float,
             G_Amp: float,
             FW: float,
+            eta: float,
             I_dark: float,
             N_e_read: float) -> None:
         """撮像装置のパラメータを保持
@@ -1100,6 +1101,8 @@ class ImagingInstrument:
             [無次元] プリアンプ基板の倍率
         FW : float
             [e- / pix] フルウェル
+        eta : float
+            [e- / photon] 検出器の量子効率（波長依存性あり）
         I_dark : float
             [e- / s / pix] 検出器暗電流
         N_e_read : float
@@ -1128,6 +1131,7 @@ class ImagingInstrument:
         self.__S_FW_pix = self.__FW / self.__G_sys
 
         # Signalへの換算で必要なパラメータ
+        self.__eta = eta
         self.__I_dark = I_dark
         self.__N_e_read = N_e_read
 
@@ -1184,6 +1188,9 @@ class ImagingInstrument:
 
     def get_FW(self) -> float:
         return self.__FW
+
+    def get_eta(self) -> float:
+        return self.__eta
 
     def get_S_FW_pix(self) -> float:
         return self.__S_FW_pix
